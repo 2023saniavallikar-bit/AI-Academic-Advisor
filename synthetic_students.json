@@ -1,0 +1,1898 @@
+[
+  {
+    "student_id": "STU_001",
+    "description": "Normal Progression - Ready for Semester 5",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 68,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP205",
+        "course_title": "Object Oriented Programming",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP301",
+        "course_title": "Artificial Intelligence",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA202",
+        "course_title": "Exploratory Data Analysis",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH301",
+        "course_title": "Optimization Techniques for Data Science",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": []
+  },
+  {
+    "student_id": "STU_002",
+    "description": "Failed Prerequisite - Testing COMP203 prerequisite block",
+    "batch": 2022,
+    "current_semester": 3,
+    "total_credits_earned": 18,
+    "minor": null,
+    "academic_status": "Probation",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "current_courses": []
+  },
+  {
+    "student_id": "STU_003",
+    "description": "Missing Information - Testing if RAG asks follow-up questions",
+    "batch": 2022,
+    "current_semester": 6,
+    "total_credits_earned": 72,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH301",
+        "course_title": "Optimization Techniques for Data Science",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": []
+  },
+  {
+    "student_id": "STU_004",
+    "description": "Conflicting/Multiple Prerequisites - Testing DATA301 (Machine Learning) eligibility",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 60,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "DATA202",
+        "course_title": "Exploratory Data Analysis",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "MATH301",
+        "course_title": "Optimization Techniques for Data Science",
+        "credits": 4
+      }
+    ],
+    "current_courses": []
+  },
+  {
+    "student_id": "STU_005",
+    "description": "Minor Declaration - Testing open/minor credit checks",
+    "batch": 2022,
+    "current_semester": 4,
+    "total_credits_earned": 45,
+    "minor": "Entrepreneurship",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "COMP203",
+        "course_title": "Analysis of Algorithms",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_006",
+    "description": "First-year student on track - Semester 1 completed",
+    "batch": 2023,
+    "current_semester": 2,
+    "total_credits_earned": 16,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH101",
+        "course_title": "Introductory Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP101",
+        "course_title": "Programming Fundamentals",
+        "credits": 4
+      },
+      {
+        "course_code": "ENGL101",
+        "course_title": "Academic Writing",
+        "credits": 3
+      },
+      {
+        "course_code": "PHYS101",
+        "course_title": "Physics for Computing",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_007",
+    "description": "Probationary student - Multiple failed core courses",
+    "batch": 2022,
+    "current_semester": 4,
+    "total_credits_earned": 28,
+    "minor": null,
+    "academic_status": "Probation",
+    "completed_courses": [
+      {
+        "course_code": "MATH101",
+        "course_title": "Introductory Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP205",
+        "course_title": "Object Oriented Programming",
+        "credits": 3
+      }
+    ],
+    "current_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_008",
+    "description": "High achiever - Minor in Economics",
+    "batch": 2021,
+    "current_semester": 7,
+    "total_credits_earned": 102,
+    "minor": "Economics",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP203",
+        "course_title": "Analysis of Algorithms",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      },
+      {
+        "course_code": "ECON101",
+        "course_title": "Microeconomics",
+        "credits": 3
+      },
+      {
+        "course_code": "ECON102",
+        "course_title": "Macroeconomics",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "DATA401",
+        "course_title": "Deep Learning",
+        "credits": 4
+      },
+      {
+        "course_code": "ECON201",
+        "course_title": "Econometrics",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_009",
+    "description": "Senior student preparing for Graduation Capstone",
+    "batch": 2021,
+    "current_semester": 8,
+    "total_credits_earned": 118,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP301",
+        "course_title": "Artificial Intelligence",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP401",
+        "course_title": "Software Engineering",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "PROJ499",
+        "course_title": "Senior Capstone Project",
+        "credits": 6
+      }
+    ]
+  },
+  {
+    "student_id": "STU_010",
+    "description": "Prerequisite Check for Deep Learning (DATA401)",
+    "batch": 2022,
+    "current_semester": 6,
+    "total_credits_earned": 80,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "DATA401",
+        "course_title": "Deep Learning",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_011",
+    "description": "Transferred credits - Credit overload request pending",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 75,
+    "minor": "Mathematics",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH301",
+        "course_title": "Optimization Techniques for Data Science",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "MATH401",
+        "course_title": "Abstract Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP203",
+        "course_title": "Analysis of Algorithms",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_012",
+    "description": "Repeated course due to prior low grade / fail",
+    "batch": 2023,
+    "current_semester": 3,
+    "total_credits_earned": 32,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH101",
+        "course_title": "Introductory Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "current_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_013",
+    "description": "Cybersecurity Track Specialization",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 64,
+    "minor": "Cybersecurity",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP205",
+        "course_title": "Object Oriented Programming",
+        "credits": 3
+      },
+      {
+        "course_code": "SEC201",
+        "course_title": "Introduction to Network Security",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "SEC301",
+        "course_title": "Applied Cryptography",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP302",
+        "course_title": "Operating Systems",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_014",
+    "description": "Academic Warning - Critical credit shortage",
+    "batch": 2022,
+    "current_semester": 4,
+    "total_credits_earned": 22,
+    "minor": null,
+    "academic_status": "Warning",
+    "completed_courses": [
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      },
+      {
+        "course_code": "ENGL101",
+        "course_title": "Academic Writing",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "current_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_015",
+    "description": "Minor in Computational Finance",
+    "batch": 2021,
+    "current_semester": 7,
+    "total_credits_earned": 98,
+    "minor": "Finance",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "FIN101",
+        "course_title": "Financial Accounting",
+        "credits": 3
+      },
+      {
+        "course_code": "FIN201",
+        "course_title": "Corporate Finance",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "FIN301",
+        "course_title": "Financial Risk Modeling",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_016",
+    "description": "First-year student - Fresh entry Semester 1",
+    "batch": 2024,
+    "current_semester": 1,
+    "total_credits_earned": 0,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH101",
+        "course_title": "Introductory Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP101",
+        "course_title": "Programming Fundamentals",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_017",
+    "description": "Testing Cloud Computing elective prerequisites",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 62,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP302",
+        "course_title": "Operating Systems",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "COMP305",
+        "course_title": "Cloud Computing Infrastructure",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_018",
+    "description": "Deferred status returning student",
+    "batch": 2021,
+    "current_semester": 5,
+    "total_credits_earned": 50,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_019",
+    "description": "Software Engineering specialization track",
+    "batch": 2022,
+    "current_semester": 6,
+    "total_credits_earned": 84,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP205",
+        "course_title": "Object Oriented Programming",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP303",
+        "course_title": "Database Management Systems",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "COMP401",
+        "course_title": "Software Engineering",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_020",
+    "description": "Pending Grade Resolution in MATH202",
+    "batch": 2023,
+    "current_semester": 3,
+    "total_credits_earned": 30,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_021",
+    "description": "Bioinformatics minor candidate",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 66,
+    "minor": "Bioinformatics",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      },
+      {
+        "course_code": "BIOL101",
+        "course_title": "General Biology",
+        "credits": 3
+      },
+      {
+        "course_code": "BIOL201",
+        "course_title": "Genomics and Genetics",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "BIO301",
+        "course_title": "Computational Genomics",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_022",
+    "description": "Multiple Fails - Risk of Suspension",
+    "batch": 2022,
+    "current_semester": 4,
+    "total_credits_earned": 15,
+    "minor": null,
+    "academic_status": "Critical Probation",
+    "completed_courses": [
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      }
+    ],
+    "current_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_023",
+    "description": "Robotics track - Missing Physics prerequisite",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 58,
+    "minor": "Robotics",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "PHYS101",
+        "course_title": "Physics for Computing",
+        "credits": 3
+      }
+    ],
+    "current_courses": [
+      {
+        "course_code": "ROB201",
+        "course_title": "Control Systems",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_024",
+    "description": "Semester 6 student - Data Engineering Stream",
+    "batch": 2022,
+    "current_semester": 6,
+    "total_credits_earned": 88,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP303",
+        "course_title": "Database Management Systems",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA302",
+        "course_title": "Data Warehousing & ETL",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "DATA402",
+        "course_title": "Big Data Systems",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_025",
+    "description": "International Exchange Student - Credit Waiver Applied",
+    "batch": 2021,
+    "current_semester": 7,
+    "total_credits_earned": 90,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP301",
+        "course_title": "Artificial Intelligence",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_026",
+    "description": "Semester 3 - Smooth progression",
+    "batch": 2023,
+    "current_semester": 3,
+    "total_credits_earned": 36,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH101",
+        "course_title": "Introductory Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP205",
+        "course_title": "Object Oriented Programming",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_027",
+    "description": "Human-Computer Interaction Minor",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 63,
+    "minor": "HCI",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "DES101",
+        "course_title": "Design Thinking",
+        "credits": 3
+      },
+      {
+        "course_code": "HCI201",
+        "course_title": "User Interface Design",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "HCI301",
+        "course_title": "User Experience Evaluation",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_028",
+    "description": "Failed Linear Algebra - Blocking MATH301",
+    "batch": 2022,
+    "current_semester": 4,
+    "total_credits_earned": 42,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      }
+    ],
+    "current_courses": [
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_029",
+    "description": "On track for early graduation - High credit load",
+    "batch": 2021,
+    "current_semester": 7,
+    "total_credits_earned": 110,
+    "minor": "Statistics",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      },
+      {
+        "course_code": "STAT301",
+        "course_title": "Bayesian Statistics",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "DATA401",
+        "course_title": "Deep Learning",
+        "credits": 4
+      },
+      {
+        "course_code": "STAT401",
+        "course_title": "Time Series Analysis",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_030",
+    "description": "Missing General Education Requirements",
+    "batch": 2022,
+    "current_semester": 6,
+    "total_credits_earned": 78,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "ETH101",
+        "course_title": "Ethics in Technology",
+        "credits": 2
+      },
+      {
+        "course_code": "ENGL101",
+        "course_title": "Academic Writing",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_031",
+    "description": "Semester 2 student - Outstanding MATH101 failure",
+    "batch": 2023,
+    "current_semester": 2,
+    "total_credits_earned": 12,
+    "minor": null,
+    "academic_status": "Probation",
+    "completed_courses": [
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP101",
+        "course_title": "Programming Fundamentals",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "MATH101",
+        "course_title": "Introductory Calculus",
+        "credits": 3
+      }
+    ],
+    "current_courses": [
+      {
+        "course_code": "MATH101",
+        "course_title": "Introductory Calculus",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_032",
+    "description": "Natural Language Processing Track",
+    "batch": 2021,
+    "current_semester": 7,
+    "total_credits_earned": 96,
+    "minor": "Linguistics",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      },
+      {
+        "course_code": "LING101",
+        "course_title": "Introduction to Linguistics",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "DATA403",
+        "course_title": "Natural Language Processing",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_033",
+    "description": "Semester 4 - Standard Progress",
+    "batch": 2022,
+    "current_semester": 4,
+    "total_credits_earned": 52,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP205",
+        "course_title": "Object Oriented Programming",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP203",
+        "course_title": "Analysis of Algorithms",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_034",
+    "description": "Web Development Specialization",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 65,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "WEB101",
+        "course_title": "Frontend Development",
+        "credits": 3
+      },
+      {
+        "course_code": "WEB201",
+        "course_title": "Backend Engineering",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "WEB301",
+        "course_title": "Full Stack Architecture",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_035",
+    "description": "Re-enrolled after leave of absence - Prerequisites outdated",
+    "batch": 2020,
+    "current_semester": 5,
+    "total_credits_earned": 54,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_036",
+    "description": "Computer Vision Track",
+    "batch": 2021,
+    "current_semester": 7,
+    "total_credits_earned": 100,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA401",
+        "course_title": "Deep Learning",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "DATA404",
+        "course_title": "Computer Vision",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_037",
+    "description": "Failed Object Oriented Programming - Retaking",
+    "batch": 2023,
+    "current_semester": 3,
+    "total_credits_earned": 28,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "COMP205",
+        "course_title": "Object Oriented Programming",
+        "credits": 3
+      }
+    ],
+    "current_courses": [
+      {
+        "course_code": "COMP205",
+        "course_title": "Object Oriented Programming",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_038",
+    "description": "Business Analytics Minor",
+    "batch": 2022,
+    "current_semester": 6,
+    "total_credits_earned": 82,
+    "minor": "Business Analytics",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA202",
+        "course_title": "Exploratory Data Analysis",
+        "credits": 3
+      },
+      {
+        "course_code": "BUS101",
+        "course_title": "Principles of Management",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "BUS301",
+        "course_title": "Predictive Business Analytics",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_039",
+    "description": "Semester 2 - All clear",
+    "batch": 2023,
+    "current_semester": 2,
+    "total_credits_earned": 18,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH101",
+        "course_title": "Introductory Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP101",
+        "course_title": "Programming Fundamentals",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_040",
+    "description": "Failed Database Systems - Prerequisite block on Web/Data tracks",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 56,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "COMP303",
+        "course_title": "Database Management Systems",
+        "credits": 4
+      }
+    ],
+    "current_courses": [
+      {
+        "course_code": "COMP303",
+        "course_title": "Database Management Systems",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_041",
+    "description": "AI & Ethics Specialization",
+    "batch": 2021,
+    "current_semester": 7,
+    "total_credits_earned": 94,
+    "minor": "Philosophy",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP301",
+        "course_title": "Artificial Intelligence",
+        "credits": 4
+      },
+      {
+        "course_code": "PHIL101",
+        "course_title": "Introduction to Philosophy",
+        "credits": 3
+      },
+      {
+        "course_code": "ETH101",
+        "course_title": "Ethics in Technology",
+        "credits": 2
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "PHIL302",
+        "course_title": "Ethics of Artificial Intelligence",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_042",
+    "description": "Late Major Switch from Physics to Data Science",
+    "batch": 2021,
+    "current_semester": 6,
+    "total_credits_earned": 70,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "PHYS101",
+        "course_title": "Physics for Computing",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_043",
+    "description": "Semester 3 - Testing COMP205 registration eligibility",
+    "batch": 2023,
+    "current_semester": 3,
+    "total_credits_earned": 31,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP101",
+        "course_title": "Programming Fundamentals",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "COMP205",
+        "course_title": "Object Oriented Programming",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_044",
+    "description": "Game Development Minor",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 67,
+    "minor": "Game Development",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP205",
+        "course_title": "Object Oriented Programming",
+        "credits": 3
+      },
+      {
+        "course_code": "GAME101",
+        "course_title": "Introduction to Game Engines",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "GAME201",
+        "course_title": "3D Graphics Programming",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_045",
+    "description": "Probationary student clearing backlog",
+    "batch": 2022,
+    "current_semester": 5,
+    "total_credits_earned": 38,
+    "minor": null,
+    "academic_status": "Probation",
+    "completed_courses": [
+      {
+        "course_code": "MATH101",
+        "course_title": "Introductory Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA130",
+        "course_title": "Computational Thinking",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      }
+    ],
+    "current_courses": [
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_046",
+    "description": "High GPA student opting for honors thesis track",
+    "batch": 2021,
+    "current_semester": 7,
+    "total_credits_earned": 108,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA401",
+        "course_title": "Deep Learning",
+        "credits": 4
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "HON490",
+        "course_title": "Honors Research Seminar",
+        "credits": 3
+      }
+    ]
+  },
+  {
+    "student_id": "STU_047",
+    "description": "Quantum Computing Minor",
+    "batch": 2021,
+    "current_semester": 7,
+    "total_credits_earned": 95,
+    "minor": "Quantum Computing",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "PHYS101",
+        "course_title": "Physics for Computing",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "PHYS301",
+        "course_title": "Quantum Mechanics for CS",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_048",
+    "description": "Semester 4 - Testing MATH301 prerequisites",
+    "batch": 2022,
+    "current_semester": 4,
+    "total_credits_earned": 48,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "MATH301",
+        "course_title": "Optimization Techniques for Data Science",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_049",
+    "description": "Network Administration Specialization",
+    "batch": 2022,
+    "current_semester": 6,
+    "total_credits_earned": 76,
+    "minor": null,
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP302",
+        "course_title": "Operating Systems",
+        "credits": 4
+      },
+      {
+        "course_code": "NET101",
+        "course_title": "Computer Networks",
+        "credits": 3
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": [
+      {
+        "course_code": "NET301",
+        "course_title": "Advanced Network Systems",
+        "credits": 4
+      }
+    ]
+  },
+  {
+    "student_id": "STU_050",
+    "description": "Final semester student - Graduation clearance check",
+    "batch": 2021,
+    "current_semester": 8,
+    "total_credits_earned": 124,
+    "minor": "Mathematics",
+    "academic_status": "Active",
+    "completed_courses": [
+      {
+        "course_code": "MATH201",
+        "course_title": "Calculus",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH202",
+        "course_title": "Probability Theory",
+        "credits": 3
+      },
+      {
+        "course_code": "MATH204",
+        "course_title": "Linear Algebra",
+        "credits": 3
+      },
+      {
+        "course_code": "COMP201",
+        "course_title": "Data Structures",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP203",
+        "course_title": "Analysis of Algorithms",
+        "credits": 4
+      },
+      {
+        "course_code": "COMP301",
+        "course_title": "Artificial Intelligence",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA201",
+        "course_title": "Foundations to Data Science",
+        "credits": 3
+      },
+      {
+        "course_code": "DATA301",
+        "course_title": "Machine Learning",
+        "credits": 4
+      },
+      {
+        "course_code": "DATA401",
+        "course_title": "Deep Learning",
+        "credits": 4
+      },
+      {
+        "course_code": "PROJ499",
+        "course_title": "Senior Capstone Project",
+        "credits": 6
+      }
+    ],
+    "failed_courses": [],
+    "current_courses": []
+  }
+]

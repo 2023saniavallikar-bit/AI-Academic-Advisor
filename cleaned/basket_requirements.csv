@@ -1,0 +1,36 @@
+batch,basket_id,basket,fixed_min_credits,scheduled_credits,differs
+2022,B1,Univ Core,18,18,False
+2022,B2,Foundation,34,34,False
+2022,B3,Program CORE,46,46,False
+2022,B4,Program HONORS,20,20,False
+2022,B5,Specialization Tracks,20,20,False
+2022,B6,Open/Minor,24,24,False
+2022,B7,Internship/ Capstone Project,18,18,False
+2023,B1,Univ Core,18,18,False
+2023,B2,Foundation,34,34,False
+2023,B3,Program CORE,46,46,False
+2023,B4,Program HONORS,20,20,False
+2023,B5,Specialization Tracks,20,20,False
+2023,B6,Open/Minor,24,24,False
+2023,B7,Internship/ Capstone Project,18,18,False
+2024,B1,Univ Core,18,18,False
+2024,B2,Foundation,34,34,False
+2024,B3,Program CORE,46,46,False
+2024,B4,Program HONORS,20,20,False
+2024,B5,Specialization Tracks,20,20,False
+2024,B6,Open/Minor,24,24,False
+2024,B7,Internship/ Capstone Project,18,18,False
+2025,B1,Univ Core,24,24,False
+2025,B2,Foundation,24,24,False
+2025,B3,Program CORE,46,46,False
+2025,B4,Program HONORS,20,20,False
+2025,B5,Specialization Tracks,20,20,False
+2025,B6,Open/Minor,32,32,False
+2025,B7,Internship/ Capstone Project,14,14,False
+2026,B1,Univ Core,24,18,True
+2026,B2,Foundation,24,26,True
+2026,B3,Program CORE,46,50,True
+2026,B4,Program HONORS,20,20,False
+2026,B5,Electives,20,20,False
+2026,B6,Open/Minor,32,32,False
+2026,B7,Internship/ Capstone Project,14,14,False

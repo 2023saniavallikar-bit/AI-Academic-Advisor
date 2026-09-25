@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advisor Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">✦</div>
+          <div>
+            <strong>Advisor</strong>
+            <span>Academic support</span>
+          </div>
+        </div>
+
+        <button class="new-chat" id="newChatButton" type="button">
+          <span>＋</span>
+          New conversation
+        </button>
+
+        <div class="sidebar-section">
+          <p class="section-label">Recent chats</p>
+          <button class="history-item active" type="button">
+            <span class="history-icon">◌</span>
+            Course planning
+          </button>
+          <button class="history-item" type="button">
+            <span class="history-icon">◌</span>
+            Degree requirements
+          </button>
+          <button class="history-item" type="button">
+            <span class="history-icon">◌</span>
+            Academic policies
+          </button>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="status-dot"></div>
+          <div>
+            <strong>Advisor online</strong>
+            <span>Grounded in university documents</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="chat-panel">
+        <header class="chat-header">
+          <div class="advisor-profile">
+            <div class="avatar">✦</div>
+            <div>
+              <h1>AI Academic Advisor</h1>
+              <p><span class="online-dot"></span> Available to help with your studies</p>
+            </div>
+          </div>
+          <button class="icon-button" id="clearButton" type="button" aria-label="Clear conversation">⌫</button>
+        </header>
+
+        <section class="chat-window" id="chatWindow" aria-live="polite">
+          <div class="welcome-block">
+            <div class="welcome-icon">✦</div>
+            <h2>How can I help you today?</h2>
+            <p>Ask me about courses, prerequisites, degree requirements, or academic policy.</p>
+          </div>
+
+          <div class="quick-prompts">
+            <button type="button" class="prompt-chip">Can I take COMP203 next semester?</button>
+            <button type="button" class="prompt-chip">What courses should I take next?</button>
+            <button type="button" class="prompt-chip">Show my degree requirements</button>
+          </div>
+        </section>
+
+        <form id="chatForm" class="composer">
+          <div class="student-context">
+            <span class="context-icon">◎</span>
+            <input id="studentId" type="text" placeholder="Student ID (optional, e.g. STU_002)" />
+          </div>
+          <div class="composer-row">
+            <textarea id="messageInput" rows="1" placeholder="Message your academic advisor..." required></textarea>
+            <button type="submit" id="sendButton" class="send-button" aria-label="Send message">↑</button>
+          </div>
+          <p class="composer-note">Advisor responses are based on your university's academic documents.</p>
+        </form>
+      </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

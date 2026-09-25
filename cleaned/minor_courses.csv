@@ -1,0 +1,167 @@
+minor,batch,course_code,course_title,L,T,P,credits,semester,prereq_raw,status,source_sheet,source_row
+Design,2022,CDES105,Appreciating and Deconstructing Art and Media,3.0,0.0,0.0,3.0,3.0,NIL,OK,Design Minor,2
+Design,2022,CDES203,Motion Graphic Design,1.0,0.0,2.0,2.0,5.0,NIL,OK,Design Minor,3
+Design,2022,CDES504,Environment Design and Communication,1.0,1.0,0.0,2.0,5.0,NIL,OK,Design Minor,4
+Design,2022,CDES704,Integrative Studio VI- Exhibition/Museum,2.0,2.0,0.0,4.0,6.0,NIL,OK,Design Minor,5
+Design,2022,CDES402,Interaction Design- UI UX,1.0,3.0,0.0,4.0,6.0,NIL,OK,Design Minor,6
+Design,2022,CDES216,Drawing and Moving Images,1.0,1.0,0.0,2.0,7.0,NIL,OK,Design Minor,7
+Design,2022,CDES712,Designing Futures,1.0,2.0,0.0,3.0,7.0,"(CDES402-Interaction Design- UI UX), (CDES504- Environment Design and Communication)",OK,Design Minor,8
+Design,2022,DON’T KNOW,(placeholder: 4 credits not yet assigned to specific courses),,,,4.0,,,CREDITS_TBD,Design Minor,9
+Design,2023,CDES105,Appreciating and Deconstructing Art and Media,3.0,0.0,0.0,3.0,3.0,NIL,OK,Design Minor,11
+Design,2023,CDES702,"Integrative Studio II- Sensemaking, Visualization",2.0,2.0,0.0,4.0,4.0,NIL,OK,Design Minor,12
+Design,2023,CDES221,Information Architecture and Design,2.0,2.0,0.0,4.0,5.0,NIL,OK,Design Minor,13
+Design,2023,CDES219,Elements of Sound,2.0,2.0,0.0,4.0,6.0,NIL,OK,Design Minor,14
+Design,2023,CDES301,Sketch to Story,2.0,2.0,0.0,4.0,6.0,NIL,OK,Design Minor,15
+Design,2023,CDES312,Designing Futures,2.0,2.0,2.0,5.0,7.0,NIL,OK,Design Minor,16
+Design,2024,CDES217,Making with Reframed Media,2.0,3.0,0.0,4.0,3.0,NIL,OK,Design Minor,18
+Design,2024,CDES218,Frames and Frequencies,2.0,2.0,0.0,4.0,4.0,NIL,OK,Design Minor,19
+Design,2024,CDES221,Information Architecture and Design,2.0,2.0,0.0,4.0,5.0,NIL,OK,Design Minor,20
+Design,2024,CDES227,Drawing and Moving Image,2.0,2.0,0.0,4.0,5.0,NIL,OK,Design Minor,21
+Design,2024,TBD,(placeholder: 8 credits not yet assigned to specific courses),,,,8.0,,,CREDITS_TBD,Design Minor,22
+Design,2025,CDES217,Making with Reframed Media,2.0,2.0,0.0,4.0,3.0,NIL,OK,Design Minor,25
+Design,2025,TBD,(placeholder: 20 credits not yet assigned to specific courses),,,,20.0,,,CREDITS_TBD,Design Minor,26
+Design,2026,TBD,(placeholder: 24 credits not yet assigned to specific courses),,,,24.0,,,CREDITS_TBD,Design Minor,28
+Economics,2022,ECON201,Microeconomics,3.0,1.0,0.0,4.0,3.0,NIL,OK,Economics,2
+Economics,2022,ECON220,Behavourial Economics,3.0,1.0,0.0,4.0,4.0,NIL,OK,Economics,3
+Economics,2022,ECON207,Macroeconomics and Applicants to Indian Economy,3.0,1.0,0.0,4.0,5.0,NIL,OK,Economics,4
+Economics,2022,ECON413,Industrial Economics,3.0,1.0,0.0,4.0,6.0,"ECON201, ECON202/ ECON207",OK,Economics,5
+Economics,2022,ECON325,Public Economics,3.0,1.0,0.0,4.0,6.0,"ECON201, ECON202/ ECON207",OK,Economics,6
+Economics,2022,ECON316,Digital Economics,3.0,1.0,0.0,4.0,7.0,ECON201,OK,Economics,7
+Economics,2023,ECON201,Microeconomics,3.0,1.0,0.0,4.0,3.0,NIL,OK,Economics,9
+Economics,2023,ECON209,Macroeconomics I,3.0,1.0,0.0,4.0,4.0,NIL,OK,Economics,10
+Economics,2023,ECON316,Digital Economics,3.0,1.0,0.0,4.0,5.0,ECON201,OK,Economics,11
+Economics,2023,ECON315,Indian Economy,3.0,1.0,0.0,4.0,6.0,"ECON201, ECON209",OK,Economics,12
+Economics,2023,ECON322,Economics of Health and Education,3.0,1.0,0.0,4.0,6.0,ECON201,OK,Economics,13
+Economics,2023,ECON301,International Economics,3.0,1.0,0.0,4.0,7.0,"ECON201, ECON202",OK,Economics,14
+Economics,2024,,(no students in this batch),,,,,,,NO_STUDENTS,Economics,16
+Economics,2025,ECON208,Microeconomics I,3.0,1.0,0.0,4.0,3.0,NIL,OK,Economics,18
+Economics,2025,ECON209,Macroeconomics I,3.0,1.0,0.0,4.0,4.0,NIL,OK,Economics,19
+Economics,2025,ECON316,Digital Economics,3.0,1.0,0.0,4.0,5.0,ECON201,OK,Economics,20
+Economics,2025,ECON315,Indian Economy,3.0,1.0,0.0,4.0,6.0,"ECON201, ECON209",OK,Economics,21
+Economics,2025,ECON346,Financial Economics,3.0,1.0,0.0,4.0,6.0,"ECON208, ECON209",OK,Economics,22
+Economics,2025,ECON301,International Economics,3.0,1.0,0.0,4.0,7.0,"ECON201, ECON202",OK,Economics,23
+Economics,2026,ECON208,Microeconomics I,3.0,1.0,0.0,4.0,3.0,NIL,OK,Economics,25
+Economics,2026,ECON209,Macroeconomics I,3.0,1.0,0.0,4.0,4.0,NIL,OK,Economics,26
+Economics,2026,ECON316,Digital Economics,3.0,1.0,0.0,4.0,5.0,ECON201,OK,Economics,27
+Economics,2026,ECON315,Indian Economy,3.0,1.0,0.0,4.0,6.0,"ECON201, ECON209",OK,Economics,28
+Economics,2026,ECON346,Financial Economics,3.0,1.0,0.0,4.0,6.0,"ECON208, ECON209",OK,Economics,29
+Economics,2026,ECON301,International Economics,3.0,1.0,0.0,4.0,7.0,"ECON201, ECON202",OK,Economics,30
+Finance,2022,DON’T KNOW,Financial and Management Accounting (FAMA),2.0,1.0,0.0,3.0,3.0,NIL,CODE_MISSING,Finance,3
+Finance,2022,FINA333,Fiancial Institutions Markets and Services,2.0,1.0,0.0,3.0,4.0,MGMT208 Introduction to Financial Accounting,OK,Finance,4
+Finance,2022,MGMT207,Corporate Finance,2.0,1.0,0.0,3.0,5.0,FAMA Financial and management accounting,OK,Finance,5
+Finance,2022,MGMT209,Financial Statement Anaylsis,2.0,1.0,0.0,3.0,6.0,FINA201 Introduction to Financial Accounting,OK,Finance,6
+Finance,2022,MGMT210,Basics of INVESTMENT MANAGEMENT,2.0,2.0,0.0,4.0,6.0,"FINA333 Financial Instituation, Markets and Services",OK,Finance,7
+Finance,2022,MGMT213,Introduction To Fintech,1.0,1.0,0.0,2.0,7.0,"FINA333 Financial Instituation, Markets and Services",OK,Finance,8
+Finance,2022,MGMT323,Basics of Startup Finance,3.0,1.0,0.0,4.0,7.0,MGMT207 Corporate Finance,OK,Finance,9
+Finance,2022,MGMT203,Business Strategy Simulation,0.0,0.0,0.0,2.0,7.0,MKMT201/ MGMT207/ FINA201 Marketing Management/ Corporate Finance/ Financial and Management Accounting,OK,Finance,10
+Finance,2023,MGMT208,Introduction to Financial Accounting,2.0,1.0,0.0,3.0,3.0,NIL,OK,Finance,14
+Finance,2023,FINA333,Fiancial Institutions Markets and Services,2.0,1.0,0.0,3.0,4.0,MGMT208 Introduction to Financial Accounting,OK,Finance,15
+Finance,2023,MGMT207,Corporate Finance,2.0,1.0,0.0,3.0,5.0,MGMT208 Introduction to Financial Accounting,OK,Finance,16
+Finance,2023,MGMT209,Finacial Statement Analysis,2.0,1.0,0.0,3.0,6.0,MGMT208 Introduction to Financial Accounting,OK,Finance,17
+Finance,2023,MGMT210,Basics of Investment Management,2.0,2.0,0.0,4.0,6.0,FINA333 Fiancial Institutions Markets and Services,OK,Finance,18
+Finance,2023,MGMT323,Basics of Startup Finance,3.0,1.0,0.0,4.0,6.0,MGMT207 Corporate Finance,OK,Finance,19
+Finance,2023,MGMT213,Introduction To Fintech,1.0,1.0,0.0,2.0,7.0,NIL,OK,Finance,20
+Finance,2023,MGMT307,Strategy & Decision Making,1.0,1.0,0.0,2.0,7.0,NIL,OK,Finance,21
+Finance,2024,MGMT208,Introduction to Financial Accounting,2.0,1.0,0.0,3.0,3.0,NIL,OK,Finance,25
+Finance,2024,FINA333,Fiancial Institutions Markets and Services,2.0,1.0,0.0,3.0,4.0,MGMT208 Introduction to Financial Accounting,OK,Finance,26
+Finance,2024,MGMT207,Corporate Finance,2.0,1.0,0.0,3.0,5.0,NIL,OK,Finance,27
+Finance,2024,MGMT209,Finacial Statement Analysis,2.0,1.0,0.0,3.0,5.0,NIL,OK,Finance,28
+Finance,2024,MGMT210,Basics of Investment Management,2.0,2.0,0.0,4.0,6.0,FINA333 Fiancial Institutions Markets and Services,OK,Finance,29
+Finance,2024,MGMT323,Basics of Startup Finance,3.0,1.0,0.0,4.0,6.0,MGMT207 Corporate Finance,OK,Finance,30
+Finance,2024,MGMT213,Introduction To Fintech,1.0,1.0,0.0,2.0,7.0,NIL,OK,Finance,31
+Finance,2024,MGMT307,Strategy & Decision Making,1.0,1.0,0.0,2.0,7.0,NIL,OK,Finance,32
+Finance,2025,MGMT330,Introduction to Financial Accounting (R ),3.0,1.0,0.0,4.0,3.0,NIL,OK,Finance,36
+Finance,2025,,Financial Institutions Markets & Services with Fintech (GIVE NEW NAME),,,,,,,NEW_COURSE_INCOMPLETE,Finance,37
+Finance,2025,,Corporate Finance New Name,,,,,,,NEW_COURSE_INCOMPLETE,Finance,38
+Finance,2025,MGMT210,Basics of Investment Management,2.0,2.0,0.0,4.0,6.0,FINA333 Fiancial Institutions Markets and Services,OK,Finance,39
+Finance,2025,MGMT213,Introduction To Fintech,1.0,1.0,0.0,2.0,6.0,NIL,OK,Finance,40
+Finance,2025,MGMT323,Basics of Startup Finance,2.0,2.0,0.0,4.0,7.0,MGMT207 Corporate Finance,OK,Finance,41
+Finance,2025,TBD,(placeholder: 2 credits not yet assigned to specific courses),,,,2.0,,,CREDITS_TBD,Finance,42
+Finance,2026,MGMT330,Introduction to Financial Accounting (R),3.0,1.0,0.0,4.0,3.0,NIL,OK,Finance,46
+Finance,2026,TBD,(placeholder: 20 credits not yet assigned to specific courses),,,,20.0,,,CREDITS_TBD,Finance,47
+Law,2023,LAWM305,Regulating platform and Gig workers,3.0,0.0,2.0,4.0,5.0,NIL,OK,Law Minor,3
+Law,2023,LAWE200,Moral Philosophy and Justice,2.0,0.0,0.0,2.0,6.0,NIL,OK,Law Minor,4
+Law,2023,LAWC410,Introduction to Alternative Dispute Resolution Methods,2.0,0.0,2.0,3.0,6.0,NIL,OK,Law Minor,5
+Law,2023,LAWB210,Criminology and Victimology,2.0,2.0,0.0,4.0,6.0,NIL,OK,Law Minor,6
+Law,2023,LAWM306,Law Relating to start-ups,3.0,1.0,0.0,4.0,7.0,NIL,OK,Law Minor,7
+Law,2023,LAWE301,Intellectual Property Rights,2.0,0.0,0.0,2.0,7.0,NIL,OK,Law Minor,8
+Law,2023,Don’t Know,(placeholder: 5 credits not yet assigned to specific courses),,,,5.0,,,CREDITS_TBD,Law Minor,9
+Law,2024,LAWP100,Political Science I,2.0,1.0,0.0,3.0,3.0,NIL,OK,Law Minor,11
+Law,2024,LAWS301,Legal Methods,2.0,0.0,2.0,3.0,3.0,NIL,OK,Law Minor,12
+Law,2024,LAWM301,Constitution for Citizens,2.0,2.0,0.0,4.0,4.0,NIL,OK,Law Minor,13
+Law,2024,LAWM302,Basics of International Law,3.0,1.0,0.0,4.0,5.0,NIL,OK,Law Minor,14
+Law,2024,TBA,(placeholder: 10 credits not yet assigned to specific courses),,,,10.0,,,CREDITS_TBD,Law Minor,15
+Law,2025,LAWS301,Legal Methods,2.0,0.0,2.0,3.0,3.0,NIL,OK,Law Minor,17
+Law,2025,LAWP101,Introduction to Political science,3.0,1.0,0.0,4.0,2.0,NIL,OK,Law Minor,18
+Law,2025,TBA,(placeholder: 17 credits not yet assigned to specific courses),,,,17.0,,,CREDITS_TBD,Law Minor,19
+Law,2026,TBA,(placeholder: 24 credits not yet assigned to specific courses),,,,24.0,,,CREDITS_TBD,Law Minor,21
+Marketing,2022,DON’T KNOW,Marketing Management,2.0,1.0,0.0,3.0,3.0,NIL,CODE_MISSING,Marketing,4
+Marketing,2022,MGMT302,Digital and Ecommerce Marketing,2.0,2.0,0.0,4.0,4.0,MKTG201 Introduction to digital business,OK,Marketing,5
+Marketing,2022,MGMT304,Integrated Marketing Communications,2.0,1.0,0.0,3.0,5.0,MKTG201 Marketing management,OK,Marketing,6
+Marketing,2022,MGMT314,Sales and distribution management,2.0,2.0,0.0,4.0,6.0,MKTG201 Marketing management,OK,Marketing,7
+Marketing,2022,MGMT320,Marketing Analytics,1.0,1.0,0.0,2.0,7.0,MKTG201 Introduction to digital business,OK,Marketing,8
+Marketing,2022,MGMT305,Services Marketing,2.0,1.0,0.0,3.0,7.0,MKTG201 Introduction to digital business,OK,Marketing,9
+Marketing,2022,MGMT211,Brand Management,2.0,1.0,0.0,3.0,7.0,MKTG201 Introduction to digital business,OK,Marketing,10
+Marketing,2022,MGMT203,Business Strategy Simulation,0.0,0.0,0.0,2.0,7.0,MKMT201/ MGMT207/ FINA201 Marketing Management/ Corporate Finance/ Financial and Management Accounting,OK,Marketing,11
+Marketing,2023,MKTG201,Marketing Management,2.0,1.0,0.0,3.0,3.0,NIL,OK,Marketing,15
+Marketing,2023,MGMT302,Digital and Ecommerce Marketing,2.0,2.0,0.0,4.0,4.0,MKTG201 Introduction to digital business,OK,Marketing,16
+Marketing,2023,MGMT304,Integrated Marketing Communications,2.0,1.0,0.0,3.0,5.0,MKTG201 Introduction to digital business,OK,Marketing,17
+Marketing,2023,MGMT314,Sales and Distribution Management,2.0,2.0,0.0,4.0,6.0,MKTG201 Introduction to digital business,OK,Marketing,18
+Marketing,2023,MGMT305,Services Marketing,2.0,1.0,0.0,3.0,6.0,MKTG201 Introduction to digital business,OK,Marketing,19
+Marketing,2023,MGMT211,Brand Management,2.0,1.0,0.0,3.0,6.0,MKTG201 Introduction to digital business,OK,Marketing,20
+Marketing,2023,MGMT320,Marketing Analytics,1.0,1.0,0.0,2.0,7.0,NIL,OK,Marketing,21
+Marketing,2023,MGMT307,Strategy & Decision Making,1.0,1.0,0.0,2.0,7.0,NIL,OK,Marketing,22
+Marketing,2024,MKTG201,Marketing Management,2.0,1.0,0.0,3.0,3.0,NIL,OK,Marketing,26
+Marketing,2024,MGMT302,Digital and Ecommerce Marketing,2.0,2.0,0.0,4.0,4.0,MKTG201 Introduction to digital business,OK,Marketing,27
+Marketing,2024,MGMT305,Services Marketing,2.0,1.0,0.0,3.0,5.0,NIL,OK,Marketing,28
+Marketing,2024,MGMT304,Integrated Marketing Communications,2.0,1.0,0.0,3.0,5.0,NIL,OK,Marketing,29
+Marketing,2024,MGMT314,Sales and Distribution Management,2.0,2.0,0.0,4.0,6.0,MKTG201 Introduction to digital business,OK,Marketing,30
+Marketing,2024,MGMT211,Brand Management,2.0,1.0,0.0,3.0,6.0,MKTG201 Introduction to digital business,OK,Marketing,31
+Marketing,2024,MGMT320,Marketing Analytics,1.0,1.0,0.0,2.0,7.0,NIL,OK,Marketing,32
+Marketing,2024,MGMT307,Strategy & Decision Making,1.0,1.0,0.0,2.0,7.0,NIL,OK,Marketing,33
+Marketing,2025,MGMT328,Foundation of Marketing Management,2.0,2.0,0.0,4.0,3.0,NIL,OK,Marketing,37
+Marketing,2025,MGMT302,Digital and Ecommerce Marketing,2.0,1.0,0.0,4.0,4.0,MKTG201 Introduction to digital business,OK,Marketing,38
+Marketing,2025,MGMT304,Integrated Marketing Communications,2.0,1.0,0.0,3.0,5.0,NIL,OK,Marketing,39
+Marketing,2025,,Services Marketing,,,,,,,NEW_COURSE_INCOMPLETE,Marketing,40
+Marketing,2025,MGMT314,Sales and Distribution Management,2.0,2.0,0.0,4.0,6.0,MKTG201 Introduction to digital business,OK,Marketing,41
+Marketing,2025,TBD,(placeholder: 5 credits not yet assigned to specific courses),,,,5.0,,,CREDITS_TBD,Marketing,42
+Marketing,2026,MGMT328,Foundations of Marketing Management,2.0,2.0,0.0,4.0,3.0,NIL,OK,Marketing,46
+Marketing,2026,TBD,(placeholder: 20 credits not yet assigned to specific courses),,,,20.0,,,CREDITS_TBD,Marketing,47
+Psychology,2022,PSYC201,Biological Psychology,3.0,1.0,0.0,4.0,3.0,NIL,OK,Psychology,2
+Psychology,2022,PSYC202,Cognitive Psychology,2.0,2.0,0.0,4.0,4.0,PSYC101,OK,Psychology,3
+Psychology,2022,PSYC255,Psychopathology,3.0,1.0,0.0,4.0,5.0,NIL,OK,Psychology,4
+Psychology,2022,PSYC241,Social Psychology,2.0,2.0,0.0,4.0,6.0,PSYC101,OK,Psychology,5
+Psychology,2022,PSYC204,Developmental Psychology,3.0,1.0,0.0,4.0,6.0,PSYC101,OK,Psychology,6
+Psychology,2022,PSYC303,Psychological Testing and Measurement,3.0,1.0,0.0,4.0,7.0,"PSYC101, PSYC202, MATH131",OK,Psychology,7
+Psychology,2023,PSYC201,Biological Psychology,3.0,1.0,0.0,4.0,3.0,NIL,OK,Psychology,9
+Psychology,2023,PSYC202,Cognitive Psychology,2.0,2.0,0.0,4.0,4.0,PSYC101,OK,Psychology,10
+Psychology,2023,PSYC104,Lifespan Development I,3.0,1.0,0.0,4.0,5.0,PSYC101,OK,Psychology,11
+Psychology,2023,PSYC241,Social Psychology,2.0,2.0,0.0,4.0,6.0,PSYC101,OK,Psychology,12
+Psychology,2023,PSYC306,Health Psychology,3.0,1.0,0.0,4.0,6.0,"PSYC101, PSYC201",OK,Psychology,13
+Psychology,2023,PSYC255,Psychopathology,3.0,1.0,0.0,4.0,7.0,NIL,OK,Psychology,14
+Psychology,2024,PSYC201/ PSYC103,Biological Psychology/ Foundations of Psychology I,3.0,1.0,0.0,4.0,3.0,NIL,OK,Psychology,16
+Psychology,2024,PSYC202,Cognitive Psychology,2.0,2.0,0.0,4.0,4.0,PSYC101,OK,Psychology,17
+Psychology,2024,PSYC241,Social Psychology,2.0,2.0,0.0,4.0,5.0,PSYC101,OK,Psychology,18
+Psychology,2024,PSYC306,Health Psychology,3.0,1.0,0.0,4.0,6.0,"PSYC101, PSYC201",OK,Psychology,19
+Psychology,2024,PSYC104,Lifespan Development I,3.0,1.0,0.0,4.0,6.0,NIL,OK,Psychology,20
+Psychology,2024,PSYC255,Psychopathology,3.0,1.0,0.0,4.0,7.0,NIL,OK,Psychology,21
+Psychology,2025,PSYC201/ PSYC103,Biological Psychology/ Foundations of Psychology I,3.0,1.0,0.0,4.0,3.0,NIL,OK,Psychology,23
+Psychology,2025,PSYC202,Cognitive Psychology,2.0,2.0,0.0,4.0,4.0,PSYC101,OK,Psychology,24
+Psychology,2025,PSYC241,Social Psychology,2.0,2.0,0.0,4.0,5.0,PSYC101,OK,Psychology,25
+Psychology,2025,PSYC306,Health Psychology,3.0,1.0,0.0,4.0,6.0,"PSYC101, PSYC201",OK,Psychology,26
+Psychology,2025,PSYC104,Lifespan Development I,3.0,1.0,0.0,4.0,6.0,NIL,OK,Psychology,27
+Psychology,2025,PSYC255,Psychopathology,3.0,1.0,0.0,4.0,7.0,NIL,OK,Psychology,28
+Psychology,2026,PSYC201/ PSYC103,Biological Psychology/ Foundations of Psychology I,3.0,1.0,0.0,4.0,3.0,NIL,OK,Psychology,30
+Psychology,2026,PSYC202,Cognitive Psychology,2.0,2.0,0.0,4.0,4.0,PSYC101,OK,Psychology,31
+Psychology,2026,PSYC241,Social Psychology,2.0,2.0,0.0,4.0,5.0,PSYC101,OK,Psychology,32
+Psychology,2026,PSYC306,Health Psychology,3.0,1.0,0.0,4.0,6.0,"PSYC101, PSYC201",OK,Psychology,33
+Psychology,2026,PSYC104,Lifespan Development I,3.0,1.0,0.0,4.0,6.0,NIL,OK,Psychology,34
+Psychology,2026,PSYC255,Psychopathology,3.0,1.0,0.0,4.0,7.0,NIL,OK,Psychology,35
+Start-up,2024,MGMT326,Product Development,2.0,2.0,0.0,4.0,4.0,MKTG201 Introduction to digital business,OK,Start-up,3
+Start-up,2024,MGMT336,Design Thinking for Entrepreneurship,2.0,1.0,2.0,4.0,5.0,NIL,OK,Start-up,4
+Start-up,2024,TBD,(placeholder: 16 credits not yet assigned to specific courses),,,,16.0,,,CREDITS_TBD,Start-up,5
+Start-up,2025,MGMT330,Introduction to Financial Accounting (R ),3.0,1.0,0.0,4.0,3.0,NIL,OK,Start-up,9
+Start-up,2025,MGMT328,Foundation of Marketing Management,2.0,2.0,0.0,4.0,3.0,NIL,OK,Start-up,10
+Start-up,2025,MGMT336,Design Thinking for Entrepreneurship,2.0,1.0,2.0,4.0,5.0,NIL,OK,Start-up,11
+Start-up,2025,MGMT213,Introduction To Fintech,1.0,1.0,0.0,2.0,6.0,NIL,OK,Start-up,12
+Start-up,2025,TBD,(placeholder: 10 credits not yet assigned to specific courses),,,,10.0,,,CREDITS_TBD,Start-up,13
