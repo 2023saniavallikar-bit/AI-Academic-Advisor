@@ -4,9 +4,10 @@ import re
 from pathlib import Path
 
 from dotenv import load_dotenv
+load_dotenv()
 
 from langchain_community.vectorstores import Chroma
-from langchain_ollama import OllamaEmbeddings, ChatOllama
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 
 # LangChain 1.x compatibility
@@ -21,10 +22,8 @@ DB_DIR = os.getenv("CHROMA_DB_DIR", str(BASE_DIR / "chroma_db"))
 STUDENT_DB_PATH = Path(
     os.getenv("STUDENT_DB_PATH", str(BASE_DIR / "synthetic_students.json"))
 )
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "nomic-embed-text")
-CHAT_MODEL = os.getenv("CHAT_MODEL", "llama3.1")
-
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+CHAT_MODEL = os.getenv("CHAT_MODEL", "gpt-4o-mini")
 
 class AcademicAdvisor:
 
@@ -35,10 +34,9 @@ class AcademicAdvisor:
             # ---------------------------------------------------------
             # Ollama embeddings
             # ---------------------------------------------------------
-            embedding_options = {"model": EMBEDDING_MODEL}
-            if OLLAMA_BASE_URL:
-                embedding_options["base_url"] = OLLAMA_BASE_URL
-            self.embeddings = OllamaEmbeddings(**embedding_options)
+            self.embeddings = OpenAIEmbeddings(
+                model=EMBEDDING_MODEL
+            )
 
             # ---------------------------------------------------------
             # Chroma vector database
@@ -55,13 +53,10 @@ class AcademicAdvisor:
             # ---------------------------------------------------------
             # Ollama chat model
             # ---------------------------------------------------------
-            llm_options = {
-                "model": CHAT_MODEL,
-                "temperature": 0,
-            }
-            if OLLAMA_BASE_URL:
-                llm_options["base_url"] = OLLAMA_BASE_URL
-            self.llm = ChatOllama(**llm_options)
+            self.llm = ChatOpenAI(
+                model=CHAT_MODEL,
+                temperature=0
+            )
 
         except Exception as e:
             print(f"\nError initializing models: {e}")
@@ -225,28 +220,101 @@ INSTRUCTIONS
 2. Do not hallucinate or invent university rules, courses,
    prerequisites, credits, policies, or academic requirements.
 
-3. If the user asks about taking a course, check whether the
-   student meets the prerequisites using the CONTEXT and
-   STUDENT PROFILE.
+3. First determine whether the user's question is asking for
+   GENERAL ACADEMIC INFORMATION or STUDENT-SPECIFIC ADVICE.
 
-4. If the student has NOT provided a Student ID and the question
-   requires knowing their completed courses or current semester,
-   do NOT make assumptions.
+   GENERAL ACADEMIC INFORMATION includes questions such as:
+   - "What are the prerequisites for DATA301?"
+   - "What are the prerequisites for DATA301 for the 2022 batch?"
+   - "How many credits is DATA301?"
+   - "When is DATA301 offered?"
+   - "What are the requirements for Machine Learning?"
+   - "What is the university rule for late registration?"
+   - "What does the Student Handbook say about registration?"
+   - "What courses are offered in semester 5?"
 
-   Politely ask:
+   For GENERAL ACADEMIC INFORMATION questions:
+   - Answer directly using the UNIVERSITY CONTEXT.
+   - Use the course catalogue, handbook, SOPs, and other
+     university documents available in the context.
+   - Do NOT ask for a Student ID.
+   - Do NOT require the STUDENT PROFILE.
+   - Do NOT evaluate the student's eligibility.
+   - Do NOT ask for personal academic information.
+   - If a Student ID happens to be present, ignore it unless
+     the question explicitly asks for a student-specific decision.
+   - If the required university information is not present in
+     the CONTEXT, clearly state that the available information
+     is insufficient. Do not invent an answer.
+
+   STUDENT-SPECIFIC QUESTIONS include questions such as:
+   - "Can I take DATA301?"
+   - "Am I eligible for DATA301?"
+   - "Can STU001 take DATA301?"
+   - "Can I register for Machine Learning?"
+   - "What courses can I take next semester?"
+   - "Have I completed the prerequisites for DATA301?"
+
+   For STUDENT-SPECIFIC QUESTIONS:
+   - Use the UNIVERSITY CONTEXT to determine the applicable
+     academic rules and course requirements.
+   - Use the STUDENT PROFILE to determine the student's
+     completed courses, current semester, programme, or other
+     relevant academic information.
+   - Check prerequisites and other eligibility requirements
+     before making a student-specific determination.
+   - If the required student information is unavailable and
+     the Student ID has not been provided, ask for the Student ID.
+   - Do not make assumptions about completed courses, current
+     semester, programme, batch, or eligibility.
+   - If the Student ID is provided but the profile cannot be
+     found, clearly state that the student profile could not
+     be found and do not invent student information.
+
+4. For STUDENT-SPECIFIC questions:
+
+   - If a STUDENT PROFILE is already provided in the context,
+     use that profile directly.
+   - If the profile contains a Student ID, do NOT ask the user
+     for their Student ID again.
+   - Check the student's completed courses, current semester,
+     programme, and other relevant information from the provided
+     STUDENT PROFILE.
+   - Only ask for the Student ID when no student profile is
+     available and the question requires student-specific
+     information.
+
+   If no student profile is available, politely ask:
 
    "Could you please provide your Student ID so I can check
-   your completed courses?"
+   your academic profile?"
 
-5. If the Student ID is provided but cannot be found in the
+5. For student-specific course eligibility questions, always use
+   the student's batch or entry year from the STUDENT PROFILE.
+
+   Match the course requirements to the student's applicable
+   curriculum or batch.
+
+   Do NOT use prerequisites or course requirements from a
+   different batch when determining eligibility.
+
+   If the CONTEXT contains different requirements for different
+   batches, identify the student's batch first and use the
+   requirements applicable to that batch.
+
+   If the student's batch cannot be determined from the
+   STUDENT PROFILE, clearly state that the batch information
+   is unavailable and do not guess.
+
+6. If the Student ID is provided but cannot be found in the
    student database, clearly state that the student profile
    could not be found.
 
-6. If there are conflicting rules or missing information in the
+7. If there are conflicting rules or missing information in the
    CONTEXT, explicitly state that the information is insufficient
    or conflicting.
 
-7. Cite the source or evidence for your answer whenever possible.
+8. Cite the source or evidence for your answer whenever possible.
 
    Examples:
 
@@ -256,12 +324,12 @@ INSTRUCTIONS
 
    "According to the academic regulations..."
 
-8. Do not claim that a student is eligible for a course unless
+9. Do not claim that a student is eligible for a course unless
    the provided information supports that conclusion.
 
-9. Be helpful, conversational, concise, and precise.
+10. Be helpful, conversational, concise, and precise.
 
-10. Never invent information that is not present in the
+11. Never invent information that is not present in the
     CONTEXT or STUDENT PROFILE.
 """
 
@@ -359,9 +427,17 @@ INSTRUCTIONS
         if not student_id:
 
             return (
-                "No student profile loaded. "
-                "The user is anonymous. "
-                "Do not assume any completed courses."
+                "NO STUDENT PROFILE IS REQUIRED FOR GENERAL COURSE "
+                "INFORMATION QUESTIONS.\n"
+                "The user has not provided a Student ID.\n"
+                "If the question asks about general course information "
+                "such as prerequisites, credits, semester, course "
+                "requirements, or course description, answer directly "
+                "from the university CONTEXT.\n"
+                "Do NOT ask for a Student ID for such questions.\n"
+                "Only require a Student ID when the user asks for "
+                "student-specific eligibility, registration, or "
+                "planning based on their academic history."
             )
 
         # Normalize ID before searching
@@ -402,9 +478,18 @@ INSTRUCTIONS
 
         profile_text = self.get_student_profile_text(current_student_id)
 
+        retrieval_input = user_input
+
+        if current_student_id:
+            retrieval_input = (
+                f"{user_input}\n"
+                f"Student ID: {current_student_id}\n"
+                f"Student profile:\n{profile_text}"
+            )
+
         response = self.chain.invoke(
             {
-                "input": user_input,
+                "input": retrieval_input,
                 "student_profile": profile_text
             }
         )
@@ -423,8 +508,9 @@ INSTRUCTIONS
     # -----------------------------------------------------------------
     # Chat interface
     # -----------------------------------------------------------------
-    def chat(self):
 
+
+    def chat(self):
         print("\n=======================================================")
         print("🎓 AI Academic Advisor is ready!")
         print("Type 'exit' or 'quit' to stop.")

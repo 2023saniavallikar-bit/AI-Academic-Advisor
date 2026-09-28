@@ -1,92 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Advisor Chat</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-  </head>
-  <body>
-    <div class="app-shell">
-      <aside class="sidebar">
-        <div class="brand">
-          <div class="brand-mark">✦</div>
-          <div>
-            <strong>Advisor</strong>
-            <span>Academic support</span>
-          </div>
-        </div>
 
-        <button class="new-chat" id="newChatButton" type="button">
-          <span>＋</span>
-          New conversation
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f7f8fc" />
+  <meta name="description"
+    content="Get clear, helpful guidance on courses, degree requirements, and university policies." />
+  <title>Vidyashilp Guide | Vidyashilp University</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+
+      <button class="new-chat" id="newChatButton" type="button">
+        <span aria-hidden="true">＋</span>
+        New conversation
+      </button>
+
+      <div class="sidebar-section">
+        <p class="section-label">Explore topics</p>
+        <button class="history-item" type="button" data-prompt="Help me plan my courses for next semester.">
+          <span class="history-icon" aria-hidden="true">↗</span>
+          <span>Course planning</span>
         </button>
+        <button class="history-item" type="button" data-prompt="What are my degree requirements?">
+          <span class="history-icon" aria-hidden="true">▤</span>
+          <span>Degree requirements</span>
+        </button>
+        <button class="history-item" type="button" data-prompt="Can you explain an academic policy to me?">
+          <span class="history-icon" aria-hidden="true">◎</span>
+          <span>Academic policies</span>
+        </button>
+      </div>
 
-        <div class="sidebar-section">
-          <p class="section-label">Recent chats</p>
-          <button class="history-item active" type="button">
-            <span class="history-icon">◌</span>
-            Course planning
-          </button>
-          <button class="history-item" type="button">
-            <span class="history-icon">◌</span>
-            Degree requirements
-          </button>
-          <button class="history-item" type="button">
-            <span class="history-icon">◌</span>
-            Academic policies
-          </button>
+      <div class="sidebar-footer">
+        <div class="status-dot" aria-hidden="true"></div>
+        <div>
+          <strong>Here to help</strong>
+          <span>Answers grounded in university documents</span>
         </div>
+      </div>
+    </aside>
 
-        <div class="sidebar-footer">
-          <div class="status-dot"></div>
+    <main class="chat-panel">
+      <header class="chat-header">
+        <div class="advisor-profile">
+          <div class="avatar" aria-hidden="true">A</div>
           <div>
-            <strong>Advisor online</strong>
-            <span>Grounded in university documents</span>
+            <h1>Academic advisor</h1>
+            <p><span class="online-dot" aria-hidden="true"></span> Ready when you are</p>
           </div>
         </div>
-      </aside>
+        <button class="clear-button" id="clearButton" type="button">
+          <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
+            <path d="M3.5 5.5h13M8 3.5h4m-7.5 2 1 11h9l1-11M8 8.5v5m4-5v5" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>Clear chat</span>
+        </button>
+      </header>
 
-      <main class="chat-panel">
-        <header class="chat-header">
-          <div class="advisor-profile">
-            <div class="avatar">✦</div>
-            <div>
-              <h1>AI Academic Advisor</h1>
-              <p><span class="online-dot"></span> Available to help with your studies</p>
-            </div>
-          </div>
-          <button class="icon-button" id="clearButton" type="button" aria-label="Clear conversation">⌫</button>
-        </header>
-
-        <section class="chat-window" id="chatWindow" aria-live="polite">
+      <section class="chat-window" id="chatWindow" aria-live="polite">
+        <div class="welcome-content">
           <div class="welcome-block">
-            <div class="welcome-icon">✦</div>
-            <h2>How can I help you today?</h2>
-            <p>Ask me about courses, prerequisites, degree requirements, or academic policy.</p>
+            <span class="welcome-eyebrow">Vidyashilp University</span>
+
+            <h2>Hello 👋<br />Welcome to Vidyashilp Guide.</h2>
+
+            <p>
+              Get clear, personalized guidance on your courses, prerequisites,
+              degree requirements, semester planning, and university policies.
+            </p>
           </div>
 
-          <div class="quick-prompts">
-            <button type="button" class="prompt-chip">Can I take COMP203 next semester?</button>
-            <button type="button" class="prompt-chip">What courses should I take next?</button>
-            <button type="button" class="prompt-chip">Show my degree requirements</button>
+          <div class="quick-prompts" aria-label="Suggested questions">
+            <button type="button" class="prompt-chip" data-prompt="What courses should I take next?">
+              <span class="prompt-icon" aria-hidden="true">01</span>
+              <span><strong>Plan my semester</strong><small>Explore courses for next term</small></span>
+              <span class="prompt-arrow" aria-hidden="true">↗</span>
+            </button>
+            <button type="button" class="prompt-chip" data-prompt="Can I take COMP203 next semester?">
+              <span class="prompt-icon" aria-hidden="true">02</span>
+              <span><strong>Check prerequisites</strong><small>See what you need before a course</small></span>
+              <span class="prompt-arrow" aria-hidden="true">↗</span>
+            </button>
+            <button type="button" class="prompt-chip" data-prompt="Show my degree requirements">
+              <span class="prompt-icon" aria-hidden="true">03</span>
+              <span><strong>Understand my degree</strong><small>Make sense of your requirements</small></span>
+              <span class="prompt-arrow" aria-hidden="true">↗</span>
+            </button>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <form id="chatForm" class="composer">
-          <div class="student-context">
-            <span class="context-icon">◎</span>
-            <input id="studentId" type="text" placeholder="Student ID (optional, e.g. STU_002)" />
-          </div>
-          <div class="composer-row">
-            <textarea id="messageInput" rows="1" placeholder="Message your academic advisor..." required></textarea>
-            <button type="submit" id="sendButton" class="send-button" aria-label="Send message">↑</button>
-          </div>
-          <p class="composer-note">Advisor responses are based on your university's academic documents.</p>
-        </form>
-      </main>
-    </div>
+      <form id="chatForm" class="composer">
+        <label class="student-context" for="studentId">
+          <span class="context-icon" aria-hidden="true">◎</span>
+          <span class="context-label">Personalize your guidance <span>(optional)</span></span>
+          <input id="studentId" type="text" placeholder="Student ID" autocomplete="off" />
+        </label>
+        <div class="composer-row">
+          <textarea id="messageInput" rows="1" placeholder="Ask about courses, requirements, or policies…"
+            aria-label="Your message" required></textarea>
+          <button type="submit" id="sendButton" class="send-button" aria-label="Send message">
+            <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
+              <path d="M10 15.5v-11m0 0L5.5 9m4.5-4.5L14.5 9" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+        <p class="composer-note">Press <kbd>Enter</kbd> to send <span aria-hidden="true">·</span> <kbd>Shift</kbd> +
+          <kbd>Enter</kbd> for a new line
+        </p>
+      </form>
+    </main>
+  </div>
 
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
-  </body>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+
 </html>

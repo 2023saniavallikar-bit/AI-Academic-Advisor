@@ -11,9 +11,9 @@ load_dotenv()
 # Configure paths
 PDF_FILES = ["4. Student Handbook Aug 2026.pdf", "SOP STUDENT 17082026 - Final.pdf"]
 CSV_FILES = {
-    "courses": "clenaed/courses.csv",
-    "minor_courses": "clenaed/minor_courses.csv",
-    "basket_requirements": "clenaed/basket_requirements.csv"
+    "courses": "cleaned/courses.csv",
+    "minor_courses": "cleaned/minor_courses.csv",
+    "basket_requirements": "cleaned/basket_requirements.csv"
 }
 DB_DIR = "./chroma_db"
 
