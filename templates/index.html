@@ -8,16 +8,42 @@
   <meta name="description"
     content="Get clear, helpful guidance on courses, degree requirements, and university policies." />
   <title>Vidyashilp Guide | Vidyashilp University</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css', v='7') }}" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  <script id="mathJaxScript" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
 </head>
 
 <body>
   <div class="app-shell">
     <aside class="sidebar">
+      <a class="brand" href="/" aria-label="Vidyashilp Guide home">
+        <img class="brand-logo" src="{{ url_for('static', filename='images/vu-logo.png') }}"
+          alt="Vidyashilp University" />
+        <span class="brand-copy">
+          <strong>Vidyashilp Guide</strong>
+          <span>ACADEMIC SUPPORT</span>
+        </span>
+      </a>
 
       <button class="new-chat" id="newChatButton" type="button">
         <span aria-hidden="true">＋</span>
         New conversation
+      </button>
+      <button class="history-toggle" id="historyToggle" type="button" aria-expanded="false">
+        History
       </button>
 
       <div class="sidebar-section">
@@ -36,6 +62,13 @@
         </button>
       </div>
 
+      <div class="sidebar-section conversation-history">
+        <p class="section-label">Recent conversations</p>
+        <div id="conversationList" aria-live="polite">
+          <span class="history-empty">Your conversations will appear here.</span>
+        </div>
+      </div>
+
       <div class="sidebar-footer">
         <div class="status-dot" aria-hidden="true"></div>
         <div>
@@ -51,7 +84,7 @@
           <div class="avatar" aria-hidden="true">A</div>
           <div>
             <h1>Academic advisor</h1>
-            <p><span class="online-dot" aria-hidden="true"></span> Ready when you are</p>
+            <p><span class="online-dot" aria-hidden="true"></span> Your academic co-pilot</p>
           </div>
         </div>
         <button class="clear-button" id="clearButton" type="button">
@@ -119,7 +152,7 @@
     </main>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js') }}"></script>
+  <script src="{{ url_for('static', filename='app.js', v='7') }}"></script>
 </body>
 
 </html>

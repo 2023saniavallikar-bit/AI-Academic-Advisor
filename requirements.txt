@@ -1,7 +1,7 @@
 langchain
 langchain-community
 langchain-ollama
-langchain-openai
+langchain-google-genai
 pypdf
 pandas
 chromadb

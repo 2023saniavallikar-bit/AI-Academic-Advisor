@@ -1,61 +1,78 @@
 import json
+import logging
 import os
 import re
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
 load_dotenv()
 
 from langchain_community.vectorstores import Chroma
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 
-# LangChain 1.x compatibility
-from langchain_classic.chains import create_retrieval_chain
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_DIR = os.getenv("CHROMA_DB_DIR", str(BASE_DIR / "chroma_db"))
-STUDENT_DB_PATH = Path(
-    os.getenv("STUDENT_DB_PATH", str(BASE_DIR / "synthetic_students.json"))
+
+
+def configured_path(env_name, default):
+    path = Path(os.getenv(env_name, str(default)))
+    return path if path.is_absolute() else BASE_DIR / path
+
+
+DB_DIR = configured_path("CHROMA_DB_DIR", BASE_DIR / "chroma_db_gemini")
+STUDENT_DB_PATH = configured_path(
+    "STUDENT_DB_PATH", BASE_DIR / "synthetic_students.json"
 )
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
-CHAT_MODEL = os.getenv("CHAT_MODEL", "gpt-4o-mini")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
+EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "768"))
+CHAT_MODEL = os.getenv("CHAT_MODEL", "gemini-2.5-flash")
+CHAT_RETRIES = int(os.getenv("CHAT_RETRIES", "1"))
+if CHAT_RETRIES < 1:
+    raise ValueError("CHAT_RETRIES must be at least 1.")
+RETRIEVAL_K = int(os.getenv("RETRIEVAL_K", "4"))
+if RETRIEVAL_K < 1:
+    raise ValueError("RETRIEVAL_K must be at least 1.")
+logger = logging.getLogger(__name__)
 
 class AcademicAdvisor:
 
     def __init__(self):
-        print("Initializing AI Academic Advisor with Ollama...")
+        print("Initializing AI Academic Advisor with Gemini...")
 
         try:
             # ---------------------------------------------------------
-            # Ollama embeddings
+            # # Gemini embeddings
             # ---------------------------------------------------------
-            self.embeddings = OpenAIEmbeddings(
-                model=EMBEDDING_MODEL
+            self.embeddings = GoogleGenerativeAIEmbeddings(
+                model=EMBEDDING_MODEL,
+                output_dimensionality=EMBEDDING_DIMENSION,
             )
 
             # ---------------------------------------------------------
             # Chroma vector database
             # ---------------------------------------------------------
             self.vectorstore = Chroma(
-                persist_directory=DB_DIR,
+                persist_directory=str(DB_DIR),
                 embedding_function=self.embeddings
             )
 
             self.retriever = self.vectorstore.as_retriever(
-                search_kwargs={"k": 5}
+                search_kwargs={"k": RETRIEVAL_K}
             )
 
             # ---------------------------------------------------------
-            # Ollama chat model
+            # Gemini chat model
             # ---------------------------------------------------------
-            self.llm = ChatOpenAI(
+            self.llm = ChatGoogleGenerativeAI(
                 model=CHAT_MODEL,
-                temperature=0
+                temperature=0,
+                retries=CHAT_RETRIES,
             )
 
         except Exception as e:
@@ -63,10 +80,9 @@ class AcademicAdvisor:
 
             print(
                 "\nMake sure:"
-                "\n1. Ollama is installed and running."
-                "\n2. llama3.1 is installed."
-                "\n3. nomic-embed-text is installed."
-                "\n4. The Chroma database exists."
+                "\n1. Your Gemini API key is configured."
+                "\n2. The Chroma database exists."
+                "\n3. The required Gemini models are available."
             )
 
             raise
@@ -78,7 +94,7 @@ class AcademicAdvisor:
         self.students = self._load_students()
 
         # Build RAG chain
-        self.chain = self._build_chain()
+        self.question_answer_chain = self._build_chain()
 
     # -----------------------------------------------------------------
     # Load students
@@ -211,6 +227,12 @@ STUDENT PROFILE
 {student_profile}
 
 ============================================================
+RECENT CONVERSATION
+============================================================
+
+{chat_history}
+
+============================================================
 INSTRUCTIONS
 ============================================================
 
@@ -331,6 +353,10 @@ INSTRUCTIONS
 
 11. Never invent information that is not present in the
     CONTEXT or STUDENT PROFILE.
+
+12. Use the RECENT CONVERSATION only to resolve follow-up
+    references. It is not an authoritative source; verify factual
+    claims against the UNIVERSITY CONTEXT and STUDENT PROFILE.
 """
 
         prompt = ChatPromptTemplate.from_messages(
@@ -340,19 +366,7 @@ INSTRUCTIONS
             ]
         )
 
-        # Create document question-answering chain
-        question_answer_chain = create_stuff_documents_chain(
-            self.llm,
-            prompt
-        )
-
-        # Create retrieval chain
-        retrieval_chain = create_retrieval_chain(
-            self.retriever,
-            question_answer_chain
-        )
-
-        return retrieval_chain
+        return create_stuff_documents_chain(self.llm, prompt)
 
     # -----------------------------------------------------------------
     # Normalize Student ID
@@ -464,7 +478,12 @@ INSTRUCTIONS
     # -----------------------------------------------------------------
     # Ask a single question and return answer
     # -----------------------------------------------------------------
-    def answer_question(self, user_input, current_student_id=None):
+    def answer_question(
+        self,
+        user_input,
+        current_student_id=None,
+        chat_history=None,
+    ):
 
         if not user_input or not str(user_input).strip():
             raise ValueError("A question is required.")
@@ -478,32 +497,78 @@ INSTRUCTIONS
 
         profile_text = self.get_student_profile_text(current_student_id)
 
-        retrieval_input = user_input
+        retrieval_query = self._build_retrieval_query(user_input, chat_history)
+        retrieval_started = time.perf_counter()
+        documents = self.retriever.invoke(retrieval_query)
+        retrieval_elapsed = time.perf_counter() - retrieval_started
+        logger.info(
+            "Advisor retrieval completed in %.3fs with %d documents",
+            retrieval_elapsed,
+            len(documents),
+        )
 
-        if current_student_id:
-            retrieval_input = (
-                f"{user_input}\n"
-                f"Student ID: {current_student_id}\n"
-                f"Student profile:\n{profile_text}"
+        generation_started = time.perf_counter()
+        try:
+            response = self.question_answer_chain.invoke(
+                {
+                    "input": user_input,
+                    "context": documents,
+                    "student_profile": profile_text,
+                    "chat_history": self._format_chat_history(chat_history),
+                }
+            )
+        finally:
+            generation_elapsed = time.perf_counter() - generation_started
+            logger.info(
+                "Advisor answer generation call finished in %.3fs",
+                generation_elapsed,
             )
 
-        response = self.chain.invoke(
-            {
-                "input": retrieval_input,
-                "student_profile": profile_text
-            }
-        )
-
-        answer = response.get(
-            "answer",
-            "I could not generate an answer."
-        )
+        answer = response.content if hasattr(response, "content") else str(response)
+        if isinstance(answer, list):
+            answer = "\n".join(
+                block["text"]
+                for block in answer
+                if isinstance(block, dict) and isinstance(block.get("text"), str)
+            )
+        if not isinstance(answer, str) or not answer.strip():
+            answer = "I could not generate an answer."
 
         return {
             "answer": answer,
             "student_id": current_student_id,
             "detected_student_id": detected_student_id,
         }
+
+    @staticmethod
+    def _build_retrieval_query(user_input, chat_history):
+        if not chat_history:
+            return user_input
+
+        previous_question = next(
+            (
+                message["content"].strip()
+                for message in reversed(chat_history)
+                if message.get("role") == "user"
+                and isinstance(message.get("content"), str)
+                and message["content"].strip()
+            ),
+            None,
+        )
+        if not previous_question:
+            return user_input
+
+        return f"{previous_question[-500:]}\n{user_input}"
+
+    @staticmethod
+    def _format_chat_history(messages):
+        if not messages:
+            return "No previous conversation."
+        return "\n".join(
+            f"{'Student' if message['role'] == 'user' else 'Advisor'}: "
+            f"{message['content'][-1000:]}"
+            for message in messages
+        )
 
     # -----------------------------------------------------------------
     # Chat interface
@@ -577,8 +642,8 @@ INSTRUCTIONS
                 print(e)
 
                 print(
-                    "\nPlease check that Ollama is running "
-                    "and that the required models are installed.\n"
+                    "\nPlease check that your Gemini API key is configured "
+                    "\nand that the required Gemini models are available.\n"
                 )
 
 

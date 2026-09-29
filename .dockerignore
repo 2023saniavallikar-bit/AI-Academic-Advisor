@@ -4,3 +4,12 @@ __pycache__/
 .venv/
 venv/
 Dockerfile
+.git
+.env
+.venv
+venv
+__pycache__
+*.pyc
+node_modules
+data
+*.log
