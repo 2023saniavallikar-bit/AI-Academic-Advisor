@@ -1448,3 +1448,164 @@ kbd {
     animation: none;
   }
 }
+
+/* =========================================================
+   VIDYASHILP GUIDE — MODERN FULL-SCREEN LAYOUT
+   ========================================================= */
+
+.app-shell {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+
+.sidebar {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  padding: 28px 24px 10px;
+  background: transparent;
+  border: 0;
+  color: #ffffff;
+}
+
+.university-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.university-logo {
+  width: 190px;
+  max-width: 45vw;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.28));
+}
+
+.university-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+}
+
+.advisor-name {
+  margin-top: 8px;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.55);
+}
+
+.advisor-subtitle {
+  margin-top: 3px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Hide the old sidebar controls */
+.sidebar>.new-chat,
+.sidebar>.sidebar-section,
+.sidebar>.sidebar-footer {
+  display: none;
+}
+
+.chat-panel {
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 235px;
+  position: relative;
+  background:
+    linear-gradient(180deg,
+      rgba(20, 45, 40, 0.42),
+      rgba(20, 45, 40, 0.58)),
+    url("/static/images/campus.jpg");
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.chat-header {
+  max-width: 950px;
+  margin: 0 auto 14px;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
+}
+
+.chat-header h1,
+.chat-header p {
+  color: #ffffff;
+}
+
+.chat-window {
+  width: min(950px, calc(100% - 32px));
+  margin: 0 auto;
+  border-radius: 24px;
+  background: rgba(255, 252, 246, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(16px);
+}
+
+.welcome-content {
+  background: transparent;
+}
+
+.composer {
+  width: min(950px, calc(100% - 32px));
+  margin: 14px auto 24px;
+}
+
+.composer-inner {
+  background: rgba(255, 252, 246, 0.9);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    padding-top: 18px;
+  }
+
+  .university-logo {
+    width: 145px;
+  }
+
+  .university-name {
+    font-size: 0.82rem;
+  }
+
+  .advisor-name {
+    font-size: 1.55rem;
+  }
+
+  .chat-panel {
+    padding-top: 205px;
+  }
+
+  .chat-window,
+  .composer {
+    width: calc(100% - 20px);
+  }
+}
