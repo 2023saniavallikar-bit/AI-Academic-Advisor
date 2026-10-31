@@ -1609,3 +1609,63 @@ kbd {
     width: calc(100% - 20px);
   }
 }
+/* =========================================================
+   ADVISOR ADDITIONS (Oct 2026): model picker, usage line
+   ========================================================= */
+
+.chat-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-bottom: 9px;
+}
+
+.option-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  color: #35493f;
+  background: rgba(255, 252, 246, 0.9);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.option-field select {
+  max-width: 180px;
+  padding: 3px 4px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.option-field select:disabled {
+  cursor: wait;
+  opacity: .6;
+}
+
+.message-body {
+  display: flex;
+  min-width: 0;
+  max-width: min(82%, 680px);
+  flex-direction: column;
+  gap: 6px;
+}
+
+.message-body .bubble {
+  max-width: 100%;
+}
+
+.usage-line {
+  padding: 0 4px;
+  color: #51635a;
+  font-size: 11.5px;
+  line-height: 1.5;
+}

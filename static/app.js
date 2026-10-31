@@ -7,12 +7,21 @@ const newChatButton = document.getElementById('newChatButton');
 const historyToggle = document.getElementById('historyToggle');
 const clearButton = document.getElementById('clearButton');
 const conversationList = document.getElementById('conversationList');
+const modelSelect = document.getElementById('modelSelect');
 
 function storeValue(key, value) {
   try {
     window.localStorage.setItem(key, value);
   } catch (error) {
     console.warn('Could not save chat state in this browser:', error);
+  }
+}
+
+function readValue(key) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch (error) {
+    return null;
   }
 }
 
@@ -62,7 +71,42 @@ const sendIcon = `
   </svg>
 `;
 
-function addMessage(text, sender = 'bot', isError = false, renderRichText = false) {
+function formatCount(value) {
+  return Number.isFinite(value) ? value.toLocaleString() : '?';
+}
+
+// The line under an answer: tokens and estimated cost, exactly as the server
+// sent them. Older saved answers have no meta, so they show no line at all.
+function buildUsageLine(meta) {
+  if (!meta || typeof meta !== 'object') return null;
+  const parts = [];
+  const usage = meta.usage;
+  if (usage) {
+    parts.push(`Input ${formatCount(usage.input_tokens)} tokens`);
+    let output = `Output ${formatCount(usage.output_tokens)} tokens`;
+    if (usage.reasoning_tokens) {
+      output += ` (incl. ${formatCount(usage.reasoning_tokens)} thinking)`;
+    }
+    parts.push(output);
+    if (meta.cost && Number.isFinite(meta.cost.amount_usd)) {
+      const amount = meta.cost.amount_usd;
+      parts.push(`Est. cost $${amount.toFixed(amount < 0.01 ? 6 : 4)} (estimated)`);
+    } else {
+      parts.push('Cost unavailable (no price on file)');
+    }
+  } else {
+    parts.push('Token usage was not reported for this response');
+  }
+  if (meta.model_label) parts.push(meta.model_label);
+
+  const line = document.createElement('div');
+  line.className = 'usage-line';
+  line.textContent = parts.join(' · ');
+  if (meta.cost && meta.cost.basis) line.title = meta.cost.basis;
+  return line;
+}
+
+function addMessage(text, sender = 'bot', isError = false, renderRichText = false, meta = null) {
   let messageList = document.querySelector('.message-list');
   if (!messageList) {
     chatWindow.innerHTML = '';
@@ -97,7 +141,15 @@ function addMessage(text, sender = 'bot', isError = false, renderRichText = fals
     bubble.textContent = text;
   }
 
-  wrapper.appendChild(bubble);
+  const usageLine = sender === 'bot' && !isError ? buildUsageLine(meta) : null;
+  if (usageLine) {
+    const body = document.createElement('div');
+    body.className = 'message-body';
+    body.append(bubble, usageLine);
+    wrapper.appendChild(body);
+  } else {
+    wrapper.appendChild(bubble);
+  }
   messageList.appendChild(wrapper);
   if (renderRichText) {
     mathJaxReady
@@ -123,6 +175,7 @@ function setLoading(isLoading) {
     : sendIcon;
   messageInput.disabled = isLoading;
   studentIdInput.disabled = isLoading;
+  modelSelect.disabled = isLoading;
   chatWindow.setAttribute('aria-busy', String(isLoading));
 }
 
@@ -199,6 +252,7 @@ function renderConversationMessages(messages) {
       message.role === 'user' ? 'user' : 'bot',
       false,
       message.role === 'assistant',
+      message.role === 'assistant' ? message.meta : null,
     );
   });
   if (!messages.length) showWelcome();
@@ -381,6 +435,7 @@ chatForm.addEventListener('submit', async (event) => {
         message,
         student_id: studentId,
         conversation_id: activeConversationId,
+        model: modelSelect.value,
       }),
     });
 
@@ -390,12 +445,12 @@ chatForm.addEventListener('submit', async (event) => {
       throw new Error(data.error || 'Unable to get an answer.');
     }
 
-    addMessage(data.answer || 'No answer returned.', 'bot', false, true);
+    addMessage(data.answer || 'No answer returned.', 'bot', false, true, data.meta);
     const cachedMessages = readCachedMessages(activeConversationId) || [];
     cacheMessages(activeConversationId, [
       ...cachedMessages,
       { role: 'user', content: message },
-      { role: 'assistant', content: data.answer || 'No answer returned.' },
+      { role: 'assistant', content: data.answer || 'No answer returned.', meta: data.meta || null },
     ]);
 
     if (data.student_id) {
@@ -430,5 +485,31 @@ historyToggle.addEventListener('click', () => {
   historyToggle.setAttribute('aria-expanded', String(isOpen));
 });
 
+async function loadOptions() {
+  try {
+    const response = await fetch('/api/options');
+    const data = await response.json();
+    if (!response.ok) throw new Error('Could not load options.');
+    modelSelect.replaceChildren();
+    data.models.forEach((model) => {
+      const option = document.createElement('option');
+      option.value = model.id;
+      option.textContent = model.label;
+      if (model.note) option.title = model.note;
+      modelSelect.appendChild(option);
+    });
+    const saved = readValue('vidyashilp-model');
+    const ids = data.models.map((model) => model.id);
+    modelSelect.value = ids.includes(saved) ? saved : data.default_model;
+  } catch (error) {
+    console.warn('Using the default model:', error);
+  }
+}
+
+modelSelect.addEventListener('change', () => {
+  storeValue('vidyashilp-model', modelSelect.value);
+});
+
+loadOptions();
 refreshConversations();
 loadConversation(activeConversationId);
