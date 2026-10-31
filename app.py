@@ -13,6 +13,7 @@ from flask import Flask, jsonify, render_template, request, session
 from langchain_google_genai.chat_models import GoogleRateLimitError
 
 from advisor import AcademicAdvisor
+from models import default_model_id, get_spec, model_options, resolve_model
 from chat_history import (
     DB_PATH,
     delete_conversation,
@@ -126,6 +127,15 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/api/options")
+def options_api():
+    """What the page can offer: the models this deployment allows."""
+    return jsonify({
+        "models": model_options(),
+        "default_model": default_model_id(),
+    })
+
+
 @app.route("/healthz")
 def healthz():
     return jsonify({"status": "ok"})
@@ -148,6 +158,14 @@ def chat_api():
         return jsonify({"error": "Student ID must be text."}), 400
     student_id = student_id.strip()
 
+    requested_model = data.get("model")
+    if requested_model is not None and not isinstance(requested_model, str):
+        return jsonify({"error": "Model must be text."}), 400
+    try:
+        model_id = resolve_model(requested_model)
+    except ValueError:
+        return jsonify({"error": "That model is not available."}), 400
+
     if not message:
         return jsonify({"error": "Please enter a question."}), 400
     if not valid_uuid(conversation_id):
@@ -165,7 +183,14 @@ def chat_api():
             message,
             current_student_id=student_id or None,
             chat_history=history,
+            model=model_id,
         )
+        answer_meta = {
+            "model": result["model"],
+            "model_label": get_spec(result["model"]).label,
+            "usage": result["usage"],
+            "cost": result["cost"],
+        }
         save_exchange(
             user_id=user_id,
             conversation_id=conversation_id,
@@ -173,11 +198,13 @@ def chat_api():
             answer=result["answer"],
             student_id=result["student_id"],
             db_path=DB_PATH,
+            answer_meta=answer_meta,
         )
         return jsonify({
             "answer": result["answer"],
             "student_id": result["student_id"],
             "conversation_id": conversation_id,
+            "meta": answer_meta,
         })
     except PermissionError:
         return jsonify({"error": "This conversation belongs to another user."}), 403
@@ -190,11 +217,12 @@ def chat_api():
             )
         }), 429
     except Exception:
-        app.logger.exception("Failed to process advisor chat request")
+        app.logger.exception("Failed to process advisor chat request (model %s)", model_id)
         return jsonify({
             "error": (
-                "The advisor could not process your question. "
-                "Check the server logs for the provider error."
+                f"The advisor could not process your question with "
+                f"{get_spec(model_id).label}. Try another model, or check the "
+                "server logs for the provider error."
             )
         }), 503
 

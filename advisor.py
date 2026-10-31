@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import re
+from threading import Lock
 import time
 from pathlib import Path
 
@@ -12,7 +13,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 
-from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+from models import default_model_id, estimate_cost, extract_usage, get_spec, resolve_model
 
 
 load_dotenv()
@@ -31,7 +32,7 @@ STUDENT_DB_PATH = configured_path(
 )
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
 EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "768"))
-CHAT_MODEL = os.getenv("CHAT_MODEL", "gemini-2.5-flash")
+CHAT_MODEL = default_model_id()  # from CHAT_MODEL, else gemini-2.5-flash
 CHAT_RETRIES = int(os.getenv("CHAT_RETRIES", "1"))
 if CHAT_RETRIES < 1:
     raise ValueError("CHAT_RETRIES must be at least 1.")
@@ -42,38 +43,42 @@ logger = logging.getLogger(__name__)
 
 class AcademicAdvisor:
 
-    def __init__(self):
+    def __init__(self, vectorstore=None, llm_factory=None):
+        # vectorstore / llm_factory are only passed by the automatic tests.
+        # In the real app both stay None and nothing changes.
         print("Initializing AI Academic Advisor with Gemini...")
 
         try:
-            # ---------------------------------------------------------
-            # # Gemini embeddings
-            # ---------------------------------------------------------
-            self.embeddings = GoogleGenerativeAIEmbeddings(
-                model=EMBEDDING_MODEL,
-                output_dimensionality=EMBEDDING_DIMENSION,
-            )
+            if vectorstore is None:
+                # ---------------------------------------------------------
+                # # Gemini embeddings
+                # ---------------------------------------------------------
+                self.embeddings = GoogleGenerativeAIEmbeddings(
+                    model=EMBEDDING_MODEL,
+                    output_dimensionality=EMBEDDING_DIMENSION,
+                )
 
-            # ---------------------------------------------------------
-            # Chroma vector database
-            # ---------------------------------------------------------
-            self.vectorstore = Chroma(
-                persist_directory=str(DB_DIR),
-                embedding_function=self.embeddings
-            )
+                # ---------------------------------------------------------
+                # Chroma vector database
+                # ---------------------------------------------------------
+                self.vectorstore = Chroma(
+                    persist_directory=str(DB_DIR),
+                    embedding_function=self.embeddings
+                )
+            else:
+                self.vectorstore = vectorstore
 
             self.retriever = self.vectorstore.as_retriever(
                 search_kwargs={"k": RETRIEVAL_K}
             )
 
             # ---------------------------------------------------------
-            # Gemini chat model
+            # Gemini chat models: one client per model, made when first used
             # ---------------------------------------------------------
-            self.llm = ChatGoogleGenerativeAI(
-                model=CHAT_MODEL,
-                temperature=0,
-                retries=CHAT_RETRIES,
-            )
+            self._llm_factory = llm_factory or self._make_llm
+            self._llms = {}
+            self._llms_lock = Lock()
+            self.llm = self._get_llm(CHAT_MODEL)  # default model, checked at start-up
 
         except Exception as e:
             print(f"\nError initializing models: {e}")
@@ -93,8 +98,25 @@ class AcademicAdvisor:
         self._student_db_mtime_ns = None
         self.students = self._load_students()
 
-        # Build RAG chain
-        self.question_answer_chain = self._build_chain()
+        # Prompt template (the chain is built per request: prompt | chosen model)
+        self.prompt = self._build_chain()
+
+    # -----------------------------------------------------------------
+    # Chat models (one per allowed model id)
+    # -----------------------------------------------------------------
+    @staticmethod
+    def _make_llm(model_id):
+        spec = get_spec(model_id)
+        kwargs = {"model": model_id, "retries": CHAT_RETRIES}
+        if spec.temperature is not None:
+            kwargs["temperature"] = spec.temperature
+        return ChatGoogleGenerativeAI(**kwargs)
+
+    def _get_llm(self, model_id):
+        with self._llms_lock:
+            if model_id not in self._llms:
+                self._llms[model_id] = self._llm_factory(model_id)
+            return self._llms[model_id]
 
     # -----------------------------------------------------------------
     # Load students
@@ -366,7 +388,7 @@ INSTRUCTIONS
             ]
         )
 
-        return create_stuff_documents_chain(self.llm, prompt)
+        return prompt
 
     # -----------------------------------------------------------------
     # Normalize Student ID
@@ -483,7 +505,10 @@ INSTRUCTIONS
         user_input,
         current_student_id=None,
         chat_history=None,
+        model=None,
     ):
+
+        model_id = resolve_model(model)  # raises ValueError for a model not allowed
 
         if not user_input or not str(user_input).strip():
             raise ValueError("A question is required.")
@@ -509,10 +534,13 @@ INSTRUCTIONS
 
         generation_started = time.perf_counter()
         try:
-            response = self.question_answer_chain.invoke(
+            # Same prompt as before. Passages are joined with a blank line, which
+            # is exactly what the old "stuff documents" chain did.
+            chain = self.prompt | self._get_llm(model_id)
+            response = chain.invoke(
                 {
                     "input": user_input,
-                    "context": documents,
+                    "context": "\n\n".join(doc.page_content for doc in documents),
                     "student_profile": profile_text,
                     "chat_history": self._format_chat_history(chat_history),
                 }
@@ -534,10 +562,25 @@ INSTRUCTIONS
         if not isinstance(answer, str) or not answer.strip():
             answer = "I could not generate an answer."
 
+        # Token counts come straight from the API response. If the API sent none,
+        # usage stays None and nothing is estimated.
+        usage = extract_usage(response)
+        cost = (
+            estimate_cost(
+                get_spec(model_id), usage["input_tokens"], usage["output_tokens"]
+            )
+            if usage
+            else None
+        )
+        logger.info("Advisor answered with %s, usage=%s", model_id, usage)
+
         return {
             "answer": answer,
             "student_id": current_student_id,
             "detected_student_id": detected_student_id,
+            "model": model_id,
+            "usage": usage,
+            "cost": cost,
         }
 
     @staticmethod

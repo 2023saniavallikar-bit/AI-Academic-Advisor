@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+import json
 import os
 import sqlite3
 from pathlib import Path
@@ -70,6 +71,15 @@ def initialize_database(db_path=DB_PATH):
         if "student_id" not in columns:
             connection.execute("ALTER TABLE conversations ADD COLUMN student_id TEXT")
 
+        # Answers now carry sources, token usage and the model used. They are
+        # stored as one JSON text column so old rows (NULL) keep working.
+        message_columns = {
+            row["name"]
+            for row in connection.execute("PRAGMA table_info(messages)")
+        }
+        if "meta_json" not in message_columns:
+            connection.execute("ALTER TABLE messages ADD COLUMN meta_json TEXT")
+
 
 def list_conversations(user_id, db_path=DB_PATH):
     with database(db_path) as connection:
@@ -112,7 +122,8 @@ def get_messages(conversation_id, user_id, db_path=DB_PATH):
     with database(db_path) as connection:
         rows = connection.execute(
             """
-            SELECT messages.role, messages.content, messages.created_at
+            SELECT messages.role, messages.content, messages.created_at,
+                   messages.meta_json
             FROM messages
             JOIN conversations ON conversations.id = messages.conversation_id
             WHERE conversations.id = ? AND conversations.user_id = ?
@@ -120,7 +131,22 @@ def get_messages(conversation_id, user_id, db_path=DB_PATH):
             """,
             (conversation_id, user_id),
         ).fetchall()
-    return [dict(row) for row in rows]
+    messages = []
+    for row in rows:
+        message = dict(row)
+        message["meta"] = _load_meta(message.pop("meta_json", None))
+        messages.append(message)
+    return messages
+
+
+def _load_meta(raw):
+    if not raw:
+        return None
+    try:
+        value = json.loads(raw)
+    except (TypeError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
 
 
 def get_recent_messages(conversation_id, user_id, limit=8, db_path=DB_PATH):
@@ -146,6 +172,7 @@ def save_exchange(
     answer,
     student_id=None,
     db_path=DB_PATH,
+    answer_meta=None,
 ):
     title = " ".join(question.split())[:80]
     with database(db_path) as connection:
@@ -167,14 +194,19 @@ def save_exchange(
             """,
             (conversation_id, user_id, title, student_id),
         )
+        meta_json = (
+            json.dumps(answer_meta, ensure_ascii=False, default=str)
+            if answer_meta
+            else None
+        )
         connection.executemany(
             """
-            INSERT INTO messages (conversation_id, role, content)
-            VALUES (?, ?, ?)
+            INSERT INTO messages (conversation_id, role, content, meta_json)
+            VALUES (?, ?, ?, ?)
             """,
             (
-                (conversation_id, "user", question),
-                (conversation_id, "assistant", answer),
+                (conversation_id, "user", question, None),
+                (conversation_id, "assistant", answer, meta_json),
             ),
         )
 
