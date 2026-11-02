@@ -8,6 +8,9 @@ const historyToggle = document.getElementById('historyToggle');
 const clearButton = document.getElementById('clearButton');
 const conversationList = document.getElementById('conversationList');
 const modelSelect = document.getElementById('modelSelect');
+const batchSelect = document.getElementById('batchSelect');
+const semesterSelect = document.getElementById('semesterSelect');
+let periodsByBatch = {};
 
 function storeValue(key, value) {
   try {
@@ -98,6 +101,12 @@ function buildUsageLine(meta) {
     parts.push('Token usage was not reported for this response');
   }
   if (meta.model_label) parts.push(meta.model_label);
+  const period = meta.period;
+  if (period && period.batch) {
+    parts.push(period.semester
+      ? `Batch ${period.batch}, semester ${period.semester}`
+      : `Batch ${period.batch}`);
+  }
 
   const line = document.createElement('div');
   line.className = 'usage-line';
@@ -176,6 +185,8 @@ function setLoading(isLoading) {
   messageInput.disabled = isLoading;
   studentIdInput.disabled = isLoading;
   modelSelect.disabled = isLoading;
+  batchSelect.disabled = isLoading;
+  semesterSelect.disabled = isLoading || !batchSelect.value;
   chatWindow.setAttribute('aria-busy', String(isLoading));
 }
 
@@ -436,6 +447,8 @@ chatForm.addEventListener('submit', async (event) => {
         student_id: studentId,
         conversation_id: activeConversationId,
         model: modelSelect.value,
+        batch: batchSelect.value,
+        semester: semesterSelect.value,
       }),
     });
 
@@ -501,10 +514,59 @@ async function loadOptions() {
     const saved = readValue('vidyashilp-model');
     const ids = data.models.map((model) => model.id);
     modelSelect.value = ids.includes(saved) ? saved : data.default_model;
+    loadPeriods(data.periods);
   } catch (error) {
     console.warn('Using the default model:', error);
   }
 }
+
+function fillSemesters(batch, wanted) {
+  semesterSelect.replaceChildren();
+  const none = document.createElement('option');
+  none.value = '';
+  none.textContent = 'Not specified';
+  semesterSelect.appendChild(none);
+  const semesters = periodsByBatch[batch] || [];
+  semesters.forEach((number) => {
+    const option = document.createElement('option');
+    option.value = String(number);
+    option.textContent = String(number);
+    semesterSelect.appendChild(option);
+  });
+  semesterSelect.value = semesters.map(String).includes(wanted) ? wanted : '';
+  semesterSelect.disabled = !batch || semesters.length === 0;
+}
+
+// Batches and semesters come from the server, which reads them from the data.
+function loadPeriods(periods) {
+  periodsByBatch = {};
+  const batches = (periods && Array.isArray(periods.batches)) ? periods.batches : [];
+  batches.forEach((entry) => { periodsByBatch[String(entry.batch)] = entry.semesters; });
+  batchSelect.replaceChildren();
+  const none = document.createElement('option');
+  none.value = '';
+  none.textContent = 'Not specified';
+  batchSelect.appendChild(none);
+  batches.forEach((entry) => {
+    const option = document.createElement('option');
+    option.value = String(entry.batch);
+    option.textContent = String(entry.batch);
+    batchSelect.appendChild(option);
+  });
+  const savedBatch = readValue('vidyashilp-batch') || '';
+  batchSelect.value = periodsByBatch[savedBatch] ? savedBatch : '';
+  fillSemesters(batchSelect.value, readValue('vidyashilp-semester') || '');
+}
+
+batchSelect.addEventListener('change', () => {
+  storeValue('vidyashilp-batch', batchSelect.value);
+  fillSemesters(batchSelect.value, '');
+  storeValue('vidyashilp-semester', '');
+});
+
+semesterSelect.addEventListener('change', () => {
+  storeValue('vidyashilp-semester', semesterSelect.value);
+});
 
 modelSelect.addEventListener('change', () => {
   storeValue('vidyashilp-model', modelSelect.value);
