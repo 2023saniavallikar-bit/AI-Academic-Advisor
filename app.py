@@ -113,6 +113,16 @@ def limit_chat_requests():
     return None
 
 
+def model_looks_unavailable(error):
+    """True when the provider says the model is gone or unknown (HTTP 404)."""
+    text = str(error).lower()
+    return (
+        "no longer available" in text
+        or "not_found" in text
+        or ("404" in text and "model" in text)
+    )
+
+
 def valid_uuid(value):
     if not isinstance(value, str):
         return False
@@ -216,8 +226,16 @@ def chat_api():
                 "Please try again later or check the Gemini API quota."
             )
         }), 429
-    except Exception:
+    except Exception as error:
         app.logger.exception("Failed to process advisor chat request (model %s)", model_id)
+        if model_looks_unavailable(error):
+            return jsonify({
+                "error": (
+                    f"{get_spec(model_id).label} is no longer available from "
+                    "Google, or this API key cannot use it. Please choose "
+                    "another model from the list."
+                )
+            }), 503
         return jsonify({
             "error": (
                 f"The advisor could not process your question with "

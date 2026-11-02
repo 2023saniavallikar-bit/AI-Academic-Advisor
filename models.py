@@ -21,8 +21,8 @@ from datetime import date
 import os
 
 PRICING_SOURCE = "https://ai.google.dev/gemini-api/docs/pricing"
-PRICING_CHECKED_ON = "2026-10-28"
-DEFAULT_FALLBACK_MODEL = "gemini-2.5-flash"
+PRICING_CHECKED_ON = "2026-10-31"
+DEFAULT_FALLBACK_MODEL = "gemini-3.5-flash-lite"
 
 
 @dataclass(frozen=True)
@@ -54,31 +54,36 @@ class ModelSpec:
     # developers to drop the sampling settings for these models.
     temperature: float | None = 0
     note: str = ""
+    # False = known, priced, but NOT shown in the dropdown unless ENABLED_MODELS
+    # names it. Used for models Google appears to have retired.
+    offered: bool = True
 
+
+# Prices re-read from Google's pricing page on 2026-10-31. The 2.5 models are
+# still priced there, but a Google forum thread (10 July 2026) reports that
+# gemini-2.5-flash / 2.5-flash-lite return "no longer available" (HTTP 404), and
+# the live advisor failed on gemini-2.5-flash. So they are kept for pricing old
+# chats but not offered by default.
+_RETIRED_NOTE = "Reported as no longer available from Google (404) since July 2026."
 
 MODEL_SPECS: dict[str, ModelSpec] = {
     spec.id: spec
     for spec in (
         ModelSpec(
-            id="gemini-2.5-flash",
-            label="Gemini 2.5 Flash",
+            id="gemini-3.5-flash-lite",
+            label="Gemini 3.5 Flash-Lite",
             prices=(PriceRule(0.30, 2.50),),
-            note="Balanced speed and quality (the original default).",
+            note="Fast and low cost (the current default).",
         ),
         ModelSpec(
-            id="gemini-2.5-flash-lite",
-            label="Gemini 2.5 Flash-Lite",
-            prices=(PriceRule(0.10, 0.40),),
-            note="Fastest and cheapest.",
-        ),
-        ModelSpec(
-            id="gemini-2.5-pro",
-            label="Gemini 2.5 Pro",
+            id="gemini-3.6-flash",
+            label="Gemini 3.6 Flash",
             prices=(
-                PriceRule(1.25, 10.00, max_input_tokens=200_000),
-                PriceRule(2.50, 15.00),
+                PriceRule(0.75, 3.75, valid_until=date(2026, 12, 31)),
+                PriceRule(1.50, 7.50, valid_from=date(2027, 1, 1)),
             ),
-            note="Strongest reasoning, slower and dearer.",
+            temperature=None,
+            note="Previous-generation Flash. Price rises on 1 Jan 2027.",
         ),
         ModelSpec(
             id="gemini-3.8-flash",
@@ -89,6 +94,30 @@ MODEL_SPECS: dict[str, ModelSpec] = {
             ),
             temperature=None,
             note="Newest Flash model. Price rises on 1 Jan 2027.",
+        ),
+        ModelSpec(
+            id="gemini-2.5-flash",
+            label="Gemini 2.5 Flash",
+            prices=(PriceRule(0.30, 2.50),),
+            note=_RETIRED_NOTE,
+            offered=False,
+        ),
+        ModelSpec(
+            id="gemini-2.5-flash-lite",
+            label="Gemini 2.5 Flash-Lite",
+            prices=(PriceRule(0.10, 0.40),),
+            note=_RETIRED_NOTE,
+            offered=False,
+        ),
+        ModelSpec(
+            id="gemini-2.5-pro",
+            label="Gemini 2.5 Pro",
+            prices=(
+                PriceRule(1.25, 10.00, max_input_tokens=200_000),
+                PriceRule(2.50, 15.00),
+            ),
+            note="Not checked live; hidden until confirmed available.",
+            offered=False,
         ),
     )
 }
@@ -106,12 +135,18 @@ def default_model_id() -> str:
 def enabled_model_ids() -> list[str]:
     """Models the dropdown offers.
 
-    * ``ENABLED_MODELS`` (comma separated) narrows the list when set.
+    * ``ENABLED_MODELS`` (comma separated) sets the list when present. It may
+      name any model in ``MODEL_SPECS``, including ones hidden by default.
+    * Otherwise every model marked ``offered`` is listed.
     * The configured default model is always included, even when it is not in
       ``MODEL_SPECS`` (it then simply has no price, so cost shows "unavailable").
     """
     configured = _csv_env("ENABLED_MODELS")
-    ids = [m for m in configured if m in MODEL_SPECS] if configured else list(MODEL_SPECS)
+    ids = (
+        [m for m in configured if m in MODEL_SPECS]
+        if configured
+        else [m for m, spec in MODEL_SPECS.items() if spec.offered]
+    )
     default = default_model_id()
     if default not in ids:
         ids.insert(0, default)
