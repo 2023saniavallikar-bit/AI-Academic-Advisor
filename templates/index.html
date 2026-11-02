@@ -8,7 +8,7 @@
   <meta name="description"
     content="Get clear, helpful guidance on courses, degree requirements, and university policies." />
   <title>Vidyashilp Guide | Vidyashilp University</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css', v='8') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css', v='9') }}" />
   <script>
     window.MathJax = {
       tex: {
@@ -137,6 +137,18 @@
               <option value="">Default model</option>
             </select>
           </label>
+          <label class="option-field" for="batchSelect">
+            <span>Batch</span>
+            <select id="batchSelect" aria-label="Batch (entry year) used to find course rows">
+              <option value="">Not specified</option>
+            </select>
+          </label>
+          <label class="option-field" for="semesterSelect">
+            <span>Semester</span>
+            <select id="semesterSelect" aria-label="Semester used to find course rows" disabled>
+              <option value="">Not specified</option>
+            </select>
+          </label>
         </div>
         <label class="student-context" for="studentId">
           <span class="context-icon" aria-hidden="true">◎</span>
@@ -160,7 +172,7 @@
     </main>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js', v='8') }}"></script>
+  <script src="{{ url_for('static', filename='app.js', v='9') }}"></script>
 </body>
 
 </html>
