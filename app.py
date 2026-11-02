@@ -14,6 +14,7 @@ from langchain_google_genai.chat_models import GoogleRateLimitError
 
 from advisor import AcademicAdvisor
 from models import default_model_id, get_spec, model_options, resolve_model
+from periods import parse_period
 from chat_history import (
     DB_PATH,
     delete_conversation,
@@ -143,6 +144,8 @@ def options_api():
     return jsonify({
         "models": model_options(),
         "default_model": default_model_id(),
+        # Only batches/semesters that really have data in the index.
+        "periods": advisor.catalog.to_json(),
     })
 
 
@@ -176,6 +179,13 @@ def chat_api():
     except ValueError:
         return jsonify({"error": "That model is not available."}), 400
 
+    try:
+        batch, semester = parse_period(
+            data.get("batch"), data.get("semester"), advisor.catalog
+        )
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+
     if not message:
         return jsonify({"error": "Please enter a question."}), 400
     if not valid_uuid(conversation_id):
@@ -194,10 +204,13 @@ def chat_api():
             current_student_id=student_id or None,
             chat_history=history,
             model=model_id,
+            batch=batch,
+            semester=semester,
         )
         answer_meta = {
             "model": result["model"],
             "model_label": get_spec(result["model"]).label,
+            "period": result["period"],
             "usage": result["usage"],
             "cost": result["cost"],
         }

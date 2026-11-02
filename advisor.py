@@ -14,6 +14,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from langchain_core.prompts import ChatPromptTemplate
 
 from models import default_model_id, estimate_cost, extract_usage, get_spec, resolve_model
+from periods import describe_selection, load_catalog, parse_period, select_documents
 
 
 load_dotenv()
@@ -71,6 +72,8 @@ class AcademicAdvisor:
             self.retriever = self.vectorstore.as_retriever(
                 search_kwargs={"k": RETRIEVAL_K}
             )
+            # Which batches / semesters really have data (read from the index).
+            self.catalog = load_catalog(self.vectorstore)
 
             # ---------------------------------------------------------
             # Gemini chat models: one client per model, made when first used
@@ -249,6 +252,12 @@ STUDENT PROFILE
 {student_profile}
 
 ============================================================
+SELECTED PERIOD
+============================================================
+
+{selected_period}
+
+============================================================
 RECENT CONVERSATION
 ============================================================
 
@@ -379,6 +388,10 @@ INSTRUCTIONS
 12. Use the RECENT CONVERSATION only to resolve follow-up
     references. It is not an authoritative source; verify factual
     claims against the UNIVERSITY CONTEXT and STUDENT PROFILE.
+
+13. Follow the SELECTED PERIOD section. Never invent a batch,
+    semester or academic year, and never assume that data exists
+    for a period that the CONTEXT does not show.
 """
 
         prompt = ChatPromptTemplate.from_messages(
@@ -506,9 +519,14 @@ INSTRUCTIONS
         current_student_id=None,
         chat_history=None,
         model=None,
+        batch=None,
+        semester=None,
     ):
 
         model_id = resolve_model(model)  # raises ValueError for a model not allowed
+        # Already checked by the web layer; checked again so no caller can slip
+        # in a period that has no data.
+        batch, semester = parse_period(batch, semester, self.catalog)
 
         if not user_input or not str(user_input).strip():
             raise ValueError("A question is required.")
@@ -524,7 +542,17 @@ INSTRUCTIONS
 
         retrieval_query = self._build_retrieval_query(user_input, chat_history)
         retrieval_started = time.perf_counter()
-        documents = self.retriever.invoke(retrieval_query)
+        documents, period_info = select_documents(
+            self.vectorstore, retrieval_query, RETRIEVAL_K, batch, semester
+        )
+        student = self.students_by_id.get(
+            self.normalize_student_id(current_student_id) or ""
+        )
+        selected_period = describe_selection(
+            batch, semester, period_info,
+            profile_batch=(student or {}).get("batch"),
+            catalog=self.catalog,
+        )
         retrieval_elapsed = time.perf_counter() - retrieval_started
         logger.info(
             "Advisor retrieval completed in %.3fs with %d documents",
@@ -542,6 +570,7 @@ INSTRUCTIONS
                     "input": user_input,
                     "context": "\n\n".join(doc.page_content for doc in documents),
                     "student_profile": profile_text,
+                    "selected_period": selected_period,
                     "chat_history": self._format_chat_history(chat_history),
                 }
             )
@@ -579,6 +608,7 @@ INSTRUCTIONS
             "student_id": current_student_id,
             "detected_student_id": detected_student_id,
             "model": model_id,
+            "period": {"batch": batch, "semester": semester},
             "usage": usage,
             "cost": cost,
         }
