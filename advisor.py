@@ -1,0 +1,729 @@
+import json
+import logging
+import os
+import re
+from threading import Lock
+import time
+from pathlib import Path
+
+from dotenv import load_dotenv
+load_dotenv()
+
+from langchain_community.vectorstores import Chroma
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from langchain_core.prompts import ChatPromptTemplate
+
+from models import default_model_id, estimate_cost, extract_usage, get_spec, resolve_model
+from periods import describe_selection, load_catalog, parse_period, select_documents
+
+
+load_dotenv()
+
+BASE_DIR = Path(__file__).resolve().parent
+
+
+def configured_path(env_name, default):
+    path = Path(os.getenv(env_name, str(default)))
+    return path if path.is_absolute() else BASE_DIR / path
+
+
+DB_DIR = configured_path("CHROMA_DB_DIR", BASE_DIR / "chroma_db_gemini")
+STUDENT_DB_PATH = configured_path(
+    "STUDENT_DB_PATH", BASE_DIR / "synthetic_students.json"
+)
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
+EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "768"))
+CHAT_MODEL = default_model_id()  # from CHAT_MODEL, else gemini-2.5-flash
+CHAT_RETRIES = int(os.getenv("CHAT_RETRIES", "1"))
+if CHAT_RETRIES < 1:
+    raise ValueError("CHAT_RETRIES must be at least 1.")
+RETRIEVAL_K = int(os.getenv("RETRIEVAL_K", "4"))
+if RETRIEVAL_K < 1:
+    raise ValueError("RETRIEVAL_K must be at least 1.")
+logger = logging.getLogger(__name__)
+
+class AcademicAdvisor:
+
+    def __init__(self, vectorstore=None, llm_factory=None):
+        # vectorstore / llm_factory are only passed by the automatic tests.
+        # In the real app both stay None and nothing changes.
+        print("Initializing AI Academic Advisor with Gemini...")
+
+        try:
+            if vectorstore is None:
+                # ---------------------------------------------------------
+                # # Gemini embeddings
+                # ---------------------------------------------------------
+                self.embeddings = GoogleGenerativeAIEmbeddings(
+                    model=EMBEDDING_MODEL,
+                    output_dimensionality=EMBEDDING_DIMENSION,
+                )
+
+                # ---------------------------------------------------------
+                # Chroma vector database
+                # ---------------------------------------------------------
+                self.vectorstore = Chroma(
+                    persist_directory=str(DB_DIR),
+                    embedding_function=self.embeddings
+                )
+            else:
+                self.vectorstore = vectorstore
+
+            self.retriever = self.vectorstore.as_retriever(
+                search_kwargs={"k": RETRIEVAL_K}
+            )
+            # Which batches / semesters really have data (read from the index).
+            self.catalog = load_catalog(self.vectorstore)
+
+            # ---------------------------------------------------------
+            # Gemini chat models: one client per model, made when first used
+            # ---------------------------------------------------------
+            self._llm_factory = llm_factory or self._make_llm
+            self._llms = {}
+            self._llms_lock = Lock()
+            self.llm = self._get_llm(CHAT_MODEL)  # default model, checked at start-up
+
+        except Exception as e:
+            print(f"\nError initializing models: {e}")
+
+            print(
+                "\nMake sure:"
+                "\n1. Your Gemini API key is configured."
+                "\n2. The Chroma database exists."
+                "\n3. The required Gemini models are available."
+            )
+
+            raise
+
+        # Load student database
+        self.students = []
+        self.students_by_id = {}
+        self._student_db_mtime_ns = None
+        self.students = self._load_students()
+
+        # Prompt template (the chain is built per request: prompt | chosen model)
+        self.prompt = self._build_chain()
+
+    # -----------------------------------------------------------------
+    # Chat models (one per allowed model id)
+    # -----------------------------------------------------------------
+    @staticmethod
+    def _make_llm(model_id):
+        spec = get_spec(model_id)
+        kwargs = {"model": model_id, "retries": CHAT_RETRIES}
+        if spec.temperature is not None:
+            kwargs["temperature"] = spec.temperature
+        return ChatGoogleGenerativeAI(**kwargs)
+
+    def _get_llm(self, model_id):
+        with self._llms_lock:
+            if model_id not in self._llms:
+                self._llms[model_id] = self._llm_factory(model_id)
+            return self._llms[model_id]
+
+    # -----------------------------------------------------------------
+    # Load students
+    # -----------------------------------------------------------------
+    def _load_students(self):
+
+        try:
+
+            with open(STUDENT_DB_PATH, "r", encoding="utf-8") as f:
+                payload = json.load(f)
+
+            if isinstance(payload, list):
+                students = payload
+            elif isinstance(payload, dict) and isinstance(
+                payload.get("students"), list
+            ):
+                students = payload["students"]
+            else:
+                raise ValueError(
+                    "synthetic_students.json must contain a list of "
+                    "student records or an object with a 'students' list."
+                )
+
+            valid_students = []
+            students_by_id = {}
+
+            for index, student in enumerate(students):
+                if not isinstance(student, dict):
+                    print(
+                        f"Skipping student record {index + 1}: "
+                        "record is not an object."
+                    )
+                    continue
+
+                raw_student_id = student.get("student_id")
+                normalized_id = self.normalize_student_id(raw_student_id)
+
+                if not normalized_id:
+                    print(
+                        f"Skipping student record {index + 1}: "
+                        f"invalid student_id {raw_student_id!r}."
+                    )
+                    continue
+
+                if normalized_id in students_by_id:
+                    raise ValueError(
+                        f"Duplicate student_id found: {normalized_id}"
+                    )
+
+                valid_students.append(student)
+                students_by_id[normalized_id] = student
+
+            self.students_by_id = students_by_id
+            self._student_db_mtime_ns = STUDENT_DB_PATH.stat().st_mtime_ns
+
+            print(
+                f"Loaded {len(valid_students)} of {len(students)} student "
+                "profiles successfully."
+            )
+
+            return valid_students
+
+        except FileNotFoundError:
+
+            print(
+                "\nCould not find synthetic_students.json."
+                "\nMake sure it is in the same directory as advisor.py."
+            )
+
+            self.students_by_id = {}
+            self._student_db_mtime_ns = None
+            return []
+
+        except json.JSONDecodeError as e:
+
+            print(
+                f"\nInvalid JSON in synthetic_students.json: {e}"
+            )
+
+            self.students_by_id = {}
+            self._student_db_mtime_ns = None
+            return []
+
+        except Exception as e:
+
+            print(
+                f"\nCould not load synthetic students: {e}"
+            )
+
+            self.students_by_id = {}
+            self._student_db_mtime_ns = None
+            return []
+
+    def _refresh_student_index_if_changed(self):
+        """Reload all student records when the JSON file changes."""
+
+        try:
+            current_mtime_ns = STUDENT_DB_PATH.stat().st_mtime_ns
+        except FileNotFoundError:
+            current_mtime_ns = None
+
+        if current_mtime_ns != self._student_db_mtime_ns:
+            self.students = self._load_students()
+
+    # -----------------------------------------------------------------
+    # Build RAG chain
+    # -----------------------------------------------------------------
+    def _build_chain(self):
+
+        system_prompt = """
+You are an AI Academic Advisor for a University.
+
+Your objective is to provide accurate academic advice based ONLY on:
+
+1. The university's rules.
+2. The course catalogue.
+3. University SOPs.
+4. The provided student profile.
+
+============================================================
+CONTEXT PROVIDED FROM KNOWLEDGE BASE
+============================================================
+
+{context}
+
+============================================================
+STUDENT PROFILE
+============================================================
+
+{student_profile}
+
+============================================================
+SELECTED PERIOD
+============================================================
+
+{selected_period}
+
+============================================================
+RECENT CONVERSATION
+============================================================
+
+{chat_history}
+
+============================================================
+INSTRUCTIONS
+============================================================
+
+1. Answer the student's question using ONLY the provided
+   CONTEXT and STUDENT PROFILE.
+
+2. Do not hallucinate or invent university rules, courses,
+   prerequisites, credits, policies, or academic requirements.
+
+3. First determine whether the user's question is asking for
+   GENERAL ACADEMIC INFORMATION or STUDENT-SPECIFIC ADVICE.
+
+   GENERAL ACADEMIC INFORMATION includes questions such as:
+   - "What are the prerequisites for DATA301?"
+   - "What are the prerequisites for DATA301 for the 2022 batch?"
+   - "How many credits is DATA301?"
+   - "When is DATA301 offered?"
+   - "What are the requirements for Machine Learning?"
+   - "What is the university rule for late registration?"
+   - "What does the Student Handbook say about registration?"
+   - "What courses are offered in semester 5?"
+
+   For GENERAL ACADEMIC INFORMATION questions:
+   - Answer directly using the UNIVERSITY CONTEXT.
+   - Use the course catalogue, handbook, SOPs, and other
+     university documents available in the context.
+   - Do NOT ask for a Student ID.
+   - Do NOT require the STUDENT PROFILE.
+   - Do NOT evaluate the student's eligibility.
+   - Do NOT ask for personal academic information.
+   - If a Student ID happens to be present, ignore it unless
+     the question explicitly asks for a student-specific decision.
+   - If the required university information is not present in
+     the CONTEXT, clearly state that the available information
+     is insufficient. Do not invent an answer.
+
+   STUDENT-SPECIFIC QUESTIONS include questions such as:
+   - "Can I take DATA301?"
+   - "Am I eligible for DATA301?"
+   - "Can STU001 take DATA301?"
+   - "Can I register for Machine Learning?"
+   - "What courses can I take next semester?"
+   - "Have I completed the prerequisites for DATA301?"
+
+   For STUDENT-SPECIFIC QUESTIONS:
+   - Use the UNIVERSITY CONTEXT to determine the applicable
+     academic rules and course requirements.
+   - Use the STUDENT PROFILE to determine the student's
+     completed courses, current semester, programme, or other
+     relevant academic information.
+   - Check prerequisites and other eligibility requirements
+     before making a student-specific determination.
+   - If the required student information is unavailable and
+     the Student ID has not been provided, ask for the Student ID.
+   - Do not make assumptions about completed courses, current
+     semester, programme, batch, or eligibility.
+   - If the Student ID is provided but the profile cannot be
+     found, clearly state that the student profile could not
+     be found and do not invent student information.
+
+4. For STUDENT-SPECIFIC questions:
+
+   - If a STUDENT PROFILE is already provided in the context,
+     use that profile directly.
+   - If the profile contains a Student ID, do NOT ask the user
+     for their Student ID again.
+   - Check the student's completed courses, current semester,
+     programme, and other relevant information from the provided
+     STUDENT PROFILE.
+   - Only ask for the Student ID when no student profile is
+     available and the question requires student-specific
+     information.
+
+   If no student profile is available, politely ask:
+
+   "Could you please provide your Student ID so I can check
+   your academic profile?"
+
+5. For student-specific course eligibility questions, always use
+   the student's batch or entry year from the STUDENT PROFILE.
+
+   Match the course requirements to the student's applicable
+   curriculum or batch.
+
+   Do NOT use prerequisites or course requirements from a
+   different batch when determining eligibility.
+
+   If the CONTEXT contains different requirements for different
+   batches, identify the student's batch first and use the
+   requirements applicable to that batch.
+
+   If the student's batch cannot be determined from the
+   STUDENT PROFILE, clearly state that the batch information
+   is unavailable and do not guess.
+
+6. If the Student ID is provided but cannot be found in the
+   student database, clearly state that the student profile
+   could not be found.
+
+7. If there are conflicting rules or missing information in the
+   CONTEXT, explicitly state that the information is insufficient
+   or conflicting.
+
+8. Cite the source or evidence for your answer whenever possible.
+
+   Examples:
+
+   "According to the Student Handbook..."
+
+   "Based on the Course Catalogue..."
+
+   "According to the academic regulations..."
+
+9. Do not claim that a student is eligible for a course unless
+   the provided information supports that conclusion.
+
+10. Be helpful, conversational, concise, and precise.
+
+11. Never invent information that is not present in the
+    CONTEXT or STUDENT PROFILE.
+
+12. Use the RECENT CONVERSATION only to resolve follow-up
+    references. It is not an authoritative source; verify factual
+    claims against the UNIVERSITY CONTEXT and STUDENT PROFILE.
+
+13. Follow the SELECTED PERIOD section. Never invent a batch,
+    semester or academic year, and never assume that data exists
+    for a period that the CONTEXT does not show.
+"""
+
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", system_prompt),
+                ("human", "{input}")
+            ]
+        )
+
+        return prompt
+
+    # -----------------------------------------------------------------
+    # Normalize Student ID
+    # -----------------------------------------------------------------
+    def normalize_student_id(self, student_id):
+
+        if not student_id:
+            return None
+
+        # Convert to uppercase
+        student_id = student_id.upper().strip()
+
+        # Remove spaces and underscores
+        cleaned = re.sub(r"[\s_]+", "", student_id)
+
+        # Check for STU followed by numbers
+        match = re.fullmatch(r"STU(\d+)", cleaned)
+
+        if match:
+
+            number = match.group(1)
+
+            # Convert:
+            # STU002 -> STU_002
+            return f"STU_{number}"
+
+        return None
+
+    # -----------------------------------------------------------------
+    # Detect Student ID from user input
+    # -----------------------------------------------------------------
+    def extract_student_id(self, user_input):
+
+        if not user_input:
+            return None
+
+        text = user_input.upper()
+
+        # -------------------------------------------------------------
+        # Detect:
+        #
+        # STU_002
+        # STU002
+        # STU 002
+        #
+        # The underscore is optional.
+        # -------------------------------------------------------------
+        patterns = [
+            r"\bSTU[_\s]?(\d+)\b",
+            r"\bSTUDENT[_\s]?(\d+)\b"
+        ]
+
+        for pattern in patterns:
+
+            match = re.search(pattern, text)
+
+            if match:
+
+                number = match.group(1)
+
+                return f"STU_{number}"
+
+        return None
+
+    # -----------------------------------------------------------------
+    # Get student profile
+    # -----------------------------------------------------------------
+    def get_student_profile_text(self, student_id):
+
+        self._refresh_student_index_if_changed()
+
+        if not student_id:
+
+            return (
+                "NO STUDENT PROFILE IS REQUIRED FOR GENERAL COURSE "
+                "INFORMATION QUESTIONS.\n"
+                "The user has not provided a Student ID.\n"
+                "If the question asks about general course information "
+                "such as prerequisites, credits, semester, course "
+                "requirements, or course description, answer directly "
+                "from the university CONTEXT.\n"
+                "Do NOT ask for a Student ID for such questions.\n"
+                "Only require a Student ID when the user asks for "
+                "student-specific eligibility, registration, or "
+                "planning based on their academic history."
+            )
+
+        # Normalize ID before searching
+        normalized_id = self.normalize_student_id(student_id)
+
+        if not normalized_id:
+
+            return (
+                f"Student ID '{student_id}' is invalid. "
+                "Treat the student as anonymous."
+            )
+
+        student = getattr(self, "students_by_id", {}).get(normalized_id)
+
+        if student:
+            return json.dumps(student, indent=2)
+
+        return (
+            f"Student ID '{normalized_id}' was not found "
+            "in the student database. Treat the student "
+            "as anonymous."
+        )
+
+    # -----------------------------------------------------------------
+    # Ask a single question and return answer
+    # -----------------------------------------------------------------
+    def answer_question(
+        self,
+        user_input,
+        current_student_id=None,
+        chat_history=None,
+        model=None,
+        batch=None,
+        semester=None,
+    ):
+
+        model_id = resolve_model(model)  # raises ValueError for a model not allowed
+        # Already checked by the web layer; checked again so no caller can slip
+        # in a period that has no data.
+        batch, semester = parse_period(batch, semester, self.catalog)
+
+        if not user_input or not str(user_input).strip():
+            raise ValueError("A question is required.")
+
+        user_input = str(user_input).strip()
+
+        detected_student_id = self.extract_student_id(user_input)
+
+        if detected_student_id:
+            current_student_id = detected_student_id
+
+        profile_text = self.get_student_profile_text(current_student_id)
+
+        retrieval_query = self._build_retrieval_query(user_input, chat_history)
+        retrieval_started = time.perf_counter()
+        documents, period_info = select_documents(
+            self.vectorstore, retrieval_query, RETRIEVAL_K, batch, semester
+        )
+        student = self.students_by_id.get(
+            self.normalize_student_id(current_student_id) or ""
+        )
+        selected_period = describe_selection(
+            batch, semester, period_info,
+            profile_batch=(student or {}).get("batch"),
+            catalog=self.catalog,
+        )
+        retrieval_elapsed = time.perf_counter() - retrieval_started
+        logger.info(
+            "Advisor retrieval completed in %.3fs with %d documents",
+            retrieval_elapsed,
+            len(documents),
+        )
+
+        generation_started = time.perf_counter()
+        try:
+            # Same prompt as before. Passages are joined with a blank line, which
+            # is exactly what the old "stuff documents" chain did.
+            chain = self.prompt | self._get_llm(model_id)
+            response = chain.invoke(
+                {
+                    "input": user_input,
+                    "context": "\n\n".join(doc.page_content for doc in documents),
+                    "student_profile": profile_text,
+                    "selected_period": selected_period,
+                    "chat_history": self._format_chat_history(chat_history),
+                }
+            )
+        finally:
+            generation_elapsed = time.perf_counter() - generation_started
+            logger.info(
+                "Advisor answer generation call finished in %.3fs",
+                generation_elapsed,
+            )
+
+        answer = response.content if hasattr(response, "content") else str(response)
+        if isinstance(answer, list):
+            answer = "\n".join(
+                block["text"]
+                for block in answer
+                if isinstance(block, dict) and isinstance(block.get("text"), str)
+            )
+        if not isinstance(answer, str) or not answer.strip():
+            answer = "I could not generate an answer."
+
+        # Token counts come straight from the API response. If the API sent none,
+        # usage stays None and nothing is estimated.
+        usage = extract_usage(response)
+        cost = (
+            estimate_cost(
+                get_spec(model_id), usage["input_tokens"], usage["output_tokens"]
+            )
+            if usage
+            else None
+        )
+        logger.info("Advisor answered with %s, usage=%s", model_id, usage)
+
+        return {
+            "answer": answer,
+            "student_id": current_student_id,
+            "detected_student_id": detected_student_id,
+            "model": model_id,
+            "period": {"batch": batch, "semester": semester},
+            "usage": usage,
+            "cost": cost,
+        }
+
+    @staticmethod
+    def _build_retrieval_query(user_input, chat_history):
+        if not chat_history:
+            return user_input
+
+        previous_question = next(
+            (
+                message["content"].strip()
+                for message in reversed(chat_history)
+                if message.get("role") == "user"
+                and isinstance(message.get("content"), str)
+                and message["content"].strip()
+            ),
+            None,
+        )
+        if not previous_question:
+            return user_input
+
+        return f"{previous_question[-500:]}\n{user_input}"
+
+    @staticmethod
+    def _format_chat_history(messages):
+        if not messages:
+            return "No previous conversation."
+        return "\n".join(
+            f"{'Student' if message['role'] == 'user' else 'Advisor'}: "
+            f"{message['content'][-1000:]}"
+            for message in messages
+        )
+
+    # -----------------------------------------------------------------
+    # Chat interface
+    # -----------------------------------------------------------------
+
+
+    def chat(self):
+        print("\n=======================================================")
+        print("🎓 AI Academic Advisor is ready!")
+        print("Type 'exit' or 'quit' to stop.")
+        print("-------------------------------------------------------")
+        print("You can enter your Student ID in any of these formats:")
+        print("  STU_002")
+        print("  STU002")
+        print("  STU 002")
+        print("  STUDENT 002")
+        print("-------------------------------------------------------")
+        print("Example:")
+        print("  I am student STU002. Can I take COMP203?")
+        print("=======================================================\n")
+
+        current_student_id = None
+
+        while True:
+
+            try:
+
+                user_input = input("Student: ").strip()
+
+            except (KeyboardInterrupt, EOFError):
+
+                print("\n\nExiting Academic Advisor.")
+                break
+
+            # Ignore empty input
+            if not user_input:
+                continue
+
+            # ---------------------------------------------------------
+            # Exit commands
+            # ---------------------------------------------------------
+            if user_input.lower() in ["exit", "quit"]:
+
+                print("\nGoodbye! 👋")
+                break
+
+            try:
+                result = self.answer_question(
+                    user_input,
+                    current_student_id=current_student_id
+                )
+
+                current_student_id = result.get("student_id")
+
+                if result.get("detected_student_id"):
+                    print(
+                        f"\n[System: Loaded context for "
+                        f"{current_student_id}]"
+                    )
+
+                print(
+                    f"\nAI Advisor: {result['answer']}\n"
+                )
+
+            except Exception as e:
+
+                print(
+                    "\nError while processing your question:"
+                )
+
+                print(e)
+
+                print(
+                    "\nPlease check that your Gemini API key is configured "
+                    "\nand that the required Gemini models are available.\n"
+                )
+
+
+# ---------------------------------------------------------------------
+# Main program
+# ---------------------------------------------------------------------
+if __name__ == "__main__":
+
+    advisor = AcademicAdvisor()
+    advisor.chat()

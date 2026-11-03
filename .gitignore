@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+.DS_Store
+data/*.sqlite3
+data/*.sqlite3-shm
+data/*.sqlite3-wal
+data/flask_session_secret

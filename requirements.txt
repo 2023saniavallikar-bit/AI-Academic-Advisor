@@ -1,0 +1,10 @@
+langchain
+langchain-community
+langchain-ollama
+langchain-google-genai
+pypdf
+pandas
+chromadb
+python-dotenv
+Flask
+gunicorn
