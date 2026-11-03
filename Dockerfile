@@ -9,7 +9,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY advisor.py app.py chat_history.py models.py periods.py synthetic_students.json ./
+COPY advisor.py app.py chat_history.py models.py periods.py synthetic_students.json \
+     academic_tools.py agents.py llm.py security.py multimodal.py ./
+COPY data/regulations.json data/demo_users.json ./data/
 COPY chroma_db_gemini ./chroma_db_gemini
 COPY cleaned ./cleaned
 COPY templates ./templates
