@@ -235,7 +235,7 @@ class AgenticAdvisor:
 
     # ------------------------------------------------------------ 5. recommendation
     def recommend(self, question, history, student, evidence, usage, feedback=None):
-        profile = json.dumps(T.sanitize_for_model(SEC.minimized_profile(student)), default=str)[:6000] if student else \
+        profile = json.dumps(T.sanitize_for_model(SEC.minimized_profile(student)), default=str, separators=(",", ":")) if student else \
             "No student is logged in, so no student record is available."
         user = (f"<<<EVIDENCE>>>\n{evidence.render()}\n<<<END EVIDENCE>>>\n\n"
                 f"STUDENT RECORD (minimised):\n{profile}\n\n"

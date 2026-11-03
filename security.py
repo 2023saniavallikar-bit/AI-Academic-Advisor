@@ -78,7 +78,7 @@ def authorize_profile(user: dict | None, requested_id: str | None) -> tuple[str 
     """
     requested = normalize_student_id(requested_id) if requested_id else None
     if not security_enabled():
-        return requested, None
+        return requested or (user or {}).get("student_id"), None
     if not user:
         return None, ("not_logged_in" if requested else None)
     if user["role"] == "student":

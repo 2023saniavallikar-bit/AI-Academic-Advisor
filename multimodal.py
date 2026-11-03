@@ -51,11 +51,13 @@ def extract_document(image_bytes: bytes, mime: str, student: dict | None = None)
 def check_extraction(data: dict, student: dict | None = None) -> dict:
     """Deterministic checks on what the vision model returned."""
     warnings, security_events = [], []
+    secure = SEC.security_enabled()
     other = str(data.get("other_text") or "")
-    other, pii = SEC.redact_pii(other)
-    if pii:
-        security_events.append({"type": "pii_redacted", "counts": pii})
-    inj = SEC.detect_injection(other + " " + json.dumps(data.get("courses", [])))
+    if secure:
+        other, pii = SEC.redact_pii(other)
+        if pii:
+            security_events.append({"type": "pii_redacted", "counts": pii})
+    inj = SEC.detect_injection(other + " " + json.dumps(data.get("courses", []))) if secure else []
     if inj:
         security_events.append({"type": "prompt_injection_in_document", "patterns": len(inj)})
         warnings.append("The document contains text that looks like instructions to the AI. It was ignored.")
@@ -86,7 +88,7 @@ def check_extraction(data: dict, student: dict | None = None) -> dict:
     discrepancies = []
     if student:
         on_doc = SEC.normalize_student_id(data.get("student_id_on_document") or "")
-        if on_doc and on_doc != student["student_id"]:
+        if secure and on_doc and on_doc != student["student_id"]:
             discrepancies.append(f"Document belongs to {on_doc}, not to the logged-in student.")
             security_events.append({"type": "document_of_another_student"})
         latest = T.latest_attempts(student)

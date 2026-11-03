@@ -44,11 +44,15 @@ def _client(model_id: str):
     return _clients[model_id]
 
 
+THROTTLE_WAITED = [0.0]  # seconds spent waiting for rate limits (subtracted in latency reports)
+
+
 def _throttle():
     with _lock:
         wait = MIN_SECONDS_BETWEEN_CALLS - (time.monotonic() - _last_call[0])
         if wait > 0:
             time.sleep(wait)
+            THROTTLE_WAITED[0] += wait
         _last_call[0] = time.monotonic()
 
 
@@ -59,8 +63,13 @@ def _text_of(response) -> str:
     return content or ""
 
 
+PROMPT_CAPTURE: list | None = None  # security audit: set to [] to record every prompt sent
+
+
 def call_llm(system: str, user: str, model: str | None = None, json_mode: bool = False):
     model = model or default_model_id()
+    if PROMPT_CAPTURE is not None:
+        PROMPT_CAPTURE.append(system + "\n" + user)
     if _backend is not None:
         return _backend(system, user, model, json_mode)
     last_error = None
@@ -76,6 +85,7 @@ def call_llm(system: str, user: str, model: str | None = None, json_mode: bool =
                 delay = 15 * (attempt + 1)
                 logger.warning("LLM rate-limited (%s); retrying in %ss", model, delay)
                 time.sleep(delay)
+                THROTTLE_WAITED[0] += delay
                 continue
             raise
     raise last_error

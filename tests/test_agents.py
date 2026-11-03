@@ -3,7 +3,7 @@ from agents import AgenticAdvisor
 
 def test_eligible_student(students):
     a = AgenticAdvisor(vectorstore=None)
-    r = a.answer("Can I take DATA301 next semester?", student=students["STU_016"])
+    r = a.answer("Can I take MATH206 next semester?", student=students["STU_006"])
     assert r["status"] == "verified"
     assert r["answer"].startswith("**Decision: ELIGIBLE**")
     assert [t["agent"] for t in r["trace"]][:5] == ["Intake / Router", "Regulation Retrieval",

@@ -338,7 +338,7 @@ def check_eligibility(student: dict, code: str, target_semester: int | None = No
     """Can this student register for this course? Returns a decision plus reasons.
 
     decision: ELIGIBLE | NOT_ELIGIBLE | CONDITIONAL | NEEDS_REVIEW | NOT_IN_CURRICULUM
-              | ALREADY_PASSED | NO_DATA_FOR_BATCH
+              | ALREADY_PASSED | CURRENTLY_REGISTERED | NO_DATA_FOR_BATCH
     """
     cat = cat or catalogue()
     code = (code or "").upper().strip()
@@ -374,6 +374,10 @@ def check_eligibility(student: dict, code: str, target_semester: int | None = No
         out["reasons"].append(f"{code} is already passed; re-registration of a passed course is only for "
                               "grade improvement (Clause 2.9, 11.4.3, 12.5).")
         out["evidence"].append(REGULATIONS["no_reregistration_of_passed"]["source"])
+        return out
+    if code in current:
+        out["decision"] = "CURRENTLY_REGISTERED"
+        out["reasons"].append(f"{code} is already in the student's current-semester registration.")
         return out
     missing, pending, conflict = [], [], []
     for p in o.prereqs:

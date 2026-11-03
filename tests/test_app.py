@@ -20,9 +20,9 @@ def login(c, user, pin):
 
 
 def test_login_and_agentic_answer(client):
-    assert login(client, "STU_016", "bad").status_code == 401
-    assert login(client, "STU_016", "0169").status_code == 200
-    r = client.post("/api/chat", json={"message": "Can I take DATA301 next semester?", "mode": "agentic"}).get_json()
+    assert login(client, "STU_006", "bad").status_code == 401
+    assert login(client, "STU_006", "0069").status_code == 200
+    r = client.post("/api/chat", json={"message": "Can I take MATH206 next semester?", "mode": "agentic"}).get_json()
     assert "ELIGIBLE" in r["answer"] and r["meta"]["trace"]
 
 

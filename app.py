@@ -205,12 +205,12 @@ def chat_api():
     user = session.get("auth")
     security_events = []
     requested = student_id or None
-    if SEC.security_enabled():
-        # IDs typed in the message are treated as a request too, so attempts
-        # to read another student's record are caught and logged.
-        mentioned = SEC.mentioned_student_ids(message)
-        if mentioned and not requested:
-            requested = mentioned[0]
+    # IDs typed in the message count as a request too. Without the security
+    # layer this reproduces Assignment 1 (the typed ID's record is loaded);
+    # with it, the request is checked and a mismatch is logged and refused.
+    mentioned = SEC.mentioned_student_ids(message)
+    if mentioned and not requested:
+        requested = mentioned[0]
     allowed_id, denial = SEC.authorize_profile(user, requested)
     if denial:
         security_events.append(denial)
@@ -317,13 +317,30 @@ def chat_api():
         }), 503
 
 
+LOGIN_MAX_FAILURES = int(os.getenv("LOGIN_MAX_FAILURES", "5"))
+LOGIN_LOCK_SECONDS = int(os.getenv("LOGIN_LOCK_SECONDS", "900"))
+login_failures = {}  # username -> deque of failure times (in memory)
+
+
 @app.route("/api/login", methods=["POST"])
 def login_api():
     data = request.get_json(silent=True) or {}
-    user = SEC.authenticate(str(data.get("username", "")), str(data.get("pin", "")), USERS)
+    username = str(data.get("username", "")).strip().upper()[:40]
+    now = time.monotonic()
+    with request_times_lock:
+        fails = login_failures.setdefault(username, deque())
+        while fails and fails[0] <= now - LOGIN_LOCK_SECONDS:
+            fails.popleft()
+        if SEC.security_enabled() and len(fails) >= LOGIN_MAX_FAILURES:
+            SEC.log_event("login_locked", user=username)
+            return jsonify({"error": "Too many failed attempts. Try again later."}), 429
+    user = SEC.authenticate(username, str(data.get("pin", "")), USERS)
     if not user:
-        SEC.log_event("login_failed")
+        with request_times_lock:
+            login_failures[username].append(now)
+        SEC.log_event("login_failed", user=username)
         return jsonify({"error": "Wrong ID or PIN."}), 401
+    login_failures.pop(username, None)
     session["auth"] = user
     return jsonify({"user": public_user(user)})
 
