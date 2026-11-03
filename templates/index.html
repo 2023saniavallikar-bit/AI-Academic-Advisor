@@ -8,7 +8,7 @@
   <meta name="description"
     content="Get clear, helpful guidance on courses, degree requirements, and university policies." />
   <title>Vidyashilp Guide | Vidyashilp University</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css', v='9') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css', v='10') }}" />
   <script>
     window.MathJax = {
       tex: {
@@ -137,6 +137,13 @@
               <option value="">Default model</option>
             </select>
           </label>
+          <label class="option-field" for="modeSelect">
+            <span>Advisor</span>
+            <select id="modeSelect" aria-label="Advisor engine">
+              <option value="agentic">Agentic (verified)</option>
+              <option value="rag">RAG (Assignment 1)</option>
+            </select>
+          </label>
           <label class="option-field" for="batchSelect">
             <span>Batch</span>
             <select id="batchSelect" aria-label="Batch (entry year) used to find course rows">
@@ -150,14 +157,32 @@
             </select>
           </label>
         </div>
-        <label class="student-context" for="studentId">
+        <div class="student-context auth-bar" id="authBar">
           <span class="context-icon" aria-hidden="true">◎</span>
-          <span class="context-label">Personalize your guidance <span>(optional)</span></span>
-          <input id="studentId" type="text" placeholder="Student ID" autocomplete="off" />
-        </label>
+          <div id="loginForm" class="login-form">
+            <span class="context-label">Log in for personal advice <span>(demo accounts: STU_001…STU_050)</span></span>
+            <input id="loginUser" type="text" placeholder="Student ID" aria-label="Student ID" />
+            <input id="loginPin" type="password" placeholder="PIN" aria-label="PIN" inputmode="numeric" />
+            <button type="button" class="small-button" id="loginButton">Log in</button>
+          </div>
+          <div id="loggedIn" class="logged-in" hidden>
+            <span id="whoAmI"></span>
+            <select id="adviseeSelect" aria-label="Advisee" hidden></select>
+            <button type="button" class="small-button" id="progressButton">Degree progress</button>
+            <button type="button" class="small-button ghost" id="logoutButton">Log out</button>
+          </div>
+          <input id="studentId" type="hidden" />
+        </div>
         <div class="composer-row">
           <textarea id="messageInput" rows="1" placeholder="Ask about courses, requirements, or policies…"
             aria-label="Your message" required></textarea>
+          <label class="icon-button" id="attachLabel" title="Upload a transcript or registration form image">
+            <input id="transcriptInput" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+            <span aria-hidden="true">📎</span><span class="sr-only">Upload transcript image</span>
+          </label>
+          <button type="button" class="icon-button" id="micButton" title="Speak your question" aria-label="Speak your question" hidden>
+            <span aria-hidden="true">🎤</span>
+          </button>
           <button type="submit" id="sendButton" class="send-button" aria-label="Send message">
             <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
               <path d="M10 15.5v-11m0 0L5.5 9m4.5-4.5L14.5 9" stroke="currentColor" stroke-width="1.8"
@@ -166,13 +191,15 @@
           </button>
         </div>
         <p class="composer-note">Press <kbd>Enter</kbd> to send <span aria-hidden="true">·</span> <kbd>Shift</kbd> +
-          <kbd>Enter</kbd> for a new line
+          <kbd>Enter</kbd> for a new line <span aria-hidden="true">·</span> Answers are AI-generated guidance, not official
+          decisions - confirm with your Faculty Advisor [Mentor].
         </p>
       </form>
     </main>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js', v='9') }}"></script>
+  <script src="{{ url_for('static', filename='app.js', v='10') }}"></script>
+  <script src="{{ url_for('static', filename='extensions.js', v='1') }}"></script>
 </body>
 
 </html>

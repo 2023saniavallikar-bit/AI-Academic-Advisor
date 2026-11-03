@@ -100,6 +100,7 @@ function buildUsageLine(meta) {
   } else {
     parts.push('Token usage was not reported for this response');
   }
+  if (meta.mode) parts.push(meta.mode === 'agentic' ? 'Agentic (verified)' : 'RAG');
   if (meta.model_label) parts.push(meta.model_label);
   const period = meta.period;
   if (period && period.batch) {
@@ -160,6 +161,9 @@ function addMessage(text, sender = 'bot', isError = false, renderRichText = fals
     wrapper.appendChild(bubble);
   }
   messageList.appendChild(wrapper);
+  if (sender === 'bot' && !isError && typeof window.decorateAnswer === 'function') {
+    window.decorateAnswer(wrapper, text, meta);
+  }
   if (renderRichText) {
     mathJaxReady
       .then(() => window.MathJax?.typesetPromise?.([bubble]))
@@ -449,6 +453,7 @@ chatForm.addEventListener('submit', async (event) => {
         model: modelSelect.value,
         batch: batchSelect.value,
         semester: semesterSelect.value,
+        mode: document.getElementById('modeSelect')?.value || 'agentic',
       }),
     });
 
