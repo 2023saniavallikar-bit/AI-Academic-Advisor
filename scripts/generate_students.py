@@ -47,22 +47,22 @@ GRADES = ["O", "A+", "A", "B+", "B", "C", "D"]
 S = [
     # ---------------- batch 2026: first semester ----------------
     dict(batch=2026, d="Fresh entry, Semester 1, no minor declared yet", tags=["normal", "minor_preregistration"], ability=.7),
-    dict(batch=2026, d="Semester 1 - attendance shortage risk in Probability Theory", tags=["attendance"], ability=.6, attendance={"MATH202": 70}),
+    dict(batch=2026, d="Semester 1 - attendance shortage risk (70%) in Multivariate Calculus", tags=["attendance"], ability=.6, attendance={"MATH208": 70}),
     dict(batch=2026, d="Semester 1 - hospitalised for 2 weeks, attendance 68% with medical documents", tags=["attendance", "medical_relaxation"], ability=.6,
-         attendance={"MATH202": 68}, restricted={"medical_accommodation": "Hospitalisation Aug 2026 (synthetic), documents submitted"}),
+         attendance={"MATH208": 68}, restricted={"medical_accommodation": "Hospitalisation Aug 2026 (synthetic), documents submitted"}),
     dict(batch=2026, d="Semester 1 - fee dues pending (registration hold)", tags=["registration_hold", "privacy"], ability=.65, restricted={"fee_dues_inr": 85000}),
     dict(batch=2026, d="Semester 1 - wants to transfer to another programme", tags=["program_transfer"], ability=.55),
     # ---------------- batch 2025: semester 3 ----------------
     dict(batch=2025, d="Semester 3 - smooth progression, high achiever", tags=["normal"], ability=.92),
     dict(batch=2025, d="Failed Data Structures (COMP201) - blocks Analysis of Algorithms", tags=["failed_prerequisite", "makeup_exam"], ability=.6, grades={"COMP201": "F"}),
-    dict(batch=2025, d="FA grade (attendance) in Calculus - must re-register", tags=["fa_grade", "failed_prerequisite"], ability=.6, grades={"MATH201": "FA"}),
+    dict(batch=2025, d="FA grade (attendance) in Probability and Statistics (MATH203) - must re-register", tags=["fa_grade"], ability=.6, grades={"MATH203": "FA"}),
     dict(batch=2025, d="CGPA below 4.00 after Year 1 - not promoted, repeating Year 1", tags=["progression", "low_cgpa"], ability=0.0,
-         grades={"COMP201": "F", "MATH201": "F", "MATH202": "F", "DATA201": "F", "MTSC111": "F"}, current_semester=1, status="Not promoted - repeating Year 1 (Clause 12.4)"),
+         grades={"COMP201": "F", "MATH208": "F", "MATH203": "F", "DATA103": "F", "MTSC111": "F"}, current_semester=1, status="Not promoted - repeating Year 1 (Clause 12.4)"),
     dict(batch=2025, d="Economics minor - first minor course this semester", tags=["minor"], ability=.75, minor="Economics"),
     dict(batch=2025, d="Psychology minor", tags=["minor"], ability=.7, minor="Psychology"),
-    dict(batch=2025, d="Incomplete 'I' grade in Statistics with R after medical absence", tags=["i_grade", "makeup_exam"], ability=.7, grades={"MATH205": "I"}),
-    dict(batch=2025, d="Grade review appeal pending in Linear Algebra", tags=["grade_review", "missing_information"], ability=.65, grade_appeal="MATH204"),
-    dict(batch=2025, d="Borderline CGPA just above 4.00", tags=["progression", "borderline"], ability=0.0, grades={"COMP201": "D", "MATH201": "D", "MATH202": "D", "DATA131": "C"}),
+    dict(batch=2025, d="Incomplete 'I' grade in Databases Management (COMP209) after medical absence", tags=["i_grade", "makeup_exam"], ability=.7, grades={"COMP209": "I"}),
+    dict(batch=2025, d="Grade review appeal pending in Probability and Statistics (MATH203)", tags=["grade_review", "missing_information"], ability=.65, grade_appeal="MATH203"),
+    dict(batch=2025, d="Borderline CGPA just above 4.00", tags=["progression", "borderline"], ability=0.0, grades={"COMP201": "D", "MATH208": "D", "MATH203": "D", "DATA103": "C"}),
     dict(batch=2025, d="Already changed minor once (Design -> Finance), wants to change again", tags=["change_of_minor", "conflict"], ability=.7, minor="Finance", minor_changes=1),
     # ---------------- batch 2024: semester 5 ----------------
     dict(batch=2024, d="Semester 5 - ready for Machine Learning (DATA301)", tags=["normal", "eligible"], ability=.8),
@@ -97,7 +97,7 @@ S = [
          status="Active - rejoined after temporary withdrawal AY 2024-25 (Clause 13.1)"),
     dict(batch=2022, d="Batch 2022 - repeated Year 2 after progression failure, now Semester 7", tags=["max_duration", "progression"], ability=.5,
          status="Active - repeated Year 2 (Clause 12.4)"),
-    dict(batch=2022, d="Batch 2022 - graduation check with outstanding backlogs", tags=["graduation", "backlog"], ability=.55, grades={"COMP206": "F", "DATA303": "F"}),
+    dict(batch=2022, d="Batch 2022 - graduation check with outstanding backlogs", tags=["graduation", "backlog"], ability=.55, grades={"COMP206": "F", "COMP209": "F"}),
     dict(batch=2022, d="Batch 2022 - graduation check, dues pending", tags=["graduation", "registration_hold", "privacy"], ability=.75, restricted={"fee_dues_inr": 42000}),
     # ---------------- deliberate data gaps ----------------
     dict(batch=2021, d="Batch 2021 student - no curriculum data provided for this batch", tags=["missing_information", "no_batch_data"], ability=.7, flags=["batch_not_in_curriculum"]),
@@ -106,7 +106,7 @@ S = [
          flags=["transfer_course_not_in_catalogue"]),
     dict(batch=2025, d="International exchange - claims credit waiver (no rule in documents)", tags=["missing_information", "exchange"], ability=.7,
          notes="Student claims a 6-credit waiver from an exchange semester; no waiver rule exists in the provided documents."),
-    dict(batch=2024, d="Incomplete record - some grades not recorded", tags=["missing_information", "incomplete_record"], ability=.7, missing_grades=["COMP205", "MATH207"],
+    dict(batch=2024, d="Incomplete record - some grades not recorded", tags=["missing_information", "incomplete_record"], ability=.7, missing_grades=["COMP209", "COMP204"],
          flags=["grades_not_recorded"]),
     dict(batch=2025, d="Wants to transfer programme in Year 2 (after the deadline)", tags=["program_transfer", "deadline"], ability=.6),
     dict(batch=2024, d="Wants to register 32 credits next semester (maximum not stated in documents)", tags=["credit_overload", "missing_information"], ability=.9),
@@ -252,6 +252,16 @@ def build_student(idx, spec, cat, rng):
         "data_quality_flags": spec.get("flags", []),
         "restricted": restricted,
     }
+    # every scenario override must really apply to this batch's curriculum
+    hist_codes = {h["course_code"] for h in history}
+    cur_codes = {c["course_code"] for c in current}
+    for code in list(forced) + list(retakes) + spec.get("missing_grades", []) + \
+            ([spec["grade_appeal"]] if spec.get("grade_appeal") else []):
+        if code not in hist_codes:
+            raise ValueError(f"{sid}: scenario course {code} is not in the generated history")
+    for code in spec.get("attendance", {}):
+        if code not in cur_codes:
+            raise ValueError(f"{sid}: attendance course {code} is not a current course")
     # derived fields (computed by the same tools the advisor uses)
     cg = compute_cgpa(st)
     cs = credit_summary(st, cat)
