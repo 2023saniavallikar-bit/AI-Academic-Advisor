@@ -1,0 +1,372 @@
+[
+  {
+    "username": "STU_001",
+    "role": "student",
+    "student_id": "STU_001",
+    "salt": "STU_001",
+    "pin_sha256": "dfbbada22cc02de0ddfd3e32f86235bb71750027ab0675e22c81519a760de0f5"
+  },
+  {
+    "username": "STU_002",
+    "role": "student",
+    "student_id": "STU_002",
+    "salt": "STU_002",
+    "pin_sha256": "c14688820fbbc57ffee116157bfb39e03916b65aed23faf96527e322be899821"
+  },
+  {
+    "username": "STU_003",
+    "role": "student",
+    "student_id": "STU_003",
+    "salt": "STU_003",
+    "pin_sha256": "43bde256f4ec3cf652fa9ab2fa6cb116c0e462955f47902e0cb5f0e054064447"
+  },
+  {
+    "username": "STU_004",
+    "role": "student",
+    "student_id": "STU_004",
+    "salt": "STU_004",
+    "pin_sha256": "ddb5de65eb7b745b7a089d99add5dddd972d953a648c00d4ee7b2c7c1009a7f1"
+  },
+  {
+    "username": "STU_005",
+    "role": "student",
+    "student_id": "STU_005",
+    "salt": "STU_005",
+    "pin_sha256": "b05135440cca7f81aba41421a5d799a65adb4d5d1acbb146961f712a36ad0af5"
+  },
+  {
+    "username": "STU_006",
+    "role": "student",
+    "student_id": "STU_006",
+    "salt": "STU_006",
+    "pin_sha256": "8370a6be612e8258376cfd0341118a266e686a8ef9afd372c9e4afdc256d269a"
+  },
+  {
+    "username": "STU_007",
+    "role": "student",
+    "student_id": "STU_007",
+    "salt": "STU_007",
+    "pin_sha256": "b3da74be02780f3a046b289237c852f5eca7c6c8680957791807941abb16f0e3"
+  },
+  {
+    "username": "STU_008",
+    "role": "student",
+    "student_id": "STU_008",
+    "salt": "STU_008",
+    "pin_sha256": "b785b3027225272ee528596820f045c20012a53fafdf4d25e453c73d4ba6217b"
+  },
+  {
+    "username": "STU_009",
+    "role": "student",
+    "student_id": "STU_009",
+    "salt": "STU_009",
+    "pin_sha256": "1700b3a372f8c8422c080d763f1bbcdda99b5ea5d6771c3a8c92dc5988dd98af"
+  },
+  {
+    "username": "STU_010",
+    "role": "student",
+    "student_id": "STU_010",
+    "salt": "STU_010",
+    "pin_sha256": "4117c595df4ceaabb7e196884d8fc474bb851ef412d9d6268e201ed538be38cb"
+  },
+  {
+    "username": "STU_011",
+    "role": "student",
+    "student_id": "STU_011",
+    "salt": "STU_011",
+    "pin_sha256": "a4fa1f0fe00c359dff05ba8c0f83eec3492149d52c999dcc94fd0788b5ca3b23"
+  },
+  {
+    "username": "STU_012",
+    "role": "student",
+    "student_id": "STU_012",
+    "salt": "STU_012",
+    "pin_sha256": "8b6e7e8ebf4a9071ecf7fcf7db7ebe45024ac2783d72edbe61e5248a0aa8f47a"
+  },
+  {
+    "username": "STU_013",
+    "role": "student",
+    "student_id": "STU_013",
+    "salt": "STU_013",
+    "pin_sha256": "27f2cdeb9b8238d4098ef897b186e3db120840dff563224815095380e941d4cf"
+  },
+  {
+    "username": "STU_014",
+    "role": "student",
+    "student_id": "STU_014",
+    "salt": "STU_014",
+    "pin_sha256": "a27d1b296778e1bad74c10bdbc4bcc6818ea697e6e2e50cbe79b2000661a53cb"
+  },
+  {
+    "username": "STU_015",
+    "role": "student",
+    "student_id": "STU_015",
+    "salt": "STU_015",
+    "pin_sha256": "f8d36dd3f339b70c927dc52ca2881d9a666f359ecea17ef926ae116948173c49"
+  },
+  {
+    "username": "STU_016",
+    "role": "student",
+    "student_id": "STU_016",
+    "salt": "STU_016",
+    "pin_sha256": "4b1a1f692a2566bba7455ffa27fce96f4dc6510c97522427fcf0277a62acf40e"
+  },
+  {
+    "username": "STU_017",
+    "role": "student",
+    "student_id": "STU_017",
+    "salt": "STU_017",
+    "pin_sha256": "6394a43f7f0d85030c6b9b4e46424fb1c2b1ff46a23db2dba3d7f368757da229"
+  },
+  {
+    "username": "STU_018",
+    "role": "student",
+    "student_id": "STU_018",
+    "salt": "STU_018",
+    "pin_sha256": "6d5f48d7cc524a41cfbfec2793ca971c855c29fdb253e08dd441045e8a8ce137"
+  },
+  {
+    "username": "STU_019",
+    "role": "student",
+    "student_id": "STU_019",
+    "salt": "STU_019",
+    "pin_sha256": "c688b2135c058bc35adefcc8f7602d6314254c3c18bb6044ac62f3daeb82379c"
+  },
+  {
+    "username": "STU_020",
+    "role": "student",
+    "student_id": "STU_020",
+    "salt": "STU_020",
+    "pin_sha256": "41b466849a32b47b2a7c18b045b291cbd9ce4d1ba2805e1ddb13b2ed14aa0853"
+  },
+  {
+    "username": "STU_021",
+    "role": "student",
+    "student_id": "STU_021",
+    "salt": "STU_021",
+    "pin_sha256": "d721405b834fb131d09872a67b8a1a328a447a8805a61bad2199fce0cddcdc06"
+  },
+  {
+    "username": "STU_022",
+    "role": "student",
+    "student_id": "STU_022",
+    "salt": "STU_022",
+    "pin_sha256": "8632bee5d7682473a60db41fd444a8545c6d1b9d6da3c30d8c228bed2c8bd589"
+  },
+  {
+    "username": "STU_023",
+    "role": "student",
+    "student_id": "STU_023",
+    "salt": "STU_023",
+    "pin_sha256": "c5c8df319c19dfefa8a125e64dcd2c98fa0cce7304a880e3298a05ae321fefe2"
+  },
+  {
+    "username": "STU_024",
+    "role": "student",
+    "student_id": "STU_024",
+    "salt": "STU_024",
+    "pin_sha256": "5ac5233c582bcd4c455b0911ffe7691ecf748c238853e30b2a9fddef87c3f536"
+  },
+  {
+    "username": "STU_025",
+    "role": "student",
+    "student_id": "STU_025",
+    "salt": "STU_025",
+    "pin_sha256": "5a8f76e5a3d8ef47daa688ff1ecde797717c71c0e9b753670eaab16ea4d546c7"
+  },
+  {
+    "username": "STU_026",
+    "role": "student",
+    "student_id": "STU_026",
+    "salt": "STU_026",
+    "pin_sha256": "845424af4ae6945d47e0aa01b9ae4554fe807f34adbee4531c776226fd897a6c"
+  },
+  {
+    "username": "STU_027",
+    "role": "student",
+    "student_id": "STU_027",
+    "salt": "STU_027",
+    "pin_sha256": "138dec0fd38c101e98a1a9c1d595e13d6c45210932456bfbec2a7ac626cc4dd9"
+  },
+  {
+    "username": "STU_028",
+    "role": "student",
+    "student_id": "STU_028",
+    "salt": "STU_028",
+    "pin_sha256": "aaaa585116d3f5d264607988f64d712e5c639228f4b9a135e85990f3c762ed1e"
+  },
+  {
+    "username": "STU_029",
+    "role": "student",
+    "student_id": "STU_029",
+    "salt": "STU_029",
+    "pin_sha256": "fec2978477e661a5847e0335bf3b1413fd08f1174f7f8b4baa6402614634a9bc"
+  },
+  {
+    "username": "STU_030",
+    "role": "student",
+    "student_id": "STU_030",
+    "salt": "STU_030",
+    "pin_sha256": "8c1924df70d3323a2527f5ed85b22e243c0746b8667bb8452d5d0aec7242b827"
+  },
+  {
+    "username": "STU_031",
+    "role": "student",
+    "student_id": "STU_031",
+    "salt": "STU_031",
+    "pin_sha256": "4bc6e36877f71c1a57953e78fba36b2f0e4aa948c8614f34d49a2f51143ef51e"
+  },
+  {
+    "username": "STU_032",
+    "role": "student",
+    "student_id": "STU_032",
+    "salt": "STU_032",
+    "pin_sha256": "a926057e66b04d4b5b6f12a71420514c33f3ef7b8e6f1561a813337b8b3ce194"
+  },
+  {
+    "username": "STU_033",
+    "role": "student",
+    "student_id": "STU_033",
+    "salt": "STU_033",
+    "pin_sha256": "c0001a8b6f3f64a122dfc6ed5242edf7b48d7d9da8e445724a9d54d239a285eb"
+  },
+  {
+    "username": "STU_034",
+    "role": "student",
+    "student_id": "STU_034",
+    "salt": "STU_034",
+    "pin_sha256": "9c45e346a63d229a6e00d83f92f5a98f0281b75dadd1b941d86bd34450e1e94e"
+  },
+  {
+    "username": "STU_035",
+    "role": "student",
+    "student_id": "STU_035",
+    "salt": "STU_035",
+    "pin_sha256": "1ca16fac699f91c9cda521d8111e218212a60a9c902dcc03adae1efc701d34d6"
+  },
+  {
+    "username": "STU_036",
+    "role": "student",
+    "student_id": "STU_036",
+    "salt": "STU_036",
+    "pin_sha256": "314a6b8c71d3c3ccc43c82ca1092bf49626dca815f624ea5339ce3b7924f3f75"
+  },
+  {
+    "username": "STU_037",
+    "role": "student",
+    "student_id": "STU_037",
+    "salt": "STU_037",
+    "pin_sha256": "af73510a3f1420994bec1f0d97adcfd698207b473c38f0043df789f1b05bcd27"
+  },
+  {
+    "username": "STU_038",
+    "role": "student",
+    "student_id": "STU_038",
+    "salt": "STU_038",
+    "pin_sha256": "3e19f73fb55cdd115728e6e8ca8b955eafb68b6cc29feb60c853e032a480d1d5"
+  },
+  {
+    "username": "STU_039",
+    "role": "student",
+    "student_id": "STU_039",
+    "salt": "STU_039",
+    "pin_sha256": "b4abceecb2c24269770202b18210e61bef98cd7ae32adfe8fb1b000aaf5f8326"
+  },
+  {
+    "username": "STU_040",
+    "role": "student",
+    "student_id": "STU_040",
+    "salt": "STU_040",
+    "pin_sha256": "e07344e2dd8b43b24814d81621b8085924d21567044b064013879fad8405364d"
+  },
+  {
+    "username": "STU_041",
+    "role": "student",
+    "student_id": "STU_041",
+    "salt": "STU_041",
+    "pin_sha256": "45f2f8be3f2859959d281989bdf049c653f8282b7943748387093e13f7cbf6ae"
+  },
+  {
+    "username": "STU_042",
+    "role": "student",
+    "student_id": "STU_042",
+    "salt": "STU_042",
+    "pin_sha256": "0a2e5bd3faf187f9a6006c8264530fda9f19e5f98b9f1cd5c66cd493be6127ec"
+  },
+  {
+    "username": "STU_043",
+    "role": "student",
+    "student_id": "STU_043",
+    "salt": "STU_043",
+    "pin_sha256": "2bd8e076ea61e39111e7f509fb39c3af5e56bcdbfd2f425928a3ffa8538f72bc"
+  },
+  {
+    "username": "STU_044",
+    "role": "student",
+    "student_id": "STU_044",
+    "salt": "STU_044",
+    "pin_sha256": "98ed41c59945bcc2d5723b8df4e998e1abbef03f6f4e21ebe1a8c43e0c9db3c4"
+  },
+  {
+    "username": "STU_045",
+    "role": "student",
+    "student_id": "STU_045",
+    "salt": "STU_045",
+    "pin_sha256": "03587aedb93ad91940efbffe1a274bc79d05b3801c46a80190da12e5bf6846b9"
+  },
+  {
+    "username": "STU_046",
+    "role": "student",
+    "student_id": "STU_046",
+    "salt": "STU_046",
+    "pin_sha256": "42995e4ff66cfe3099ec37ff9e0887ba37c5aaa7af178fc403db20971e7c12a9"
+  },
+  {
+    "username": "STU_047",
+    "role": "student",
+    "student_id": "STU_047",
+    "salt": "STU_047",
+    "pin_sha256": "1bcabc10c50ec10177677edb079185aaa660b5d81c992ed82b529fcbec284ead"
+  },
+  {
+    "username": "STU_048",
+    "role": "student",
+    "student_id": "STU_048",
+    "salt": "STU_048",
+    "pin_sha256": "683a9aa2318b1e687be74b0a825ccb72e6b4940679864089b4d28f860d8ce1d1"
+  },
+  {
+    "username": "STU_049",
+    "role": "student",
+    "student_id": "STU_049",
+    "salt": "STU_049",
+    "pin_sha256": "36ea4d43222d3f2cb393a9ae19b2118deb5a6700bf4559a77afe37453da52101"
+  },
+  {
+    "username": "STU_050",
+    "role": "student",
+    "student_id": "STU_050",
+    "salt": "STU_050",
+    "pin_sha256": "806088459bc8fbfbfc14d6e2d6406423850e82c3fcbae93c93373c051ee4892e"
+  },
+  {
+    "username": "ADVISOR_01",
+    "role": "advisor",
+    "advisees": [
+      "STU_001",
+      "STU_002",
+      "STU_003",
+      "STU_004",
+      "STU_005",
+      "STU_006",
+      "STU_007",
+      "STU_008",
+      "STU_009",
+      "STU_010",
+      "STU_011",
+      "STU_012"
+    ],
+    "salt": "ADVISOR_01",
+    "pin_sha256": "124283ef4806f71187ccb27a691d9e39ad10fcc52ef8cb4cb93e530c82eec27f"
+  }
+]
