@@ -13,6 +13,9 @@ from flask import Flask, jsonify, render_template, request, session
 from langchain_google_genai.chat_models import GoogleRateLimitError
 
 from advisor import AcademicAdvisor
+from agents import AgenticAdvisor
+import multimodal as MM
+import security as SEC
 from models import default_model_id, get_spec, model_options, resolve_model
 from periods import parse_period
 from chat_history import (
@@ -33,10 +36,13 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
 )
 app.config["MAX_CONTENT_LENGTH"] = int(
-    os.getenv("MAX_REQUEST_BYTES", "32768")
+    os.getenv("MAX_REQUEST_BYTES", str(5 * 1024 * 1024))  # room for one image upload
 )
 advisor = AcademicAdvisor()
+agentic = AgenticAdvisor(vectorstore=advisor.vectorstore)
 initialize_database(DB_PATH)
+USERS = SEC.load_users()
+MODES = {"agentic", "rag"}
 
 
 def load_session_secret():
@@ -80,7 +86,7 @@ def assign_anonymous_session():
 
 @app.before_request
 def limit_chat_requests():
-    if request.endpoint != "chat_api":
+    if request.endpoint not in ("chat_api", "transcript_api"):
         return None
 
     client_ip = request.remote_addr or "unknown"
@@ -191,6 +197,41 @@ def chat_api():
     if not valid_uuid(conversation_id):
         return jsonify({"error": "Invalid conversation ID."}), 400
 
+    mode = data.get("mode") or os.getenv("DEFAULT_MODE", "agentic")
+    if mode not in MODES:
+        return jsonify({"error": "Unknown advisor mode."}), 400
+
+    # ---- Phase 10 safeguards -------------------------------------------
+    user = session.get("auth")
+    security_events = []
+    requested = student_id or None
+    if SEC.security_enabled():
+        # IDs typed in the message are treated as a request too, so attempts
+        # to read another student's record are caught and logged.
+        mentioned = SEC.mentioned_student_ids(message)
+        if mentioned and not requested:
+            requested = mentioned[0]
+    allowed_id, denial = SEC.authorize_profile(user, requested)
+    if denial:
+        security_events.append(denial)
+        SEC.log_event("authorization_denied", user=(user or {}).get("username"), reason=denial)
+    injection = SEC.detect_injection(message) if SEC.security_enabled() else []
+    if injection:
+        security_events.append("prompt_injection_blocked")
+        SEC.log_event("prompt_injection", user=(user or {}).get("username"), count=len(injection))
+        refusal = ("I can't follow instructions that try to change how I work or access other "
+                   "students' data. I can help with your courses, credits and university regulations.")
+        return jsonify({"answer": refusal, "student_id": allowed_id, "conversation_id": conversation_id,
+                        "meta": {"mode": mode, "security_events": security_events, "status": "blocked"}})
+    if denial == "other_student_record":
+        note = ("For privacy I can only use your own record. I can't look up or share another "
+                "student's information.")
+        if not SEC.mentioned_student_ids(message) or len(message) < 40:
+            return jsonify({"answer": note, "student_id": allowed_id, "conversation_id": conversation_id,
+                            "meta": {"mode": mode, "security_events": security_events, "status": "blocked"}})
+    if denial == "not_logged_in":
+        security_events.append("login_required_for_record")
+
     try:
         owner_id = get_conversation_owner(conversation_id, DB_PATH)
         if owner_id is not None and owner_id != user_id:
@@ -199,20 +240,38 @@ def chat_api():
             }), 403
 
         history = get_recent_messages(conversation_id, user_id, db_path=DB_PATH)
-        result = advisor.answer_question(
-            message,
-            current_student_id=student_id or None,
-            chat_history=history,
-            model=model_id,
-            batch=batch,
-            semester=semester,
-        )
+        student = advisor.students_by_id.get(allowed_id or "")
+        if mode == "agentic":
+            res = agentic.answer(
+                message, student=student,
+                history_text=advisor._format_chat_history(history) if history else "",
+                batch=batch,
+            )
+            result = {"answer": res["answer"], "student_id": allowed_id, "model": model_id,
+                      "period": {"batch": batch, "semester": semester}, "usage": res["usage"], "cost": None}
+            agent_meta = {"trace": res["trace"], "evidence": res["evidence"], "status": res["status"],
+                          "human_review": res["human_review"], "elapsed_ms": res["elapsed_ms"]}
+        else:
+            result = advisor.answer_question(
+                message,
+                current_student_id=allowed_id,
+                chat_history=history,
+                model=model_id,
+                batch=batch,
+                semester=semester,
+            )
+            agent_meta = {}
+        result["answer"], out_events = SEC.filter_output(result["answer"], allowed_id, student)
+        security_events += out_events
         answer_meta = {
             "model": result["model"],
             "model_label": get_spec(result["model"]).label,
             "period": result["period"],
             "usage": result["usage"],
             "cost": result["cost"],
+            "mode": mode,
+            "security_events": security_events,
+            **agent_meta,
         }
         save_exchange(
             user_id=user_id,
@@ -256,6 +315,84 @@ def chat_api():
                 "server logs for the provider error."
             )
         }), 503
+
+
+@app.route("/api/login", methods=["POST"])
+def login_api():
+    data = request.get_json(silent=True) or {}
+    user = SEC.authenticate(str(data.get("username", "")), str(data.get("pin", "")), USERS)
+    if not user:
+        SEC.log_event("login_failed")
+        return jsonify({"error": "Wrong ID or PIN."}), 401
+    session["auth"] = user
+    return jsonify({"user": public_user(user)})
+
+
+@app.route("/api/logout", methods=["POST"])
+def logout_api():
+    session.pop("auth", None)
+    session.pop("uploaded_record", None)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/me")
+def me_api():
+    user = session.get("auth")
+    return jsonify({"user": public_user(user) if user else None,
+                    "security": SEC.security_enabled()})
+
+
+def public_user(user):
+    out = {"username": user["username"], "role": user["role"], "student_id": user.get("student_id")}
+    if user["role"] == "advisor":
+        out["advisees"] = user.get("advisees", [])
+    return out
+
+
+def current_student(requested=None):
+    allowed, _ = SEC.authorize_profile(session.get("auth"), requested)
+    return advisor.students_by_id.get(allowed or "")
+
+
+@app.route("/api/transcript", methods=["POST"])
+def transcript_api():
+    """Phase 8: image in. Extract -> check -> show for confirmation."""
+    file = request.files.get("image")
+    if file is None:
+        return jsonify({"error": "Please attach an image."}), 400
+    data = file.read(MM.MAX_IMAGE_BYTES + 1)
+    try:
+        result = MM.extract_document(data, file.mimetype, current_student(request.form.get("student_id")))
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+    except Exception:
+        app.logger.exception("transcript extraction failed")
+        return jsonify({"error": "Could not read the image with the vision model."}), 503
+    for ev in result["security_events"]:
+        SEC.log_event(ev["type"], user=(session.get("auth") or {}).get("username"))
+    return jsonify(result)
+
+
+@app.route("/api/chart/prerequisites")
+def prerequisite_chart_api():
+    code = (request.args.get("code") or "").upper().strip()
+    student = current_student(request.args.get("student_id"))
+    try:
+        batch = int(request.args.get("batch") or (student or {}).get("batch") or 0)
+    except ValueError:
+        batch = 0
+    if not code or batch not in advisor.catalog.batches:
+        return jsonify({"error": "Choose a course code and a batch that has curriculum data."}), 400
+    svg = MM.prerequisite_svg(code, batch, student)
+    return app.response_class(svg, mimetype="image/svg+xml")
+
+
+@app.route("/api/chart/progress")
+def progress_chart_api():
+    student = current_student(request.args.get("student_id"))
+    if not student:
+        return jsonify({"error": "Log in to see your degree progress."}), 401
+    return app.response_class(MM.progress_svg(student), mimetype="image/svg+xml")
 
 
 @app.route("/api/conversations")
