@@ -13,7 +13,10 @@ from flask import Flask, jsonify, render_template, request, session
 from langchain_google_genai.chat_models import GoogleRateLimitError
 
 from advisor import AcademicAdvisor
-from models import default_model_id, get_spec, model_options, resolve_model
+from agents import AgenticAdvisor
+import multimodal as MM
+import security as SEC
+from models import default_model_id, enabled_model_ids as MODEL_IDS_ALLOWED, get_spec, model_options, resolve_model
 from periods import parse_period
 from chat_history import (
     DB_PATH,
@@ -33,10 +36,13 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
 )
 app.config["MAX_CONTENT_LENGTH"] = int(
-    os.getenv("MAX_REQUEST_BYTES", "32768")
+    os.getenv("MAX_REQUEST_BYTES", str(5 * 1024 * 1024))  # room for one image upload
 )
 advisor = AcademicAdvisor()
+agentic = AgenticAdvisor(vectorstore=advisor.vectorstore)
 initialize_database(DB_PATH)
+USERS = SEC.load_users()
+MODES = {"agentic", "rag"}
 
 
 def load_session_secret():
@@ -80,7 +86,7 @@ def assign_anonymous_session():
 
 @app.before_request
 def limit_chat_requests():
-    if request.endpoint != "chat_api":
+    if request.endpoint not in ("chat_api", "transcript_api"):
         return None
 
     client_ip = request.remote_addr or "unknown"
@@ -191,6 +197,54 @@ def chat_api():
     if not valid_uuid(conversation_id):
         return jsonify({"error": "Invalid conversation ID."}), 400
 
+    mode = data.get("mode") or os.getenv("DEFAULT_MODE", "agentic")
+    if mode not in MODES:
+        return jsonify({"error": "Unknown advisor mode."}), 400
+
+    # ---- Phase 10 safeguards -------------------------------------------
+    user = session.get("auth")
+    security_events = []
+    requested = student_id or None
+    # IDs typed in the message count as a request too. Without the security
+    # layer this reproduces Assignment 1 (the typed ID's record is loaded);
+    # with it, the request is checked and a mismatch is logged and refused.
+    mentioned = SEC.mentioned_student_ids(message)
+    if mentioned and not requested:
+        requested = mentioned[0]
+    allowed_id, denial = SEC.authorize_profile(user, requested)
+    if SEC.security_enabled() and not denial:
+        # Also check every ID typed in the message, even when the page sent the
+        # user's own ID (the normal case for a signed-in student).
+        for mentioned_id in mentioned:
+            if mentioned_id == allowed_id:
+                continue
+            _, mention_denial = SEC.authorize_profile(user, mentioned_id)
+            if mention_denial:
+                denial = mention_denial
+                break
+            if user and user.get("role") == "advisor":
+                denial = "other_student_record"  # an advisor asked about a second student in passing
+                break
+    if denial:
+        security_events.append(denial)
+        SEC.log_event("authorization_denied", user=(user or {}).get("username"), reason=denial)
+    injection = SEC.detect_injection(message) if SEC.security_enabled() else []
+    if injection:
+        security_events.append("prompt_injection_blocked")
+        SEC.log_event("prompt_injection", user=(user or {}).get("username"), count=len(injection))
+        refusal = ("I can't follow instructions that try to change how I work or access other "
+                   "students' data. I can help with your courses, credits and university regulations.")
+        return jsonify({"answer": refusal, "student_id": allowed_id, "conversation_id": conversation_id,
+                        "meta": {"mode": mode, "security_events": security_events, "status": "blocked"}})
+    if denial == "other_student_record":
+        note = ("For privacy I can only use your own record. I can't look up or share another "
+                "student's information.")
+        if not SEC.mentioned_student_ids(message) or len(message) < 40:
+            return jsonify({"answer": note, "student_id": allowed_id, "conversation_id": conversation_id,
+                            "meta": {"mode": mode, "security_events": security_events, "status": "blocked"}})
+    if denial == "not_logged_in":
+        security_events.append("login_required_for_record")
+
     try:
         owner_id = get_conversation_owner(conversation_id, DB_PATH)
         if owner_id is not None and owner_id != user_id:
@@ -199,20 +253,62 @@ def chat_api():
             }), 403
 
         history = get_recent_messages(conversation_id, user_id, db_path=DB_PATH)
-        result = advisor.answer_question(
-            message,
-            current_student_id=student_id or None,
-            chat_history=history,
-            model=model_id,
-            batch=batch,
-            semester=semester,
-        )
+        student = advisor.students_by_id.get(allowed_id or "")
+        if mode == "agentic":
+            res = agentic.answer(
+                message, student=student,
+                history_text=advisor._format_chat_history(history) if history else "",
+                batch=batch,
+                model=model_id,
+            )
+            used = (res["usage"] or {}).get("models_used") or [model_id]
+            result = {"answer": res["answer"], "student_id": allowed_id, "model": used[-1],
+                      "period": {"batch": batch, "semester": semester}, "usage": res["usage"], "cost": None}
+            agent_meta = {"trace": res["trace"], "evidence": res["evidence"], "status": res["status"],
+                          "human_review": res["human_review"], "elapsed_ms": res["elapsed_ms"]}
+        else:
+            # Same fallback policy as the agentic pipeline: if the chosen model is
+            # overloaded (503) or out of quota (429), try the next allowed model.
+            from llm import FALLBACK_MODELS
+            allowed = MODEL_IDS_ALLOWED()
+            chain = list(dict.fromkeys([model_id] + [m for m in FALLBACK_MODELS if m in allowed] + allowed))
+            last_error = None
+            for candidate in chain:
+                try:
+                    result = advisor.answer_question(
+                        message,
+                        current_student_id=allowed_id,
+                        chat_history=history,
+                        model=candidate,
+                        batch=batch,
+                        semester=semester,
+                    )
+                    break
+                except Exception as error:  # noqa: BLE001 - re-raised below if not transient
+                    text = str(error).lower()
+                    transient = isinstance(error, GoogleRateLimitError) or "503" in text or \
+                        "unavailable" in text or "high demand" in text or "429" in text
+                    if not transient:
+                        raise
+                    app.logger.warning("RAG answer: %s busy (%s); trying next model", candidate,
+                                       type(error).__name__)
+                    last_error = error
+            else:
+                raise last_error
+            agent_meta = {}
+        result["answer"], out_events = SEC.filter_output(result["answer"], allowed_id, student)
+        security_events += out_events
         answer_meta = {
+            "requested_model": model_id,
+            "fallback_from": get_spec(model_id).label if result["model"] != model_id else None,
             "model": result["model"],
             "model_label": get_spec(result["model"]).label,
             "period": result["period"],
             "usage": result["usage"],
             "cost": result["cost"],
+            "mode": mode,
+            "security_events": security_events,
+            **agent_meta,
         }
         save_exchange(
             user_id=user_id,
@@ -235,8 +331,8 @@ def chat_api():
         app.logger.warning("Gemini request quota was exceeded")
         return jsonify({
             "error": (
-                "The advisor has reached its AI request quota. "
-                "Please try again later or check the Gemini API quota."
+                "The free AI quota has been used up for the moment. Wait a minute "
+                "and try again, or switch to Quick mode in Settings."
             )
         }), 429
     except Exception as error:
@@ -251,11 +347,113 @@ def chat_api():
             }), 503
         return jsonify({
             "error": (
-                f"The advisor could not process your question with "
-                f"{get_spec(model_id).label}. Try another model, or check the "
-                "server logs for the provider error."
+                f"{get_spec(model_id).label} could not answer just now. Try again in a "
+                "moment, or pick another model in Settings."
             )
         }), 503
+
+
+LOGIN_MAX_FAILURES = int(os.getenv("LOGIN_MAX_FAILURES", "5"))
+LOGIN_LOCK_SECONDS = int(os.getenv("LOGIN_LOCK_SECONDS", "900"))
+login_failures = {}  # username -> deque of failure times (in memory)
+
+
+@app.route("/api/login", methods=["POST"])
+def login_api():
+    data = request.get_json(silent=True) or {}
+    username = str(data.get("username", "")).strip().upper()[:40]
+    now = time.monotonic()
+    with request_times_lock:
+        fails = login_failures.setdefault(username, deque())
+        while fails and fails[0] <= now - LOGIN_LOCK_SECONDS:
+            fails.popleft()
+        if SEC.security_enabled() and len(fails) >= LOGIN_MAX_FAILURES:
+            SEC.log_event("login_locked", user=username)
+            return jsonify({"error": "Too many failed attempts. Try again later."}), 429
+    user = SEC.authenticate(username, str(data.get("pin", "")), USERS)
+    if not user:
+        with request_times_lock:
+            login_failures[username].append(now)
+        SEC.log_event("login_failed", user=username)
+        return jsonify({"error": "Wrong ID or PIN."}), 401
+    login_failures.pop(username, None)
+    # New identity on sign-in: the next person on a shared computer never sees
+    # the previous person's conversation list.
+    session.clear()
+    session["user_id"] = str(uuid.uuid4())
+    session["auth"] = user
+    return jsonify({"user": public_user(user)})
+
+
+@app.route("/api/logout", methods=["POST"])
+def logout_api():
+    session.clear()
+    session["user_id"] = str(uuid.uuid4())
+    return jsonify({"ok": True})
+
+
+@app.route("/api/me")
+def me_api():
+    user = session.get("auth")
+    return jsonify({"user": public_user(user) if user else None,
+                    "security": SEC.security_enabled()})
+
+
+def public_user(user):
+    out = {"username": user["username"], "role": user["role"], "student_id": user.get("student_id")}
+    if user["role"] == "advisor":
+        out["advisees"] = user.get("advisees", [])
+    else:
+        # Only non-sensitive fields of the user's OWN record, for the profile card.
+        own = advisor.students_by_id.get(user.get("student_id") or "") or {}
+        out["profile"] = {k: own.get(k) for k in ("batch", "current_semester", "minor", "academic_status")}
+    return out
+
+
+def current_student(requested=None):
+    allowed, _ = SEC.authorize_profile(session.get("auth"), requested)
+    return advisor.students_by_id.get(allowed or "")
+
+
+@app.route("/api/transcript", methods=["POST"])
+def transcript_api():
+    """Phase 8: image in. Extract -> check -> show for confirmation."""
+    file = request.files.get("image")
+    if file is None:
+        return jsonify({"error": "Please attach an image."}), 400
+    data = file.read(MM.MAX_IMAGE_BYTES + 1)
+    try:
+        result = MM.extract_document(data, file.mimetype, current_student(request.form.get("student_id")))
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+    except Exception:
+        app.logger.exception("transcript extraction failed")
+        return jsonify({"error": "Could not read the image with the vision model."}), 503
+    for ev in result["security_events"]:
+        SEC.log_event(ev["type"], user=(session.get("auth") or {}).get("username"))
+    return jsonify(result)
+
+
+@app.route("/api/chart/prerequisites")
+def prerequisite_chart_api():
+    code = (request.args.get("code") or "").upper().strip()
+    student = current_student(request.args.get("student_id"))
+    try:
+        batch = int(request.args.get("batch") or (student or {}).get("batch") or 0)
+    except ValueError:
+        batch = 0
+    if not code or batch not in advisor.catalog.batches:
+        return jsonify({"error": "Choose a course code and a batch that has curriculum data."}), 400
+    svg = MM.prerequisite_svg(code, batch, student)
+    return app.response_class(svg, mimetype="image/svg+xml")
+
+
+@app.route("/api/chart/progress")
+def progress_chart_api():
+    student = current_student(request.args.get("student_id"))
+    if not student:
+        return jsonify({"error": "Log in to see your degree progress."}), 401
+    return app.response_class(MM.progress_svg(student), mimetype="image/svg+xml")
 
 
 @app.route("/api/conversations")

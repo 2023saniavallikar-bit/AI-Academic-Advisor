@@ -1,0 +1,61 @@
+Initializing AI Academic Advisor with Gemini...
+/home/user/AI-Academic-Advisor/advisor.py:66: LangChainDeprecationWarning: The class `Chroma` was deprecated in LangChain 0.2.9 and will be removed in 1.0. An updated version of the class exists in the `langchain-chroma package and should be used instead. To use it run `pip install -U `langchain-chroma` and import as `from `langchain_chroma import Chroma``.
+  self.vectorstore = Chroma(
+Loaded 50 of 50 student profiles successfully.
+[agentic] T01 ok (6.1s)
+LLM rate-limited (gemini-3.5-flash-lite); retrying in 15s
+LLM rate-limited (gemini-3.5-flash-lite); retrying in 30s
+[agentic] T02 ok (14.4s)
+[agentic] T03 ok (14.1s)
+[agentic] T04 ok (22.2s)
+[agentic] T05 ok (14.7s)
+LLM rate-limited (gemini-3.5-flash-lite); retrying in 15s
+[agentic] T06 ok (15.7s)
+[agentic] T07 ok (16.5s)
+[agentic] T08 ok (16.5s)
+[agentic] T09 ok (14.8s)
+LLM rate-limited (gemini-3.5-flash-lite); retrying in 15s
+[agentic] T10 ok (17.5s)
+[agentic] T11 ok (22.3s)
+[agentic] T12 ok (28.7s)
+[agentic] M01 ok (23.2s)
+[agentic] M02 ok (27.4s)
+[agentic] M03 ok (18.1s)
+[agentic] M04 ok (28.6s)
+[agentic] M05 ok (33.0s)
+[agentic] M06 ok (29.3s)
+[agentic] C01 ok (10.9s)
+[agentic] C02 ok (41.8s)
+[agentic] C03 ok (53.2s)
+[agentic] C04 ok (47.3s)
+[agentic] C05 ok (30.2s)
+[agentic] E01 ok (13.5s)
+[agentic] E02 ok (37.5s)
+[agentic] E03 ok (4.1s)
+[agentic] E04 ok (5.8s)
+[agentic] E05 ok (3.1s)
+[agentic] E06 ok (3.3s)
+[agentic] E07 ok (3.3s)
+[agentic] E08 ok (3.9s)
+[agentic] E09 ok (3.6s)
+[agentic] E10 ok (3.9s)
+[agentic] E11 ok (3.5s)
+[agentic] E12 ok (0.7s)
+[agentic] E13 ok (3.2s)
+[agentic] A01 ok (0.9s)
+[agentic] A02 ok (4.0s)
+[agentic] A03 ok (5.1s)
+[agentic] U01 ok (4.3s)
+[agentic] U02 ok (2.7s)
+[agentic] O01 ok (0.9s)
+# Evaluation summary
+
+Test set: 42 cases (eval/test_cases.json). Latency excludes free-tier throttling waits.
+
+| mode | cases | accuracy_correct_% | partially_correct_% | hallucination_% | incorrect_% | eligibility_decisions_correct_% | source_correct_% | missing_info_handled_% | conflicts_flagged_% | incorrect_recommendations | median_latency_s | avg_latency_s | avg_tokens |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| basic | 42 | 16.7 | 38.1 | 7.1 | 38.1 | 9.1 | 35.7 | 14.3 | 60.0 | 11 | 1.13 | 1.26 | 236 |
+| prompting | 42 | 7.1 | 52.4 | 0.0 | 40.5 | 0.0 | 85.7 | 0.0 | 0.0 | 11 | 0.79 | 0.82 | 1240 |
+| rag | 42 | 40.5 | 21.4 | 14.3 | 23.8 | 9.1 | 92.9 | 71.4 | 20.0 | 12 | 1.36 | 1.42 | 2288 |
+| rag_student | 42 | 52.4 | 16.7 | 7.1 | 23.8 | 27.3 | 92.9 | 71.4 | 20.0 | 9 | 1.74 | 2.13 | 3632 |
+| agentic | 42 | 76.2 | 16.7 | 2.4 | 4.8 | 100.0 | 92.9 | 85.7 | 60.0 | 0 | 14.42 | 15.56 | 4972 |

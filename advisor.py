@@ -15,6 +15,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 from models import default_model_id, estimate_cost, extract_usage, get_spec, resolve_model
 from periods import describe_selection, load_catalog, parse_period, select_documents
+from security import minimized_profile, security_enabled
 
 
 load_dotenv()
@@ -502,7 +503,8 @@ INSTRUCTIONS
         student = getattr(self, "students_by_id", {}).get(normalized_id)
 
         if student:
-            return json.dumps(student, indent=2)
+            # Phase 10: restricted fields never reach the model (security.py S2).
+            return json.dumps(minimized_profile(student), indent=2, default=str)
 
         return (
             f"Student ID '{normalized_id}' was not found "
@@ -521,9 +523,14 @@ INSTRUCTIONS
         model=None,
         batch=None,
         semester=None,
+        allow_text_id=None,
     ):
 
-        model_id = resolve_model(model)  # raises ValueError for a model not allowed
+        model_id = resolve_model(model)
+        if allow_text_id is None:
+            # Assignment 1 behaviour (any ID typed in the chat loads that record)
+            # only when the security layer is switched off for the audit.
+            allow_text_id = not security_enabled()
         # Already checked by the web layer; checked again so no caller can slip
         # in a period that has no data.
         batch, semester = parse_period(batch, semester, self.catalog)
@@ -533,7 +540,7 @@ INSTRUCTIONS
 
         user_input = str(user_input).strip()
 
-        detected_student_id = self.extract_student_id(user_input)
+        detected_student_id = self.extract_student_id(user_input) if allow_text_id else None
 
         if detected_student_id:
             current_student_id = detected_student_id

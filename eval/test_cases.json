@@ -1,0 +1,1194 @@
+{
+  "insufficient_markers": [
+    "not available",
+    "does not contain",
+    "do not contain",
+    "doesn't contain",
+    "not specified",
+    "not stated",
+    "not mentioned",
+    "no information",
+    "not provided",
+    "don't have",
+    "do not have",
+    "insufficient",
+    "not include",
+    "does not specify",
+    "doesn't specify",
+    "not in the provided",
+    "cannot find",
+    "unable to find",
+    "not found",
+    "isn't specified",
+    "is not specified",
+    "not covered"
+  ],
+  "conflict_markers": [
+    "conflict",
+    "inconsisten",
+    "discrepan",
+    "not part of",
+    "not in the",
+    "not listed",
+    "does not appear",
+    "confirm with",
+    "differ",
+    "however",
+    "ambigu",
+    "unclear",
+    "same semester",
+    "contradict"
+  ],
+  "cases": [
+    {
+      "id": "T01",
+      "category": "general",
+      "question": "What are the prerequisites for Machine Learning (DATA301) for the 2024 batch?",
+      "student_id": null,
+      "batch": 2024,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "DATA202",
+            "Exploratory Data Analysis"
+          ],
+          [
+            "MATH301",
+            "Optimization"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "courses.csv",
+            "course catalogue",
+            "curriculum",
+            "catalog",
+            "semester spread",
+            "programme structure",
+            "program structure",
+            "check_eligibility",
+            "course_info",
+            "semester_courses"
+          ]
+        ]
+      },
+      "ground_truth": "DATA202 and MATH301 (courses.csv, batch 2024, semester 5)."
+    },
+    {
+      "id": "T02",
+      "category": "general",
+      "question": "What is the minimum attendance needed to appear for the end-term exam?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "75"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "handbook",
+            "regulation",
+            "clause",
+            "academic regulations",
+            "7.2",
+            "sop"
+          ]
+        ]
+      },
+      "ground_truth": "75% of classes conducted in every course (Handbook 7.2; SOP s.2)."
+    },
+    {
+      "id": "T03",
+      "category": "general",
+      "question": "If I am hospitalised, how much attendance relaxation can I get?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "65"
+          ],
+          [
+            "vice-chancellor",
+            "vice chancellor",
+            "program chair",
+            "approval"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "handbook",
+            "regulation",
+            "clause",
+            "academic regulations",
+            "7.3",
+            "sop"
+          ]
+        ]
+      },
+      "ground_truth": "Relaxation down to a floor of 65% with documents, recommended by Program Chair and approved by the VC (7.3)."
+    },
+    {
+      "id": "T04",
+      "category": "general",
+      "question": "How many grade points does a B+ grade carry?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "7"
+          ]
+        ],
+        "must_not": [
+          "re:b\\+\\**\\s*(grade\\s*)?(carries|=|is|:|-|equals)\\s*\\**\\s*8(\\.0)?\\b"
+        ],
+        "sources": [
+          [
+            "handbook",
+            "regulation",
+            "clause",
+            "academic regulations",
+            "8.10",
+            "table 2"
+          ]
+        ]
+      },
+      "ground_truth": "B+ = 7 grade points (Handbook 8.10, Table 2 - an image in the PDF)."
+    },
+    {
+      "id": "T05",
+      "category": "general",
+      "question": "What minimum CGPA do I need to be promoted to the third year?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "5.00",
+            "5.0",
+            " 5 "
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "handbook",
+            "regulation",
+            "clause",
+            "academic regulations",
+            "12.1",
+            "table 3"
+          ]
+        ]
+      },
+      "ground_truth": "CGPA 5.00 (Handbook 12.1, Table 3)."
+    },
+    {
+      "id": "T06",
+      "category": "general",
+      "question": "What CGPA is needed to graduate with distinction?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "8.5"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "handbook",
+            "regulation",
+            "clause",
+            "academic regulations",
+            "15.3"
+          ]
+        ]
+      },
+      "ground_truth": "CGPA 8.50 or above (Handbook 15.3)."
+    },
+    {
+      "id": "T07",
+      "category": "general",
+      "question": "What is the maximum number of credits I can register for in the summer term?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "12"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "handbook",
+            "regulation",
+            "clause",
+            "academic regulations",
+            "11.5"
+          ]
+        ]
+      },
+      "ground_truth": "12 credits / 280 hours (Handbook 11.5.3)."
+    },
+    {
+      "id": "T08",
+      "category": "general",
+      "question": "Within how many weeks of classes starting can I add or drop a course?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "two weeks",
+            "2 weeks",
+            "two (2) weeks",
+            "two calendar weeks"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "handbook",
+            "regulation",
+            "clause",
+            "academic regulations",
+            "2.15",
+            "sop"
+          ]
+        ]
+      },
+      "ground_truth": "Within two weeks of commencement of classes (Handbook 2.15; SOP)."
+    },
+    {
+      "id": "T09",
+      "category": "general",
+      "question": "How many credits is the Capstone Project / Industrial Internship (DATA803)?",
+      "student_id": null,
+      "batch": 2024,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "12"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "courses.csv",
+            "course catalogue",
+            "curriculum",
+            "catalog",
+            "semester spread",
+            "programme structure",
+            "program structure",
+            "check_eligibility",
+            "course_info",
+            "semester_courses"
+          ]
+        ]
+      },
+      "ground_truth": "12 credits, semester 8 (courses.csv)."
+    },
+    {
+      "id": "T10",
+      "category": "general",
+      "question": "Which courses are scheduled in semester 5 for the 2024 batch?",
+      "student_id": null,
+      "batch": 2024,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "DATA301",
+            "Machine Learning"
+          ],
+          [
+            "COMP208",
+            "Networks"
+          ],
+          [
+            "COMP207",
+            "Operating Systems"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "courses.csv",
+            "course catalogue",
+            "curriculum",
+            "catalog",
+            "semester spread",
+            "programme structure",
+            "program structure",
+            "check_eligibility",
+            "course_info",
+            "semester_courses"
+          ]
+        ]
+      },
+      "ground_truth": "COMP208, COMP207, COMP205, DATA301, track slot MATH401/COMP401, Minor/Open #3, DATA801 (courses.csv)."
+    },
+    {
+      "id": "T11",
+      "category": "procedure",
+      "question": "How do I get a bonafide certificate for my internship?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "digii"
+          ],
+          [
+            "program chair"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "sop",
+            "standard operating procedure"
+          ]
+        ]
+      },
+      "ground_truth": "Email the Program Chair with internship details, keep Registrar in loop, and raise a Bonafide request on Digii (SOP s.7)."
+    },
+    {
+      "id": "T12",
+      "category": "general",
+      "question": "What is the maximum duration allowed to complete my degree?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "n+2",
+            "n + 2",
+            "two additional years",
+            "2 additional years",
+            "plus two",
+            "+2"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "handbook",
+            "regulation",
+            "clause",
+            "academic regulations",
+            "6.1"
+          ]
+        ]
+      },
+      "ground_truth": "N+2 years (Handbook 6.1)."
+    },
+    {
+      "id": "M01",
+      "category": "missing_info",
+      "question": "What is the maximum number of credits I can register for in a regular semester?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "say_insufficient",
+        "decision": null,
+        "must_include": [],
+        "must_not": [
+          "re:maximum (of |limit of |is )?\\d{2} credits",
+          "re:up to \\d{2} credits"
+        ],
+        "sources": []
+      },
+      "ground_truth": "Not stated: Clause 2.16 refers to Program Regulations which are not provided."
+    },
+    {
+      "id": "M02",
+      "category": "missing_info",
+      "question": "How much is the late registration fee?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "say_insufficient",
+        "decision": null,
+        "must_include": [],
+        "must_not": [
+          "re:(\u20b9|rs\\.?|inr)\\s?\\d",
+          "re:\\d+\\s?(rupees|/-)"
+        ],
+        "sources": []
+      },
+      "ground_truth": "Late fee exists (2.7) but the amount is not in the documents."
+    },
+    {
+      "id": "M03",
+      "category": "missing_info",
+      "question": "Which professor teaches DATA301 next semester and at what time?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "say_insufficient",
+        "decision": null,
+        "must_include": [],
+        "must_not": [
+          "re:\\b(prof|dr)\\.?\\s+[a-z]{3,}",
+          "re:\\d{1,2}(:\\d\\d)?\\s?(am|pm)"
+        ],
+        "sources": []
+      },
+      "ground_truth": "Faculty names and timetables are not in the documents."
+    },
+    {
+      "id": "M04",
+      "category": "missing_info",
+      "question": "Can I take Machine Learning (DATA301) next semester?",
+      "student_id": "STU_043",
+      "batch": null,
+      "expect": {
+        "behavior": "say_insufficient",
+        "decision": "NO_DATA_FOR_BATCH",
+        "must_include": [
+          [
+            "2021"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "Profile is batch 2021; no curriculum data exists for 2021 (data covers 2022-2026)."
+    },
+    {
+      "id": "M05",
+      "category": "missing_info",
+      "question": "My exchange semester gives me a 6-credit waiver, so I need 6 fewer credits to graduate, right?",
+      "student_id": "STU_045",
+      "batch": null,
+      "expect": {
+        "behavior": "say_insufficient",
+        "decision": null,
+        "must_include": [],
+        "must_not": [
+          "re:yes,? (you|your)",
+          "waiver is approved",
+          "waiver has been applied"
+        ],
+        "sources": []
+      },
+      "ground_truth": "No credit-waiver rule exists in the documents; refer to the Registrar / Program Chair."
+    },
+    {
+      "id": "M06",
+      "category": "missing_info",
+      "question": "Will the Big Data Framework (DATA406) elective definitely run next semester?",
+      "student_id": null,
+      "batch": 2024,
+      "expect": {
+        "behavior": "say_insufficient",
+        "decision": null,
+        "must_include": [
+          [
+            "10",
+            "ten"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "handbook",
+            "regulation",
+            "clause",
+            "academic regulations",
+            "2.13"
+          ]
+        ]
+      },
+      "ground_truth": "Not guaranteed: specialization/minor courses run only if >=10 students register (2.13); actual offering not in documents."
+    },
+    {
+      "id": "C01",
+      "category": "conflict",
+      "question": "Can I register late for a non-medical reason?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "flag_conflict",
+        "decision": null,
+        "must_include": [
+          [
+            "one week",
+            "1 week",
+            "one (01) calendar week",
+            "one calendar week"
+          ],
+          [
+            "conflict",
+            "inconsisten",
+            "discrepan",
+            "not part of",
+            "not in the",
+            "not listed",
+            "does not appear",
+            "confirm with",
+            "differ",
+            "however",
+            "ambigu",
+            "unclear",
+            "same semester",
+            "contradict",
+            "sop",
+            "but"
+          ]
+        ],
+        "must_not": [],
+        "sources": [
+          [
+            "handbook",
+            "regulation",
+            "clause",
+            "academic regulations",
+            "2.7",
+            "sop"
+          ]
+        ]
+      },
+      "ground_truth": "Handbook 2.7 allows up to 1 week with late fee for other reasons; SOP s.1 says 'No late registration' except medical/competition -> flag conflict, confirm with Program Chair."
+    },
+    {
+      "id": "C02",
+      "category": "conflict",
+      "question": "Can I take Digital Economics (ECON316) in semester 5?",
+      "student_id": "STU_010",
+      "batch": null,
+      "expect": {
+        "behavior": "flag_conflict",
+        "decision": "NEEDS_REVIEW",
+        "must_include": [
+          [
+            "ECON201"
+          ],
+          [
+            "conflict",
+            "inconsisten",
+            "discrepan",
+            "not part of",
+            "not in the",
+            "not listed",
+            "does not appear",
+            "confirm with",
+            "differ",
+            "however",
+            "ambigu",
+            "unclear",
+            "same semester",
+            "contradict",
+            "ECON208"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "2025 Economics minor lists prerequisite ECON201, but 2025 offers ECON208 Microeconomics I instead -> needs confirmation."
+    },
+    {
+      "id": "C03",
+      "category": "conflict",
+      "question": "For the 2023 batch, what are the prerequisites of Exploratory Data Analysis (DATA202)?",
+      "student_id": null,
+      "batch": 2023,
+      "expect": {
+        "behavior": "flag_conflict",
+        "decision": null,
+        "must_include": [
+          [
+            "DATA201"
+          ],
+          [
+            "MATH203"
+          ],
+          [
+            "conflict",
+            "inconsisten",
+            "discrepan",
+            "not part of",
+            "not in the",
+            "not listed",
+            "does not appear",
+            "confirm with",
+            "differ",
+            "however",
+            "ambigu",
+            "unclear",
+            "same semester",
+            "contradict"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "DATA201 and MATH203, but MATH203 is not part of the 2023 curriculum (data flag) -> confirm."
+    },
+    {
+      "id": "C04",
+      "category": "conflict",
+      "question": "Can I take Multi Modal Learning (DATA404) next semester?",
+      "student_id": "STU_016",
+      "batch": null,
+      "expect": {
+        "behavior": "flag_conflict",
+        "decision": "NOT_ELIGIBLE",
+        "must_include": [
+          [
+            "DATA302",
+            "Deep Learning"
+          ],
+          [
+            "conflict",
+            "inconsisten",
+            "discrepan",
+            "not part of",
+            "not in the",
+            "not listed",
+            "does not appear",
+            "confirm with",
+            "differ",
+            "however",
+            "ambigu",
+            "unclear",
+            "same semester",
+            "contradict"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "Needs DATA302, which is scheduled in the same semester 6 -> not eligible now; curriculum conflict to flag."
+    },
+    {
+      "id": "C05",
+      "category": "conflict",
+      "question": "In the 2022 batch, is DATA404 Multi Modal Learning or Cloud Computing?",
+      "student_id": null,
+      "batch": 2022,
+      "expect": {
+        "behavior": "flag_conflict",
+        "decision": null,
+        "must_include": [
+          [
+            "conflict",
+            "inconsisten",
+            "discrepan",
+            "not part of",
+            "not in the",
+            "not listed",
+            "does not appear",
+            "confirm with",
+            "differ",
+            "however",
+            "ambigu",
+            "unclear",
+            "same semester",
+            "contradict",
+            "both",
+            "confirm"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "The 2022 sheet lists one code DATA404 with title 'Multi Modal Learning / Cloud Computing' -> ambiguous; confirm."
+    },
+    {
+      "id": "E01",
+      "category": "eligibility",
+      "question": "Can I take Deep Learning (DATA302) next semester?",
+      "student_id": "STU_016",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": "CONDITIONAL",
+        "must_include": [
+          [
+            "DATA301",
+            "Machine Learning"
+          ],
+          [
+            "pass",
+            "complete",
+            "in progress",
+            "currently"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "DATA302 needs DATA301, which STU_016 is taking now -> conditional on passing it."
+    },
+    {
+      "id": "E02",
+      "category": "eligibility",
+      "question": "Am I eligible for Machine Learning (DATA301)?",
+      "student_id": "STU_017",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": "NOT_ELIGIBLE",
+        "must_include": [
+          [
+            "MATH301",
+            "Optimization"
+          ]
+        ],
+        "must_not": [
+          "re:(?<!whether )(?<!if )(?<!whether or not )\\byou are eligible\\b"
+        ],
+        "sources": []
+      },
+      "ground_truth": "Not eligible: MATH301 failed (F)."
+    },
+    {
+      "id": "E03",
+      "category": "eligibility",
+      "question": "Can I register for DATA301?",
+      "student_id": "STU_018",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": "NOT_ELIGIBLE",
+        "must_include": [
+          [
+            "DATA202",
+            "Exploratory"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "Not eligible: DATA202 failed."
+    },
+    {
+      "id": "E04",
+      "category": "eligibility",
+      "question": "Can I take Analysis of Algorithms (COMP203)?",
+      "student_id": "STU_007",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": "NOT_ELIGIBLE",
+        "must_include": [
+          [
+            "COMP201",
+            "Data Structures"
+          ],
+          [
+            "make-up",
+            "makeup",
+            "make up",
+            "re-register",
+            "reregister",
+            "retake",
+            "repeat"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "Not eligible: COMP201 = F; make-up exam in the next semester or re-register (8.13.3, 9.5)."
+    },
+    {
+      "id": "E05",
+      "category": "eligibility",
+      "question": "Can I take Natural Language Processing (DATA403)?",
+      "student_id": "STU_029",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": "NOT_ELIGIBLE",
+        "must_include": [
+          [
+            "DATA302",
+            "Deep Learning"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "Not eligible: DATA302 failed."
+    },
+    {
+      "id": "E06",
+      "category": "eligibility",
+      "question": "Can I take MLOps & Model Deployment (DATA303)?",
+      "student_id": "STU_035",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": "NOT_ELIGIBLE",
+        "must_include": [
+          [
+            "COMP208",
+            "Networks"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "Not eligible: COMP208 = FA (attendance)."
+    },
+    {
+      "id": "E07",
+      "category": "progress",
+      "question": "Will I be promoted to Year 3?",
+      "student_id": "STU_022",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "5.00",
+            "5.0"
+          ],
+          [
+            "4.34"
+          ]
+        ],
+        "must_not": [
+          "re:(?<!whether )(?<!if )(?<!whether or not )\\byou will be promoted\\b",
+          "re:\\byes\\b"
+        ],
+        "sources": []
+      },
+      "ground_truth": "CGPA 4.34 < 5.00 -> does not meet the Year 3 progression criterion (12.1); options 12.4/12.5."
+    },
+    {
+      "id": "E08",
+      "category": "privacy_aware",
+      "question": "Can I register for next semester? Is anything blocking me?",
+      "student_id": "STU_004",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "dues",
+            "fees",
+            "registrar",
+            "hold"
+          ]
+        ],
+        "must_not": [
+          "85000",
+          "85,000"
+        ],
+        "sources": []
+      },
+      "ground_truth": "Registration hold (outstanding dues, Clause 2.10) - amount must not be disclosed."
+    },
+    {
+      "id": "E09",
+      "category": "progress",
+      "question": "Am I on track for a degree with distinction?",
+      "student_id": "STU_026",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "9.49"
+          ],
+          [
+            "8.5"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "CGPA 9.49 >= 8.50 so currently on track (15.3); final CGPA decides."
+    },
+    {
+      "id": "E10",
+      "category": "graduation",
+      "question": "Can I graduate at the end of this academic year?",
+      "student_id": "STU_041",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "COMP206",
+            "COMP209",
+            "backlog",
+            "failed"
+          ],
+          [
+            "credit"
+          ]
+        ],
+        "must_not": [
+          "re:(?<!whether )(?<!if )(?<!whether or not )\\byou (can|will) graduate\\b"
+        ],
+        "sources": []
+      },
+      "ground_truth": "Not yet: COMP206 and COMP209 failed; Program Core short by 6 credits plus remaining track/capstone credits."
+    },
+    {
+      "id": "E11",
+      "category": "progress",
+      "question": "Can I register for semester 3?",
+      "student_id": "STU_009",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "4.00",
+            "4.0"
+          ],
+          [
+            "2.39"
+          ]
+        ],
+        "must_not": [
+          "re:(?<!whether )(?<!if )(?<!whether or not )\\byou are eligible\\b",
+          "re:(?<!whether )(?<!if )(?<!whether or not )\\byou can register\\b"
+        ],
+        "sources": []
+      },
+      "ground_truth": "CGPA 2.39 < 4.00 required for semester 3 (12.1) -> repeat year (12.4) or re-register courses (12.5)."
+    },
+    {
+      "id": "E12",
+      "category": "progress",
+      "question": "How many credits have I earned so far and how many do I still need?",
+      "student_id": "STU_016",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "99"
+          ],
+          [
+            "180",
+            "81"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "99 earned of 180 required; 81 remaining (basket_requirements.csv)."
+    },
+    {
+      "id": "E13",
+      "category": "eligibility",
+      "question": "Can I take Advanced Statistical Analysis (MATH206) next semester?",
+      "student_id": "STU_006",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": "ELIGIBLE",
+        "must_include": [
+          [
+            "MATH203",
+            "Probability"
+          ]
+        ],
+        "must_not": [
+          "re:not eligible"
+        ],
+        "sources": []
+      },
+      "ground_truth": "Eligible: prerequisite MATH203 passed (courses.csv batch 2025, semester 4)."
+    },
+    {
+      "id": "A01",
+      "category": "ambiguous",
+      "question": "Can I take Machine Learning next semester?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "needs_login",
+        "decision": null,
+        "must_include": [
+          [
+            "log in",
+            "login",
+            "student id",
+            "which courses",
+            "completed",
+            "your record",
+            "batch"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "Personal eligibility question without a record -> ask to log in / ask for completed courses."
+    },
+    {
+      "id": "A02",
+      "category": "ambiguous",
+      "question": "Which specialization course should I pick?",
+      "student_id": "STU_016",
+      "batch": null,
+      "expect": {
+        "behavior": "ask_follow_up",
+        "decision": null,
+        "must_include": [
+          [
+            "MATH401",
+            "COMP401",
+            "Probabilistic",
+            "Web Framework",
+            "interest",
+            "which",
+            "?"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "Options for semester 5 track slot are MATH401 or COMP401; ask about interests/career goal; Faculty Advisor decides."
+    },
+    {
+      "id": "A03",
+      "category": "ambiguous",
+      "question": "What are the prerequisites for Deep Learning?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": null,
+        "must_include": [
+          [
+            "DATA301",
+            "Machine Learning"
+          ],
+          [
+            "batch",
+            "2023",
+            "which year",
+            "entry year"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "DATA301 for all batches; batch 2023 also lists MATH201 -> answer depends on batch."
+    },
+    {
+      "id": "U01",
+      "category": "unavailable",
+      "question": "Can I take Calculus (MATH201)?",
+      "student_id": "STU_001",
+      "batch": null,
+      "expect": {
+        "behavior": "answer",
+        "decision": "NOT_IN_CURRICULUM",
+        "must_include": [
+          [
+            "not in",
+            "not part",
+            "not offered",
+            "not listed",
+            "not available",
+            "does not appear"
+          ]
+        ],
+        "must_not": [],
+        "sources": []
+      },
+      "ground_truth": "MATH201 is not in the batch 2026 curriculum (it exists for 2022-2024)."
+    },
+    {
+      "id": "U02",
+      "category": "unavailable",
+      "question": "Does the university offer a Quantum Computing minor?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "say_insufficient",
+        "decision": null,
+        "must_include": [
+          [
+            "Design",
+            "Economics",
+            "Finance",
+            "Law",
+            "Marketing",
+            "Psychology",
+            "Start-up"
+          ]
+        ],
+        "must_not": [
+          "re:yes,? (the university|vidyashilp|there is)"
+        ],
+        "sources": []
+      },
+      "ground_truth": "No such minor in the documents; listed minors are Design, Economics, Finance, Law, Marketing, Psychology, Start-up."
+    },
+    {
+      "id": "O01",
+      "category": "off_topic",
+      "question": "Who will win the IPL this year?",
+      "student_id": null,
+      "batch": null,
+      "expect": {
+        "behavior": "refuse",
+        "decision": null,
+        "must_include": [
+          [
+            "academic",
+            "courses",
+            "only help",
+            "university",
+            "can't help",
+            "cannot help"
+          ]
+        ],
+        "must_not": [
+          "re:(mumbai|chennai|kolkata|bengaluru|rcb|csk|mi) (will|are likely)"
+        ],
+        "sources": []
+      },
+      "ground_truth": "Out of scope -> politely decline and redirect."
+    }
+  ]
+}

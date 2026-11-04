@@ -1,0 +1,6 @@
+mode,cases,accuracy_correct_%,partially_correct_%,hallucination_%,incorrect_%,eligibility_decisions_correct_%,source_correct_%,missing_info_handled_%,conflicts_flagged_%,incorrect_recommendations,median_latency_s,avg_latency_s,avg_tokens
+basic,42,16.7,38.1,7.1,38.1,9.1,35.7,14.3,60.0,11,1.13,1.26,236
+prompting,42,7.1,52.4,0.0,40.5,0.0,85.7,0.0,0.0,11,0.79,0.82,1240
+rag,42,42.9,26.2,2.4,28.6,9.1,92.9,71.4,20.0,10,1.36,1.42,2288
+rag_student,42,61.9,19.0,2.4,16.7,54.5,92.9,71.4,20.0,5,1.74,2.13,3632
+agentic,42,81.0,16.7,0.0,2.4,100.0,100.0,85.7,80.0,0,14.42,15.46,5054

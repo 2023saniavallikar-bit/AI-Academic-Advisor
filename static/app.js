@@ -52,22 +52,6 @@ function getOrCreateId(storageKey) {
 let activeConversationId = getOrCreateId('vidyashilp-active-conversation-id');
 const messageCachePrefix = 'vidyashilp-history:';
 let conversationLoadSequence = 0;
-const mathJaxReady = new Promise((resolve) => {
-  if (typeof window.MathJax?.typesetPromise === 'function') {
-    resolve();
-    return;
-  }
-
-  const mathJaxScript = document.getElementById('mathJaxScript');
-  if (!mathJaxScript) {
-    resolve();
-    return;
-  }
-
-  mathJaxScript.addEventListener('load', resolve, { once: true });
-  mathJaxScript.addEventListener('error', resolve, { once: true });
-});
-
 const sendIcon = `
   <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
     <path d="M10 15.5v-11m0 0L5.5 9m4.5-4.5L14.5 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
@@ -100,6 +84,7 @@ function buildUsageLine(meta) {
   } else {
     parts.push('Token usage was not reported for this response');
   }
+  if (meta.mode) parts.push(meta.mode === 'agentic' ? 'Agentic (verified)' : 'RAG');
   if (meta.model_label) parts.push(meta.model_label);
   const period = meta.period;
   if (period && period.batch) {
@@ -133,39 +118,28 @@ function addMessage(text, sender = 'bot', isError = false, renderRichText = fals
     const avatar = document.createElement('div');
     avatar.className = 'message-avatar';
     avatar.setAttribute('aria-hidden', 'true');
-    avatar.textContent = 'A';
+    avatar.textContent = 'VG';
     wrapper.appendChild(avatar);
   }
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
-  if (
-    renderRichText
-    && typeof window.marked?.parse === 'function'
-    && typeof window.DOMPurify?.sanitize === 'function'
-  ) {
-    const markdown = window.marked.parse(text, { gfm: true, breaks: false });
-    bubble.innerHTML = window.DOMPurify.sanitize(markdown);
+  if (renderRichText && window.UI) {
+    // UI.renderAnswer escapes all HTML first, then applies a small Markdown subset.
+    bubble.innerHTML = window.UI.renderAnswer(text);
   } else {
     bubble.textContent = text;
   }
 
-  const usageLine = sender === 'bot' && !isError ? buildUsageLine(meta) : null;
-  if (usageLine) {
-    const body = document.createElement('div');
-    body.className = 'message-body';
-    body.append(bubble, usageLine);
-    wrapper.appendChild(body);
-  } else {
-    wrapper.appendChild(bubble);
-  }
+  const usageLine = sender === 'bot' && !isError && !window.UI ? buildUsageLine(meta) : null;
+  const body = document.createElement('div');
+  body.className = 'message-body';
+  body.appendChild(bubble);
+  if (usageLine) body.appendChild(usageLine);
+  wrapper.appendChild(body);
   messageList.appendChild(wrapper);
-  if (renderRichText) {
-    mathJaxReady
-      .then(() => window.MathJax?.typesetPromise?.([bubble]))
-      .catch((error) => {
-        console.error('Could not typeset advisor response math:', error);
-      });
+  if (sender === 'bot' && !isError && window.UI) {
+    window.UI.decorateAnswer(wrapper, text, meta);
   }
   chatWindow.scrollTop = chatWindow.scrollHeight;
 }
@@ -191,35 +165,14 @@ function setLoading(isLoading) {
 }
 
 function showWelcome() {
-  chatWindow.innerHTML = `
-    <div class="welcome-content">
-      <div class="welcome-block">
-        <span class="welcome-eyebrow">VIDYASHILP UNIVERSITY</span>
-        <h2>Hello 👋<br />Welcome to Vidyashilp Guide.</h2>
-        <p>Get clear, personalized guidance on your courses, prerequisites, degree requirements, semester planning, and university policies.</p>
-      </div>
-      <div class="quick-prompts" aria-label="Suggested questions">
-        <button type="button" class="prompt-chip" data-prompt="What courses should I take next?">
-          <span class="prompt-icon" aria-hidden="true">01</span>
-          <span><strong>Plan my semester</strong><small>Explore courses for next term</small></span>
-          <span class="prompt-arrow" aria-hidden="true">↗</span>
-        </button>
-        <button type="button" class="prompt-chip" data-prompt="Can I take COMP203 next semester?">
-          <span class="prompt-icon" aria-hidden="true">02</span>
-          <span><strong>Check prerequisites</strong><small>See what you need before a course</small></span>
-          <span class="prompt-arrow" aria-hidden="true">↗</span>
-        </button>
-        <button type="button" class="prompt-chip" data-prompt="Show my degree requirements">
-          <span class="prompt-icon" aria-hidden="true">03</span>
-          <span><strong>Understand my degree</strong><small>Make sense of your requirements</small></span>
-          <span class="prompt-arrow" aria-hidden="true">↗</span>
-        </button>
-      </div>
-    </div>
-  `;
+  if (window.UI) {
+    window.UI.renderWelcome(chatWindow);
+  } else {
+    chatWindow.innerHTML = '<p>Ask a question about courses, credits or regulations.</p>';
+  }
   messageInput.value = '';
-  studentIdInput.value = '';
   messageInput.style.height = 'auto';
+  // Note: the signed-in student / chosen advisee (studentIdInput) is kept.
 }
 
 function readCachedMessages(conversationId) {
@@ -391,57 +344,16 @@ document.addEventListener('click', (event) => {
   messageInput.focus();
 });
 
-chatForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-
-  const message = messageInput.value.trim();
+async function sendMessage(message) {
   const studentId = studentIdInput.value.trim();
-
-  if (!message) {
-    messageInput.focus();
-    return;
-  }
-
+  const mode = window.UI ? window.UI.currentMode() : 'agentic';
   addMessage(message, 'user');
-  messageInput.value = '';
-  messageInput.style.height = 'auto';
   setLoading(true);
-
-  const typingMessage = document.createElement('div');
-  typingMessage.className = 'message bot';
-  typingMessage.setAttribute('role', 'status');
-  typingMessage.setAttribute('aria-label', 'Finding guidance in university documents');
-
-  const avatar = document.createElement('div');
-  avatar.className = 'message-avatar';
-  avatar.setAttribute('aria-hidden', 'true');
-  avatar.textContent = 'V';
-
-  const bubble = document.createElement('div');
-  bubble.className = 'bubble typing-indicator';
-  const spinner = document.createElement('span');
-  spinner.className = 'thinking-spinner';
-  spinner.setAttribute('aria-hidden', 'true');
-  const statusText = document.createElement('span');
-  statusText.textContent = 'Finding guidance';
-  const dots = document.createElement('span');
-  dots.className = 'thinking-dots';
-  dots.setAttribute('aria-hidden', 'true');
-  for (let index = 0; index < 3; index += 1) {
-    dots.appendChild(document.createElement('span'));
-  }
-
-  bubble.append(spinner, statusText, dots);
-  typingMessage.append(avatar, bubble);
-  document.querySelector('.message-list').appendChild(typingMessage);
-  chatWindow.scrollTop = chatWindow.scrollHeight;
-
+  const thinking = window.UI ? window.UI.showThinking(mode) : { remove() {} };
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message,
         student_id: studentId,
@@ -449,15 +361,16 @@ chatForm.addEventListener('submit', async (event) => {
         model: modelSelect.value,
         batch: batchSelect.value,
         semester: semesterSelect.value,
+        mode,
       }),
     });
-
-    const data = await response.json();
-
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error(data.error || 'Unable to get an answer.');
+      const error = new Error(data.error || 'Unable to get an answer.');
+      error.status = response.status;
+      throw error;
     }
-
+    thinking.remove();
     addMessage(data.answer || 'No answer returned.', 'bot', false, true, data.meta);
     const cachedMessages = readCachedMessages(activeConversationId) || [];
     cacheMessages(activeConversationId, [
@@ -465,23 +378,51 @@ chatForm.addEventListener('submit', async (event) => {
       { role: 'user', content: message },
       { role: 'assistant', content: data.answer || 'No answer returned.', meta: data.meta || null },
     ]);
-
-    if (data.student_id) {
-      studentIdInput.value = data.student_id;
-    }
     refreshConversations();
   } catch (error) {
-    addMessage(error instanceof Error ? error.message : 'Something went wrong.', 'bot', true);
+    thinking.remove();
+    const text = error instanceof Error ? error.message : 'Something went wrong.';
+    if (window.UI) {
+      window.UI.showError(text, {
+        status: error.status,
+        retry: () => {
+          // remove the failed question bubble, then send it again
+          const bubbles = chatWindow.querySelectorAll('.message.user');
+          const last = bubbles[bubbles.length - 1];
+          if (last) last.remove();
+          sendMessage(message);
+        },
+      });
+    } else {
+      addMessage(text, 'bot', true);
+    }
   } finally {
-    typingMessage.remove();
     setLoading(false);
     messageInput.focus();
   }
+}
+
+chatForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const message = messageInput.value.trim();
+  if (!message) {
+    messageInput.focus();
+    return;
+  }
+  messageInput.value = '';
+  messageInput.style.height = 'auto';
+  sendMessage(message);
+});
+
+// Signing in or out starts a fresh conversation, so one person's chat is never
+// shown to the next person using the same browser.
+document.addEventListener('vg:auth-changed', () => {
+  startNewConversation();
 });
 
 messageInput.addEventListener('input', () => {
   messageInput.style.height = 'auto';
-  messageInput.style.height = `${Math.min(messageInput.scrollHeight, 130)}px`;
+  messageInput.style.height = `${Math.min(messageInput.scrollHeight, 160)}px`;
 });
 
 messageInput.addEventListener('keydown', (event) => {

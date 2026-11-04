@@ -1,0 +1,125 @@
+{
+  "_about": "Structured academic rules transcribed by hand from '4. Student Handbook Aug 2026.pdf' (Academic Regulations) and 'SOP STUDENT 17082026 - Final.pdf'. Each rule keeps its clause and page so answers can cite it. Page numbers are the printed page numbers in the Handbook footer. Used by the deterministic tools in academic_tools.py and shown to the model as evidence.",
+  "grade_points": {
+    "source": "Student Handbook, Clause 8.10, Table 2 (p.24)",
+    "note": "Table 2 is an IMAGE in the PDF, so plain text extraction / the original RAG index cannot see it. Transcribed manually (multimodal ingestion finding).",
+    "scale": {"O": 10, "A+": 9, "A": 8, "B+": 7, "B": 6, "C": 5, "D": 4, "F": 0, "FA": 0},
+    "no_grade_point": ["S", "U", "I"],
+    "earned_credit_grades": ["O", "A+", "A", "B+", "B", "C", "D", "S"],
+    "earned_credit_source": "Clause 8.11 (p.25): earned credits = courses graded S (non-audit) or O, A+, A, B+, B, C, D; not F or FA.",
+    "minimum_pass_grade": "D",
+    "minimum_pass_source": "Clause 8.13.2 (p.25)"
+  },
+  "cgpa": {
+    "source": "Clause 8.15-8.17 (p.28-29)",
+    "rule": "CGPA = sum(C_i * G_i) / sum(C_i) over courses with grade points, including F and FA (zero points). S/U/I excluded. On re-registration only the most recent valid grade counts. Two decimal places."
+  },
+  "progression": {
+    "source": "Clause 12.1, Table 3 (p.34)",
+    "to_year_2_min_cgpa": 4.0,
+    "to_year_2_note": "Eligibility criterion to register for Semester 3",
+    "to_year_3_plus_min_cgpa": 5.0,
+    "after_results_of": "end of semester, make-up exams and summer term (Clause 12.2)",
+    "if_not_met": "Repeat the academic year (Clause 12.4) or re-register only specific courses (Clause 12.5)."
+  },
+  "graduation": {
+    "source": "Clause 15.2 (p.38)",
+    "min_cgpa": 5.0,
+    "conditions": ["Minimum credit requirements of the Program Regulations (15.2.1)", "CGPA >= 5.00 (15.2.2)", "All dues paid (15.2.3)", "No disciplinary action pending (15.2.4)"],
+    "distinction_min_cgpa": 8.5,
+    "distinction_source": "Clause 15.3 (p.38)"
+  },
+  "attendance": {
+    "source": "Clause 7.2-7.6 (p.21-22); SOP Section 2",
+    "minimum_percent": 75,
+    "relaxed_floor_percent": 65,
+    "relaxation_grounds": "Hospitalisation/trauma/contagious disease of student or family (7.3), or representing State/India in events (7.4); needs documents and Vice-Chancellor approval.",
+    "shortage_consequence": "Not allowed to sit End Term Exam in that course; 'FA' grade (7.6)."
+  },
+  "late_registration": {
+    "source": "Clause 2.6-2.8 (p.16-17); SOP Section 1",
+    "medical_max_weeks": 2,
+    "competition": "Days approved by Vice-Chancellor (2.6.2), semester 2 onwards",
+    "other_reasons_max_weeks": 1,
+    "other_reasons_note": "Handbook 2.7 allows late registration for OTHER reasons up to 1 week with a Late Fee.",
+    "summer_term": "Not applicable to Summer Term; no late registration for summer (2.8, 11.5.1).",
+    "known_conflict": "SOP Section 1 says 'No late registration shall be permitted' except medical/competition cases, while the SOP's own 'Course Registration Deadline' bullet and Handbook 2.7 allow up to one week for other reasons. The advisor must flag this and refer to the Program Chair."
+  },
+  "registration_conditions": {
+    "source": "Clause 2.10-2.12 (p.17); SOP Sections 1 and 5",
+    "conditions": ["All fees paid (2.10.1)", "University, hostel, transport, library dues cleared (2.10.2)", "Not debarred (2.10.3)", "Progression criteria of 12.1 met at start of academic year (2.11)"],
+    "sop_extra": "SOP: students with pending fees or incomplete documentation are not eligible; students with outstanding fees cannot sit semester-end exams."
+  },
+  "no_reregistration_of_passed": {
+    "source": "Clause 2.9 (p.17)",
+    "rule": "A passed course cannot be re-registered except for grade improvement under 11.4.3 (summer) and 12.5."
+  },
+  "pre_registration_minor": {
+    "source": "Clause 2.13 (p.17-18)",
+    "rule": "Specialization/Minor/Open courses need pre-registration after consulting the Faculty Advisor; offered only if at least 10 students register (Program Chair may still offer)."
+  },
+  "change_of_minor": {
+    "source": "Clause 8.13.3(g) (p.26)",
+    "rule": "Change of Minor permitted only once until completion of the program."
+  },
+  "add_drop": {
+    "source": "Clause 2.15 (p.18); SOP Section 1",
+    "window_weeks": 2,
+    "rule": "Within two weeks of commencement of classes, after consulting the Faculty Advisor, request to Program Chair/Dean. Dropped courses do not appear on the grade card."
+  },
+  "program_transfer": {
+    "source": "Clause 2.15 (p.18); SOP Section 3",
+    "rule": "Allowed only before registration for the Second Year, with approval of both Program Chairs; Credit Transfer Equivalence Committee reviews credits."
+  },
+  "credit_load_limits": {
+    "source": "Clause 2.16 (p.18)",
+    "rule": "Students must register within the minimum and maximum credit limits stipulated in the Program Regulations.",
+    "missing_information": "The provided documents do NOT state the numeric minimum/maximum credits per regular semester. The advisor must say this is not available."
+  },
+  "audit_course": {
+    "source": "Clause 2.17 (p.18-19); SOP Section 1",
+    "rule": "Audit needs Faculty Advisor consultation and Course Instructor approval; graded S/U; earns no credits; does not count towards degree."
+  },
+  "fail_and_makeup": {
+    "source": "Clause 8.13.3 (p.25-26), 9.5 (p.30-31)",
+    "f_grade": "F students may take a Make-Up Exam in the immediately following semester; if still F, must re-register when the course is next offered.",
+    "fa_grade": "FA (attendance) must re-register in a subsequent term; no make-up exam for FA. Non-mandatory courses: may repeat or choose another approved course.",
+    "makeup_not_for": "Practice/skill-based and non-taught credit courses (9.5.3).",
+    "makeup_improvement": "Make-up can also be used to improve CGPA; new grade replaces old unless lower (9.5.2)."
+  },
+  "summer_term": {
+    "source": "Clause 11 (p.32-33); SOP Section 4",
+    "max_credits": 12,
+    "max_hours": 280,
+    "rules": ["Only for FA/F re-registration or grade improvement (11.4)", "No late registration (11.5.1)", "75% attendance applies (11.5.4)", "Students cannot demand a specific course (11.5.5)", "Fewer than 10 students: Program Chair decides (11.5.6)"]
+  },
+  "max_duration": {
+    "source": "Clause 6.1-6.3 (p.20-21)",
+    "rule": "Maximum duration N+2 years (N = normal duration); time for improvement and temporary withdrawal counts."
+  },
+  "temporary_withdrawal": {
+    "source": "Clause 13.1 (p.36)",
+    "rule": "May be permitted to withdraw temporarily for one academic year with supporting documents; counts towards maximum duration."
+  },
+  "grade_review": {
+    "source": "Clause 10 (Review of Grades)",
+    "rule": "Student may appeal for review of grades to the Academic Appeals Board within the notified schedule."
+  },
+  "bonafide_certificate": {
+    "source": "SOP Section 7",
+    "rule": "Raise request on Digii Campus Help Centre stating the reason; issued within 24 hours. Internship: also email Program Chair with company, duration, dates and keep Registrar in loop."
+  },
+  "grievance": {
+    "source": "SOP Section 9",
+    "rule": "Email studentgrievance@vidyashilp.edu.in or use the official grievance form on the university website."
+  },
+  "not_in_documents": [
+    "Numeric maximum/minimum credits per regular semester (2.16 refers to Program Regulations not provided)",
+    "Fee amounts, late fee amount, make-up exam fee",
+    "Exact academic calendar dates for the current term",
+    "Which elective/track sections actually run this semester (offering is subject to 10-student minimum)",
+    "Faculty names and timetables",
+    "Rules for credit transfer from other universities beyond program change (no equivalence table provided)",
+    "Hostel allocation rules"
+  ]
+}

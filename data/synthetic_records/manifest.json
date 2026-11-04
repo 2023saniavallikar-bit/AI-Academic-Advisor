@@ -1,0 +1,191 @@
+[
+  {
+    "files": [
+      "transcript_STU_016_clean.png",
+      "transcript_STU_016_clean.pdf"
+    ],
+    "purpose": "clean transcript",
+    "student_id": "STU_016",
+    "expected": {
+      "courses": 33,
+      "cgpa": 8.86
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_017_clean.png",
+      "transcript_STU_017_clean.pdf"
+    ],
+    "purpose": "clean transcript",
+    "student_id": "STU_017",
+    "expected": {
+      "courses": 33,
+      "cgpa": 7.35
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_029_clean.png",
+      "transcript_STU_029_clean.pdf"
+    ],
+    "purpose": "clean transcript",
+    "student_id": "STU_029",
+    "expected": {
+      "courses": 49,
+      "cgpa": 7.62
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_007_clean.png",
+      "transcript_STU_007_clean.pdf"
+    ],
+    "purpose": "clean transcript",
+    "student_id": "STU_007",
+    "expected": {
+      "courses": 17,
+      "cgpa": 6.66
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_035_clean.png",
+      "transcript_STU_035_clean.pdf"
+    ],
+    "purpose": "clean transcript",
+    "student_id": "STU_035",
+    "expected": {
+      "courses": 47,
+      "cgpa": 7.22
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_022_clean.png",
+      "transcript_STU_022_clean.pdf"
+    ],
+    "purpose": "clean transcript",
+    "student_id": "STU_022",
+    "expected": {
+      "courses": 33,
+      "cgpa": 4.34
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_016_phone.jpg"
+    ],
+    "purpose": "phone-photo transcript",
+    "student_id": "STU_016",
+    "expected": {
+      "courses": 33,
+      "cgpa": 8.86
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_017_phone.jpg"
+    ],
+    "purpose": "phone-photo transcript",
+    "student_id": "STU_017",
+    "expected": {
+      "courses": 33,
+      "cgpa": 7.35
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_029_phone.jpg"
+    ],
+    "purpose": "phone-photo transcript",
+    "student_id": "STU_029",
+    "expected": {
+      "courses": 49,
+      "cgpa": 7.62
+    }
+  },
+  {
+    "files": [
+      "registration_STU_016.png",
+      "registration_STU_016.pdf"
+    ],
+    "purpose": "registration card",
+    "student_id": "STU_016",
+    "expected": {
+      "courses": 7
+    }
+  },
+  {
+    "files": [
+      "registration_STU_028.png",
+      "registration_STU_028.pdf"
+    ],
+    "purpose": "registration card",
+    "student_id": "STU_028",
+    "expected": {
+      "courses": 5
+    }
+  },
+  {
+    "files": [
+      "registration_STU_010.png",
+      "registration_STU_010.pdf"
+    ],
+    "purpose": "registration card",
+    "student_id": "STU_010",
+    "expected": {
+      "courses": 7
+    }
+  },
+  {
+    "files": [
+      "adddrop_STU_023.png"
+    ],
+    "purpose": "add/drop form",
+    "student_id": "STU_023",
+    "expected": {
+      "courses": 2
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_017_TAMPERED.png"
+    ],
+    "purpose": "tampered: MATH301 shown as B, official record is F",
+    "student_id": "STU_017",
+    "expected": {
+      "discrepancy": "MATH301 document B vs record F"
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_018_INJECTION.png"
+    ],
+    "purpose": "hidden prompt injection line",
+    "student_id": "STU_018",
+    "expected": {
+      "security_event": "prompt_injection_in_document"
+    }
+  },
+  {
+    "files": [
+      "registration_STU_020_PII.png"
+    ],
+    "purpose": "contains fake phone/email/DOB to test redaction",
+    "student_id": "STU_020",
+    "expected": {
+      "security_event": "pii_redacted"
+    }
+  },
+  {
+    "files": [
+      "transcript_STU_026_for_wrong_owner.png"
+    ],
+    "purpose": "uploaded while logged in as another student",
+    "student_id": "STU_026",
+    "expected": {
+      "security_event": "document_of_another_student",
+      "upload_as": "STU_016"
+    }
+  }
+]
