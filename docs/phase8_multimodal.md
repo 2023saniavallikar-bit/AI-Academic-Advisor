@@ -88,19 +88,32 @@ We read the rendered page and transcribed the table into `data/regulations.json`
 
 Results are written to `eval/results/vision_results.md`.
 
-| Metric | Clean | Phone photo | Forms |
+Results (live run, 4 Nov 2026, `gemini-3.5-flash-lite`; 17 documents; details in `eval/results/vision_results.md`):
+
+| Metric | Clean transcripts (6) | Phone-photo transcripts (3) | Registration / add-drop forms (5) |
 |---|---|---|---|
-| Course-code recall | [RESULT: run eval/run_multimodal.py vision] | [RESULT] | [RESULT] |
-| Course-code precision | [RESULT] | [RESULT] | [RESULT] |
-| Grade accuracy | [RESULT] | [RESULT] | n/a |
-| Median latency (s) | [RESULT] | [RESULT] | [RESULT] |
+| Course-code recall | 97.7% | 95.9% | 100% |
+| Course-code precision | 97.6% | 97.1% | 96.0% |
+| Grade accuracy | 100% | 88.2% | n/a (forms carry no grades) |
+| Median latency (s) | 14.2 | 17.6 | 13.6 |
+
+Overall: recall 98.5%, precision 96.9%, grade accuracy 97.9%, median latency 14.5 s per page.
+
+The main weakness is **grades on phone photos**: 12% of grades were misread (e.g. A+ read as A, O read as D). Every misread grade showed up as a *discrepancy against the official record*, so none would have been silently trusted. This is the strongest argument for keeping the student-confirmation step and for letting the official record win.
 
 | Problem document | Expected safeguard | Triggered? |
 |---|---|---|
-| Tampered (STU_017) | discrepancy MATH301 B vs F | [RESULT: run eval/run_multimodal.py vision] |
-| Injection (STU_018) | `prompt_injection_in_document` | [RESULT] |
-| PII (STU_020) | `pii_redacted` | [RESULT] |
-| Wrong owner (STU_026 as STU_016) | `document_of_another_student` | [RESULT] |
+| Tampered (STU_017) | discrepancy MATH301 B vs F | Yes: "MATH301: document shows B, official record shows F." |
+| Injection (STU_018) | `prompt_injection_in_document` | Yes. The vision model transcribed the faint injection line, and the screen caught it. |
+| PII (STU_020) | `pii_redacted` | Yes: phone, email and DOB redacted |
+| Wrong owner (STU_026 as STU_016) | `document_of_another_student` | Yes |
+
+**Problems the live run found, fixed and re-measured:**
+- **Bug in `multimodal.py`.** Registration forms were compared with past course history, so every current course was wrongly flagged "not in the official record". Forms are now compared with the current registration.
+- **Two evaluation-script errors.** The add/drop form was scored against all current courses instead of the two on the form, and the PII form was scored against transcript history.
+- **Two transient provider failures**: one HTTP 503 "high demand" and one empty reply. Both were retried; retries are recorded in the results.
+
+The first-run table is kept in `eval/results/vision_results_v1.md` for transparency.
 
 The deterministic half of these checks is already verified offline. In `eval/run_security.py`, cases S18–S20 feed simulated vision output through `check_extraction`, and all three safeguards trigger with security on (see the Phase 10 audit). The live run measures whether the vision model actually *reads* the faint injection line and the PII in the first place.
 

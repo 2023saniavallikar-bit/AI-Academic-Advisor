@@ -92,8 +92,15 @@ def check_extraction(data: dict, student: dict | None = None) -> dict:
             discrepancies.append(f"Document belongs to {on_doc}, not to the logged-in student.")
             security_events.append({"type": "document_of_another_student"})
         latest = T.latest_attempts(student)
+        is_form = data.get("document_type") in ("registration_form", "add_drop_form")
+        current = {c["course_code"] for c in student.get("current_courses", []) if c.get("course_code")}
         for row in courses:
             rec = latest.get(row["course_code"] or "")
+            if is_form:
+                # a registration/add-drop form lists this semester's courses
+                if row["course_code"] and row["status"] == "ok" and row["course_code"] not in current:
+                    discrepancies.append(f"{row['course_code']} is on the form but not in the current registration.")
+                continue
             if row["course_code"] and rec is None and row["status"] == "ok":
                 discrepancies.append(f"{row['course_code']} is on the document but not in the official record.")
             elif rec and row["grade"] and rec.get("grade") and row["grade"] != rec["grade"]:

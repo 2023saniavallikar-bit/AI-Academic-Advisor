@@ -63,28 +63,30 @@ Both systems run on the **same 42-case test set** (`eval/test_cases.json`), thro
 
 | Metric | RAG (no student data) | RAG + student data (Asg 1) | Agentic |
 |---|---|---|---|
-| Correct (%) | [RESULT: run eval/run_eval.py] | [RESULT] | [RESULT] |
-| Partially correct (%) | [RESULT] | [RESULT] | [RESULT] |
-| Hallucinated / unsupported (%) | [RESULT] | [RESULT] | [RESULT] |
-| Eligibility decisions correct (%) | [RESULT] | [RESULT] | [RESULT] |
-| Source / evidence correct (%) | [RESULT] | [RESULT] | [RESULT] |
-| Missing information handled (%) | [RESULT] | [RESULT] | [RESULT] |
-| Conflicts flagged (%) | [RESULT] | [RESULT] | [RESULT] |
-| Incorrect recommendations (count) | [RESULT] | [RESULT] | [RESULT] |
-| Median latency (s, throttling excluded) | [RESULT] | [RESULT] | [RESULT] |
-| LLM calls per answer | 1 | 1 | 2–5 (router, recommend, verifier; +2 on repair) |
-| Avg tokens per answer | [RESULT] | [RESULT] | [RESULT] |
+| Correct (%) | 42.9 | 61.9 | **81.0** |
+| Partially correct (%) | 26.2 | 19.0 | 16.7 |
+| Hallucinated / unsupported (%) | 2.4 | 2.4 | **0.0** |
+| Eligibility decisions correct (%) | 9.1 | 54.5 | **100** |
+| Source / evidence correct (%) | 92.9 | 92.9 | 100 |
+| Missing information handled (%) | 71.4 | 71.4 | 85.7 |
+| Conflicts flagged (%) | 20.0 | 20.0 | **80.0** |
+| Incorrect recommendations (count) | 10 | 5 | **0** |
+| Median latency (s, throttling excluded) | 1.4 | 1.7 | 3.3* |
+| LLM calls per answer | 1 | 1 | 3 median (router, recommendation, verifier; up to 5 with a repair) |
+
+\* Median over the 33 answers that went through the full pipeline in the first, sequential agentic run (p90 4.0 s). The final re-run shared the API with the security and vision runs and hit provider 503/429 errors, so its 14.4 s median is not representative.
+| Avg tokens per answer | 2,288 | 3,632 | 5,054 |
 
 Per-category labels (general, missing_info, conflict, eligibility, progress, ambiguous, unavailable, off_topic) are in `eval/results/summary.md`. They show *where* the extra components help.
 
 ## 6. Expected trade-offs: when agentic complexity is not worth it
 
-- **Simple handbook lookups** (T02 attendance 75%, T06 distinction 8.50, T08 add/drop two weeks). A good RAG retrieval already answers these. The agentic pipeline spends 2–3 extra model calls (router and verifier) for the same answer. That means higher latency and, on the free tier, faster use of the requests-per-minute and per-day quota (`LLM_MIN_INTERVAL_SECONDS=4` spacing). For these, a router that sends simple regulation questions straight to single-call RAG would be cheaper. [RESULT: compare latency/tokens on T01–T12]
-- **Where it should pay off**: student-specific eligibility, credits, progression and graduation (E01–E13), source-data conflicts (C01–C05) and missing information (M01–M06). Here a single LLM call must do lookups and arithmetic over long JSON, and that is where silent errors occur. [RESULT: per-category comparison]
+- **Simple handbook lookups** (T02 attendance 75%, T06 distinction 8.50, T08 add/drop two weeks). A good RAG retrieval already answers these. The agentic pipeline spends 2–3 extra model calls (router and verifier) for the same answer. That means higher latency and, on the free tier, faster use of the requests-per-minute and per-day quota (`LLM_MIN_INTERVAL_SECONDS=4` spacing). For these, a router that sends simple regulation questions straight to single-call RAG would be cheaper. Measured on T01–T12: agentic answered 92% correctly against 83% for RAG, but used about 3,700 tokens per answer against about 2,550, with roughly 3× the model calls.
+- **Where it should pay off**: student-specific eligibility, credits, progression and graduation (E01–E13), source-data conflicts (C01–C05) and missing information (M01–M06). Here a single LLM call must do lookups and arithmetic over long JSON, and that is where silent errors occur. Measured: student-specific 62% → 77%, conflicts 20% → 80%, missing information 50% → 83% (RAG + student data → agentic; `eval/results/category_breakdown.md`).
 - **New failure points**: a router misclassification (e.g. not detecting that a question is personal) can skip the record entirely, and a too-strict verifier can replace a good answer with the terser fallback. Both are visible in the trace, which makes debugging easier than with one opaque call.
 - **Engineering cost**: about 390 lines of orchestration (`agents.py`) and 500 lines of tools (`academic_tools.py`), against one prompt. The tools are reused by the evaluation, the data generator, the charts and the security layer, so the cost is shared.
 
-Conclusion (to fill after the run): [RESULT: does the agentic version reduce hallucinations and incorrect recommendations enough to justify its extra calls and latency? On which categories is plain RAG just as good?]
+**Conclusion.** On this test set the extra complexity pays for itself where it was designed to: eligibility (55% → 100% correct decisions), conflicting rules (20% → 80% flagged) and unsafe recommendations (5 → 0). These gains come mostly from the *deterministic* parts (tools and structured rules), not from adding more LLM calls. For simple handbook lookups, plain RAG is almost as good (83% vs 92%) at a third of the calls, so a production version should route simple rule questions to single-call RAG. The live run also showed the main new risk: the first agentic run scored only 66.7% because the router wrongly asked anonymous users to log in for general questions. An extra component is an extra place to fail. The trace made the bug easy to find, and a one-line code rule fixed it.
 
 ## 7. Real data issues the deterministic layer surfaced
 

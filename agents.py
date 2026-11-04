@@ -83,6 +83,10 @@ message. Reply with ONE JSON object only, no prose:
  "target_semester": integer or null (the semester the student wants to take something in),
  "batch": integer year or null (only if the student states it),
  "needs_student_record": true if the answer depends on THIS student's own courses/grades/credits,
+ "answerable_without_record": true if a correct general answer exists from rules or the catalogue
+     (e.g. "what CGPA do I need to be promoted?", "what are the prerequisites of X?", "which courses
+     are in semester 5?"); false only when the answer is about this student's own history
+     (e.g. "can I take X?", "am I eligible?", "how many credits have I earned?"),
  "off_topic": true if unrelated to university academics,
  "missing_information": [short items the advisor would need and cannot infer],
  "follow_up_question": a single clarifying question if the request is too ambiguous to answer, else null}
@@ -162,8 +166,9 @@ class AgenticAdvisor:
         return {
             "intent": intent, "course_codes": codes, "target_semester": target,
             "batch": batch if isinstance(batch, int) else None,
-            "needs_student_record": bool(data.get("needs_student_record")) or intent in
-            ("eligibility", "credits_progress", "graduation", "course_planning"),
+            "needs_student_record": (bool(data.get("needs_student_record")) or intent in
+                                     ("eligibility", "credits_progress", "graduation", "course_planning"))
+            and not bool(data.get("answerable_without_record")),
             "off_topic": bool(data.get("off_topic")) or intent == "off_topic",
             "missing_information": data.get("missing_information") or [],
             "follow_up_question": data.get("follow_up_question"),
@@ -307,6 +312,11 @@ class AgenticAdvisor:
             return done("I can only help with academic questions about Vidyashilp University courses, "
                         "credits, registration and regulations. What would you like to know about your studies?",
                         "off_topic")
+        if intake["needs_student_record"] and not student and intake["topics"] and not intake["course_codes"]:
+            # A rule question phrased personally ("can I register late ...?"): answer the
+            # general rule instead of refusing; personal checks still need a login.
+            intake["needs_student_record"] = False
+            intake["general_answer_for_anonymous"] = True
         if intake["needs_student_record"] and not student:
             return done("To answer that I need your academic record. Please log in with your student "
                         "account (top right) and ask again. For general questions about a course or a rule "

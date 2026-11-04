@@ -30,6 +30,7 @@ sys.path.insert(0, str(ROOT))
 os.chdir(ROOT)
 RESULTS = ROOT / "eval" / "results"
 RECORDS = ROOT / "data" / "synthetic_records"
+ONLY = set(a for a in sys.argv[2:])  # optional file names to (re)run
 
 VOICE_PROMPTS = [
     "Can I take machine learning DATA301 next semester",
@@ -101,16 +102,27 @@ def vision():
         mime = "image/jpeg" if img.endswith(".jpg") else "image/png"
         owner = item["expected"].get("upload_as", item["student_id"])
         student = students[owner]
-        t0 = time.perf_counter()
-        try:
-            res = MM.extract_document((RECORDS / img).read_bytes(), mime, student)
-            err = None
-        except Exception as e:
-            res, err = {"courses": [], "security_events": [], "discrepancies": []}, str(e)[:200]
-        lat = time.perf_counter() - t0
+        if ONLY and img not in ONLY:
+            continue
+        retries = 0
+        for attempt in range(3):
+            t0 = time.perf_counter()
+            try:
+                res = MM.extract_document((RECORDS / img).read_bytes(), mime, student)
+                err = None
+            except Exception as e:
+                res, err = {"courses": [], "security_events": [], "discrepancies": []}, str(e)[:200]
+            lat = time.perf_counter() - t0
+            # transient provider errors (503) or an empty/unparseable reply: retry, and record it
+            if (err and ("503" in err or "429" in err)) or (not err and not res["courses"]):
+                retries += 1
+                time.sleep(20)
+                continue
+            break
         truth_student = students[item["student_id"]]
-        if "registration" in item["purpose"] or "add/drop" in item["purpose"]:
-            truth = {c["course_code"]: None for c in truth_student["current_courses"] if c["course_code"]}
+        if img.startswith(("registration_", "adddrop_")):
+            listed = truth_student["current_courses"][:2] if img.startswith("adddrop_") else truth_student["current_courses"]
+            truth = {c["course_code"]: None for c in listed if c["course_code"]}
         else:
             truth = {c["course_code"]: c["grade"] for c in truth_student["course_history"] if c["course_code"]}
             if "TAMPERED" in img:
@@ -120,13 +132,21 @@ def vision():
         grade_ok = sum(1 for k in set(got) & set(truth) if truth[k] is None or got[k] == truth[k])
         events = [e["type"] for e in res["security_events"]]
         exp_event = item["expected"].get("security_event")
-        rows.append({"file": img, "purpose": item["purpose"], "error": err, "latency_s": round(lat, 1),
+        rows.append({"file": img, "purpose": item["purpose"], "error": err, "retries": retries, "latency_s": round(lat, 1),
                      "recall": round(tp / max(1, len(truth)), 3), "precision": round(tp / max(1, len(got)), 3),
                      "grade_accuracy": round(grade_ok / max(1, tp), 3),
                      "expected_safeguard": exp_event or item["expected"].get("discrepancy", "-"),
                      "triggered": ", ".join(events) or ("; ".join(res.get("discrepancies", []))[:80] or "-")})
         print(rows[-1])
     RESULTS.mkdir(parents=True, exist_ok=True)
+    cache = RESULTS / "vision_rows.json"
+    if ONLY and cache.exists():
+        old_rows = {r["file"]: r for r in json.loads(cache.read_text())}
+        old_rows.update({r["file"]: r for r in rows})
+        rows = [old_rows[i_file] for i_file in old_rows]
+    cache.write_text(json.dumps(rows, indent=2))
+    for r in rows:
+        r.setdefault("retries", 0)
     keys = list(rows[0])
     md = ["# Vision (transcript image) extraction results", "",
           "| " + " | ".join(keys) + " |", "|" + "---|" * len(keys)]

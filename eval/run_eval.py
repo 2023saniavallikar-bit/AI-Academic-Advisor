@@ -32,17 +32,17 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 os.chdir(ROOT)
-RESULTS = ROOT / "eval" / "results"
+RESULTS = Path(os.getenv("EVAL_RESULTS_DIR", str(ROOT / "eval" / "results")))
 MODES = ["basic", "prompting", "rag", "rag_student", "agentic"]
 
-DECISION_PATTERNS = [  # for free-text answers (non-agentic modes)
+DECISION_PATTERNS = [  # for free-text answers (non-agentic modes); first match wins
     ("NO_DATA_FOR_BATCH", r"no (curriculum )?(data|information|records?)[^.]{0,40}batch|batch 2021[^.]{0,80}(not|no)"),
     ("NOT_IN_CURRICULUM", r"not (in|part of|included in|listed in|offered in) (the |your )?(batch \d{4} |\d{4} )?(curriculum|programme|program|catalogue)"),
     ("CURRENTLY_REGISTERED", r"(already|currently) (registered|enrolled|taking)"),
-    ("NEEDS_REVIEW", r"needs? review|confirm with|conflict|inconsisten"),
-    ("CONDITIONAL", r"conditional|provided (that )?you pass|once you (pass|complete)|after you (pass|complete)|depends on (you )?passing|if you pass"),
-    ("NOT_ELIGIBLE", r"not eligible|ineligible|cannot (take|register)|can't (take|register)|not (yet )?(able|allowed|permitted) to (take|register)"),
-    ("ELIGIBLE", r"\beligible\b|you can (take|register)|you may (take|register)|meet (all )?the prerequisites"),
+    ("NOT_ELIGIBLE", r"not (currently |yet )?eligible|ineligible|cannot (take|register)|can't (take|register)|not (yet )?(able|allowed|permitted) to (take|register)"),
+    ("CONDITIONAL", r"conditional(ly)? eligible|provided (that )?you pass|depends on (you )?passing|if you pass"),
+    ("NEEDS_REVIEW", r"needs? review|conflict|inconsisten"),
+    ("ELIGIBLE", r"(?<!whether )(?<!if )\beligible\b|you can (take|register)|you may (take|register)|meet (all )?the prerequisites"),
 ]
 
 
@@ -169,7 +169,9 @@ def score(case, result, markers, known_codes):
 # ---------------------------------------------------------------- report
 def summarize(cases, markers):
     import academic_tools as T
-    known = {o.code for o in T.catalogue().offerings if o.code}
+    # codes that exist anywhere in the source data (offered courses AND listed prerequisites)
+    known = {o.code for o in T.catalogue().offerings if o.code} | \
+        {p for o in T.catalogue().offerings for p in o.prereqs}
     rows, per_case = [], {}
     for mode in MODES:
         path = RESULTS / f"raw_{mode}.jsonl"

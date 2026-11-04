@@ -154,7 +154,7 @@
           ]
         ],
         "must_not": [
-          "re:b\\+[^.\\n]{0,30}\\b8\\b"
+          "re:b\\+\\**\\s*(grade\\s*)?(carries|=|is|:|-|equals)\\s*\\**\\s*8(\\.0)?\\b"
         ],
         "sources": [
           [
@@ -463,7 +463,7 @@
         "decision": null,
         "must_include": [],
         "must_not": [
-          "re:\\b(prof|professor|dr)\\.?\\s+[a-z]{3,}",
+          "re:\\b(prof|dr)\\.?\\s+[a-z]{3,}",
           "re:\\d{1,2}(:\\d\\d)?\\s?(am|pm)"
         ],
         "sources": []
@@ -771,7 +771,7 @@
           ]
         ],
         "must_not": [
-          "re:\\byou are eligible\\b"
+          "re:(?<!whether )(?<!if )(?<!whether or not )\\byou are eligible\\b"
         ],
         "sources": []
       },
@@ -885,7 +885,7 @@
           ]
         ],
         "must_not": [
-          "re:\\byou will be promoted\\b",
+          "re:(?<!whether )(?<!if )(?<!whether or not )\\byou will be promoted\\b",
           "re:\\byes\\b"
         ],
         "sources": []
@@ -960,7 +960,7 @@
           ]
         ],
         "must_not": [
-          "re:\\byou (can|will) graduate\\b"
+          "re:(?<!whether )(?<!if )(?<!whether or not )\\byou (can|will) graduate\\b"
         ],
         "sources": []
       },
@@ -985,8 +985,8 @@
           ]
         ],
         "must_not": [
-          "re:\\byou are eligible\\b",
-          "re:\\byou can register\\b"
+          "re:(?<!whether )(?<!if )(?<!whether or not )\\byou are eligible\\b",
+          "re:(?<!whether )(?<!if )(?<!whether or not )\\byou can register\\b"
         ],
         "sources": []
       },

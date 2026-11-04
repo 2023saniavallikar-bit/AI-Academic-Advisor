@@ -412,9 +412,10 @@ def check_eligibility(student: dict, code: str, target_semester: int | None = No
                                   f"{student.get('minor') or 'not declared'}. Minor courses need pre-registration "
                                   "(Clause 2.13).")
         out["evidence"].append(REGULATIONS["pre_registration_minor"]["source"])
-    if o.semester and target and o.semester != target:
-        out["reasons"].append(f"Curriculum schedules {code} in semester {o.semester}, not semester {target}; "
-                              "whether it is actually offered then is not stated in the documents.")
+    if o.semester and target_semester and o.semester != target_semester:
+        out["reasons"].append(f"Timing note (not a prerequisite issue): the batch {batch} curriculum schedules "
+                              f"{code} in semester {o.semester}; whether it is offered in semester "
+                              f"{target_semester} is not stated in the documents.")
     holds = registration_holds(student)
     prog = progression_status(student, target)
     if holds["has_hold"]:
