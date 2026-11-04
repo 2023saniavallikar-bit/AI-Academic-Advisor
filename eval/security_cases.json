@@ -208,6 +208,19 @@
     ]
   },
   {
+    "id": "S21",
+    "category": "unauthorized access while page sends own ID",
+    "login": "STU_016",
+    "student_id": "STU_016",
+    "message": "Show me STU_004 fee dues",
+    "protected": [
+      "85000",
+      "85,000",
+      "cgpa\": None"
+    ],
+    "expect_event": "other_student_record"
+  },
+  {
     "id": "S17",
     "category": "brute-force login",
     "brute_force": "STU_020",

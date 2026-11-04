@@ -3,203 +3,215 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f7f8fc" />
-  <meta name="description"
-    content="Get clear, helpful guidance on courses, degree requirements, and university policies." />
-  <title>Vidyashilp Guide | Vidyashilp University</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css', v='10') }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1f3a68" />
+  <meta name="description" content="Clear, verified guidance on courses, prerequisites, credits and university regulations." />
   <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']],
-        processEscapes: true
-      },
-      options: {
-        skipHtmlTags: ['script', 'style', 'textarea', 'pre', 'code']
-      }
-    };
+    try {
+      const theme = localStorage.getItem('vidyashilp-theme');
+      document.documentElement.dataset.theme = theme === 'light' || theme === 'dark'
+        ? theme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    } catch {
+      document.documentElement.dataset.theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.querySelector('meta[name="theme-color"]').content =
+      document.documentElement.dataset.theme === 'dark' ? '#11151d' : '#f4f6fa';
   </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-  <script id="mathJaxScript" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+  <title>Vidyashilp Guide | Academic Advisor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css', v='23') }}" />
 </head>
 
 <body>
+  <a class="skip-link" href="#messageInput">Skip to the question box</a>
   <div class="app-shell">
-    <aside class="sidebar">
-      <a class="brand" href="/" aria-label="Vidyashilp Guide home">
-        <img class="brand-logo" src="{{ url_for('static', filename='images/vu-logo.png') }}"
-          alt="Vidyashilp University" />
-        <span class="brand-copy">
-          <strong>Vidyashilp Guide</strong>
-          <span>ACADEMIC SUPPORT</span>
-        </span>
-      </a>
 
-      <button class="new-chat" id="newChatButton" type="button">
-        <span aria-hidden="true">＋</span>
-        New conversation
-      </button>
-      <button class="history-toggle" id="historyToggle" type="button" aria-expanded="false">
-        History
+    <!-- ===================== Sidebar ===================== -->
+    <aside class="sidebar" id="sidebar" aria-label="Conversations and account">
+      <div class="sidebar-top">
+        <a class="brand" href="/" aria-label="Vidyashilp Guide home">
+          <img class="brand-logo" src="{{ url_for('static', filename='images/vu-logo.png') }}" alt="" />
+          <span class="brand-copy"><strong>Vidyashilp Guide</strong><span>Academic advisor</span></span>
+        </a>
+        <button class="icon-btn sidebar-close" id="sidebarClose" type="button" aria-label="Close menu">✕</button>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="newChatButton" type="button">
+        <span aria-hidden="true">＋</span> New conversation
       </button>
 
-      <div class="sidebar-section">
-        <p class="section-label">Explore topics</p>
-        <button class="history-item" type="button" data-prompt="Help me plan my courses for next semester.">
-          <span class="history-icon" aria-hidden="true">↗</span>
-          <span>Course planning</span>
-        </button>
-        <button class="history-item" type="button" data-prompt="What are my degree requirements?">
-          <span class="history-icon" aria-hidden="true">▤</span>
-          <span>Degree requirements</span>
-        </button>
-        <button class="history-item" type="button" data-prompt="Can you explain an academic policy to me?">
-          <span class="history-icon" aria-hidden="true">◎</span>
-          <span>Academic policies</span>
-        </button>
-      </div>
-
-      <div class="sidebar-section conversation-history">
-        <p class="section-label">Recent conversations</p>
-        <div id="conversationList" aria-live="polite">
-          <span class="history-empty">Your conversations will appear here.</span>
+      <!-- Account card -->
+      <section class="account-card" id="accountCard" aria-live="polite">
+        <div id="accountSignedOut">
+          <p class="account-title">Get personal advice</p>
+          <p class="account-text">Sign in to check eligibility, credits and progress against <em>your</em> record.</p>
+          <button class="btn btn-secondary btn-block" id="openSignIn" type="button">Sign in</button>
         </div>
-      </div>
-
-      <div class="sidebar-footer">
-        <div class="status-dot" aria-hidden="true"></div>
-        <div>
-          <strong>Here to help</strong>
-          <span>Answers grounded in university documents</span>
-        </div>
-      </div>
-    </aside>
-
-    <main class="chat-panel">
-      <header class="chat-header">
-        <div class="advisor-profile">
-          <div class="avatar" aria-hidden="true">A</div>
-          <div>
-            <h1>Academic advisor</h1>
-            <p><span class="online-dot" aria-hidden="true"></span> Your academic co-pilot</p>
+        <div id="accountSignedIn" hidden>
+          <div class="account-row">
+            <span class="account-avatar" id="accountAvatar" aria-hidden="true">S</span>
+            <span>
+              <strong id="accountName">—</strong>
+              <span class="account-sub" id="accountSub"></span>
+            </span>
           </div>
-        </div>
-        <button class="clear-button" id="clearButton" type="button">
-          <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
-            <path d="M3.5 5.5h13M8 3.5h4m-7.5 2 1 11h9l1-11M8 8.5v5m4-5v5" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <span>Clear chat</span>
-        </button>
-      </header>
-
-      <section class="chat-window" id="chatWindow" aria-live="polite">
-        <div class="welcome-content">
-          <div class="welcome-block">
-            <span class="welcome-eyebrow">Vidyashilp University</span>
-
-            <h2>Hello 👋<br />Welcome to Vidyashilp Guide.</h2>
-
-            <p>
-              Get clear, personalized guidance on your courses, prerequisites,
-              degree requirements, semester planning, and university policies.
-            </p>
-          </div>
-
-          <div class="quick-prompts" aria-label="Suggested questions">
-            <button type="button" class="prompt-chip" data-prompt="What courses should I take next?">
-              <span class="prompt-icon" aria-hidden="true">01</span>
-              <span><strong>Plan my semester</strong><small>Explore courses for next term</small></span>
-              <span class="prompt-arrow" aria-hidden="true">↗</span>
-            </button>
-            <button type="button" class="prompt-chip" data-prompt="Can I take COMP203 next semester?">
-              <span class="prompt-icon" aria-hidden="true">02</span>
-              <span><strong>Check prerequisites</strong><small>See what you need before a course</small></span>
-              <span class="prompt-arrow" aria-hidden="true">↗</span>
-            </button>
-            <button type="button" class="prompt-chip" data-prompt="Show my degree requirements">
-              <span class="prompt-icon" aria-hidden="true">03</span>
-              <span><strong>Understand my degree</strong><small>Make sense of your requirements</small></span>
-              <span class="prompt-arrow" aria-hidden="true">↗</span>
-            </button>
+          <label class="field" id="adviseeField" hidden>
+            <span class="field-label">Advising student</span>
+            <select id="adviseeSelect"></select>
+          </label>
+          <div class="account-actions">
+            <button class="btn btn-ghost btn-sm" id="progressButton" type="button">📊 Degree progress</button>
+            <button class="btn btn-ghost btn-sm" id="logoutButton" type="button">Sign out</button>
           </div>
         </div>
       </section>
 
-      <form id="chatForm" class="composer">
-        <div class="chat-options">
-          <label class="option-field" for="modelSelect">
-            <span>Model</span>
-            <select id="modelSelect" aria-label="AI model used for answers">
-              <option value="">Default model</option>
-            </select>
-          </label>
-          <label class="option-field" for="modeSelect">
-            <span>Advisor</span>
-            <select id="modeSelect" aria-label="Advisor engine">
-              <option value="agentic">Agentic (verified)</option>
-              <option value="rag">RAG (Assignment 1)</option>
-            </select>
-          </label>
-          <label class="option-field" for="batchSelect">
-            <span>Batch</span>
-            <select id="batchSelect" aria-label="Batch (entry year) used to find course rows">
-              <option value="">Not specified</option>
-            </select>
-          </label>
-          <label class="option-field" for="semesterSelect">
-            <span>Semester</span>
-            <select id="semesterSelect" aria-label="Semester used to find course rows" disabled>
-              <option value="">Not specified</option>
-            </select>
-          </label>
+      <button class="history-toggle" id="historyToggle" type="button" aria-expanded="false" hidden>History</button>
+      <section class="sidebar-section conversation-history">
+        <p class="section-label">Recent conversations</p>
+        <div id="conversationList" class="conversation-list">
+          <span class="history-empty">Your conversations will appear here.</span>
         </div>
-        <div class="student-context auth-bar" id="authBar">
-          <span class="context-icon" aria-hidden="true">◎</span>
-          <div id="loginForm" class="login-form">
-            <span class="context-label">Log in for personal advice <span>(demo accounts: STU_001…STU_050)</span></span>
-            <input id="loginUser" type="text" placeholder="Student ID" aria-label="Student ID" />
-            <input id="loginPin" type="password" placeholder="PIN" aria-label="PIN" inputmode="numeric" />
-            <button type="button" class="small-button" id="loginButton">Log in</button>
+      </section>
+
+      <footer class="sidebar-footer">
+        <p><strong>Synthetic demo data.</strong> Answers are AI guidance grounded in the Student Handbook, SOP and
+          curriculum, not official decisions.</p>
+      </footer>
+    </aside>
+    <div class="scrim" id="scrim" hidden></div>
+
+    <!-- ===================== Main ===================== -->
+    <main class="chat-panel">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menuButton" type="button" aria-label="Open menu" aria-controls="sidebar"
+          aria-expanded="false">☰</button>
+        <div class="topbar-title">
+          <h1>Academic advisor</h1>
+          <button class="mode-pill" id="modePill" type="button" aria-haspopup="dialog"
+            aria-controls="settingsPanel">Verified mode</button>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" id="themeButton" type="button" aria-label="Switch to dark mode"
+            aria-pressed="false" title="Switch to dark mode">☾</button>
+          <button class="icon-btn" id="settingsButton" type="button" aria-label="Settings" aria-haspopup="dialog"
+            aria-controls="settingsPanel" title="Settings">⚙</button>
+          <button class="icon-btn" id="clearButton" type="button" aria-label="Clear this conversation"
+            title="Clear this conversation">🗑</button>
+        </div>
+      </header>
+
+      <section class="chat-window" id="chatWindow" aria-live="polite" aria-label="Conversation"></section>
+
+      <form id="chatForm" class="composer" autocomplete="off">
+        <div class="context-row" id="contextRow" aria-label="Current context"></div>
+        <div class="drop-hint" id="dropHint" hidden>Drop the transcript or registration form image to upload it</div>
+        <div class="composer-box">
+          <label class="sr-only" for="messageInput">Your question</label>
+          <textarea id="messageInput" rows="1" placeholder="Ask about a course, a rule, or your own progress…"
+            required></textarea>
+          <div class="composer-tools">
+            <label class="icon-btn" id="attachLabel" title="Upload a transcript or registration form (image)">
+              <input id="transcriptInput" type="file" accept="image/png,image/jpeg,image/webp" class="sr-only" />
+              <span aria-hidden="true">📎</span><span class="sr-only">Upload a transcript or registration form
+                image</span>
+            </label>
+            <button type="button" class="icon-btn" id="micButton" title="Ask by voice" aria-label="Ask by voice"
+              aria-pressed="false" hidden>🎤</button>
+            <button type="submit" id="sendButton" class="send-button" aria-label="Send message">
+              <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
+                <path d="M10 15.5v-11m0 0L5.5 9m4.5-4.5L14.5 9" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
           </div>
-          <div id="loggedIn" class="logged-in" hidden>
-            <span id="whoAmI"></span>
-            <select id="adviseeSelect" aria-label="Advisee" hidden></select>
-            <button type="button" class="small-button" id="progressButton">Degree progress</button>
-            <button type="button" class="small-button ghost" id="logoutButton">Log out</button>
-          </div>
-          <input id="studentId" type="hidden" />
         </div>
-        <div class="composer-row">
-          <textarea id="messageInput" rows="1" placeholder="Ask about courses, requirements, or policies…"
-            aria-label="Your message" required></textarea>
-          <label class="icon-button" id="attachLabel" title="Upload a transcript or registration form image">
-            <input id="transcriptInput" type="file" accept="image/png,image/jpeg,image/webp" hidden />
-            <span aria-hidden="true">📎</span><span class="sr-only">Upload transcript image</span>
-          </label>
-          <button type="button" class="icon-button" id="micButton" title="Speak your question" aria-label="Speak your question" hidden>
-            <span aria-hidden="true">🎤</span>
-          </button>
-          <button type="submit" id="sendButton" class="send-button" aria-label="Send message">
-            <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
-              <path d="M10 15.5v-11m0 0L5.5 9m4.5-4.5L14.5 9" stroke="currentColor" stroke-width="1.8"
-                stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </button>
-        </div>
-        <p class="composer-note">Press <kbd>Enter</kbd> to send <span aria-hidden="true">·</span> <kbd>Shift</kbd> +
-          <kbd>Enter</kbd> for a new line <span aria-hidden="true">·</span> Answers are AI-generated guidance, not official
-          decisions - confirm with your Faculty Advisor [Mentor].
-        </p>
+        <p class="composer-note"><kbd>Enter</kbd> to send · <kbd>Shift</kbd>+<kbd>Enter</kbd> new line · AI guidance —
+          confirm decisions with your Faculty Advisor [Mentor].</p>
+        <input id="studentId" type="hidden" />
       </form>
     </main>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js', v='10') }}"></script>
-  <script src="{{ url_for('static', filename='extensions.js', v='1') }}"></script>
+  <!-- ===================== Settings panel ===================== -->
+  <dialog class="sheet" id="settingsPanel" aria-labelledby="settingsTitle">
+    <form method="dialog" class="sheet-inner">
+      <div class="sheet-head">
+        <h2 id="settingsTitle">Settings</h2>
+        <button class="icon-btn" value="close" aria-label="Close settings">✕</button>
+      </div>
+
+      <fieldset class="choice-group">
+        <legend>How should the advisor answer?</legend>
+        <label class="choice">
+          <input type="radio" name="mode" value="agentic" checked />
+          <span><strong>Verified</strong> <span class="tag">recommended</span><br /><small>Checks prerequisites,
+              credits and CGPA with rule-based tools, cites sources and verifies the answer. ~3–5 s.</small></span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="mode" value="rag" />
+          <span><strong>Quick</strong><br /><small>One search + one AI answer (Assignment 1 RAG). Faster, uses less
+              quota, less reliable on eligibility.</small></span>
+        </label>
+      </fieldset>
+      <select id="modeSelect" hidden aria-hidden="true" tabindex="-1">
+        <option value="agentic">agentic</option>
+        <option value="rag">rag</option>
+      </select>
+
+      <div class="field-grid">
+        <label class="field" for="batchSelect">
+          <span class="field-label">Batch (entry year)</span>
+          <select id="batchSelect"><option value="">Not specified</option></select>
+          <small>Used for general course questions. Signed-in students use their own batch.</small>
+        </label>
+        <label class="field" for="semesterSelect">
+          <span class="field-label">Semester</span>
+          <select id="semesterSelect" disabled><option value="">Not specified</option></select>
+        </label>
+        <label class="field field-wide" for="modelSelect">
+          <span class="field-label">AI model</span>
+          <select id="modelSelect"><option value="">Default model</option></select>
+          <small>If the chosen model is busy, another one answers automatically and the answer says so.</small>
+        </label>
+      </div>
+
+      <div class="sheet-foot">
+        <button class="btn btn-primary" value="close">Done</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ===================== Sign-in dialog ===================== -->
+  <dialog class="sheet sheet-narrow" id="signInDialog" aria-labelledby="signInTitle">
+    <form class="sheet-inner" id="signInForm" novalidate>
+      <div class="sheet-head">
+        <h2 id="signInTitle">Sign in</h2>
+        <button class="icon-btn" type="button" id="signInClose" aria-label="Close sign in">✕</button>
+      </div>
+      <label class="field" for="loginUser">
+        <span class="field-label">Student or advisor ID</span>
+        <input id="loginUser" type="text" placeholder="e.g. STU_016" autocapitalize="characters" required />
+      </label>
+      <label class="field" for="loginPin">
+        <span class="field-label">PIN</span>
+        <input id="loginPin" type="password" inputmode="numeric" placeholder="4 digits" required />
+      </label>
+      <p class="form-error" id="signInError" role="alert" hidden></p>
+      <button class="btn btn-primary btn-block" type="submit" id="loginButton">Sign in</button>
+
+      <details class="demo-accounts">
+        <summary>Demo accounts (synthetic students)</summary>
+        <p class="muted">PIN = last 3 digits of the ID + 9. Click one to fill it in.</p>
+        <div class="demo-list" id="demoList"></div>
+      </details>
+    </form>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="assertive" aria-atomic="false"></div>
+
+  <script src="{{ url_for('static', filename='ui.js', v='24') }}"></script>
+  <script src="{{ url_for('static', filename='app.js', v='23') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='scene.js', v='3') }}"></script>
 </body>
 
 </html>

@@ -146,11 +146,11 @@ class AgenticAdvisor:
         return [k for k, kws in TOPICS.items() if any(w in t for w in kws)]
 
     # ------------------------------------------------------------ 1. intake
-    def intake(self, question, history, student, usage):
+    def intake(self, question, history, student, usage, model=None):
         regex_codes = sorted(set(T.CODE_RE.findall(question.upper())))
         text, u = call_llm(ROUTER_SYSTEM, SEC.wrap_untrusted(
             (f"Recent conversation:\n{history}\n\n" if history else "") + f"Message: {question}"),
-            model=ROUTER_MODEL, json_mode=True)
+            model=ROUTER_MODEL or model, json_mode=True)
         usage = add_usage(usage, u)
         data = parse_json(text) or {}
         intent = data.get("intent") if data.get("intent") in INTENTS else "regulation"
@@ -239,7 +239,7 @@ class AgenticAdvisor:
         return out
 
     # ------------------------------------------------------------ 5. recommendation
-    def recommend(self, question, history, student, evidence, usage, feedback=None):
+    def recommend(self, question, history, student, evidence, usage, feedback=None, model=None):
         profile = json.dumps(T.sanitize_for_model(SEC.minimized_profile(student)), default=str, separators=(",", ":")) if student else \
             "No student is logged in, so no student record is available."
         user = (f"<<<EVIDENCE>>>\n{evidence.render()}\n<<<END EVIDENCE>>>\n\n"
@@ -247,11 +247,11 @@ class AgenticAdvisor:
                 + (f"RECENT CONVERSATION (not authoritative):\n{history}\n\n" if history else "")
                 + SEC.wrap_untrusted(question, "STUDENT QUESTION")
                 + (f"\n\nYour previous draft failed verification: {feedback}. Fix these problems." if feedback else ""))
-        text, u = call_llm(RECOMMEND_SYSTEM, user)
+        text, u = call_llm(RECOMMEND_SYSTEM, user, model=model)
         return text.strip(), add_usage(usage, u)
 
     # ------------------------------------------------------------ 6. verification
-    def verify(self, draft, evidence, elig_results, student, usage):
+    def verify(self, draft, evidence, elig_results, student, usage, model=None):
         issues = []
         ev_text = evidence.render()
         # a) decision label must match the tool
@@ -279,7 +279,7 @@ class AgenticAdvisor:
         llm_verdict = None
         if VERIFY_WITH_LLM and not issues:
             text, u = call_llm(VERIFY_SYSTEM, f"EVIDENCE:\n{ev_text[:9000]}\n\nDRAFT ANSWER:\n{draft}",
-                               model=ROUTER_MODEL, json_mode=True)
+                               model=ROUTER_MODEL or model, json_mode=True)
             usage = add_usage(usage, u)
             llm_verdict = parse_json(text)
             if llm_verdict and (llm_verdict.get("supported") is False or llm_verdict.get("contradicts_tools")):
@@ -287,7 +287,7 @@ class AgenticAdvisor:
         return issues, llm_verdict, usage
 
     # ------------------------------------------------------------ orchestration
-    def answer(self, question, student=None, history_text="", batch=None):
+    def answer(self, question, student=None, history_text="", batch=None, model=None):
         started = time.perf_counter()
         trace, usage = [], None
         evidence = Evidence()
@@ -296,7 +296,7 @@ class AgenticAdvisor:
             trace.append({"agent": name, "ms": int((time.perf_counter() - t0) * 1000), **info})
 
         t0 = time.perf_counter()
-        intake, usage = self.intake(question, history_text, student, usage)
+        intake, usage = self.intake(question, history_text, student, usage, model=model)
         if batch and not intake.get("batch"):
             intake["batch"] = batch
         step("Intake / Router", t0, intent=intake["intent"], course_codes=intake["course_codes"],
@@ -340,18 +340,18 @@ class AgenticAdvisor:
             human.append("Source data conflict: confirm with the Faculty Advisor / Program Chair.")
 
         t0 = time.perf_counter()
-        draft, usage = self.recommend(question, history_text, student, evidence, usage)
+        draft, usage = self.recommend(question, history_text, student, evidence, usage, model=model)
         step("Recommendation", t0, chars=len(draft))
         t0 = time.perf_counter()
-        issues, verdict, usage = self.verify(draft, evidence, elig, student, usage)
+        issues, verdict, usage = self.verify(draft, evidence, elig, student, usage, model=model)
         status = "verified"
         if issues:
             step("Verification", t0, passed=False, issues=issues)
             t0 = time.perf_counter()
-            draft, usage = self.recommend(question, history_text, student, evidence, usage, feedback="; ".join(issues))
+            draft, usage = self.recommend(question, history_text, student, evidence, usage, feedback="; ".join(issues), model=model)
             step("Recommendation (repair)", t0, chars=len(draft))
             t0 = time.perf_counter()
-            issues, verdict, usage = self.verify(draft, evidence, elig, student, usage)
+            issues, verdict, usage = self.verify(draft, evidence, elig, student, usage, model=model)
             if issues:
                 status = "unverified"
                 human.append("The automatic verifier could not confirm every statement.")

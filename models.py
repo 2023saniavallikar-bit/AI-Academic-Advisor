@@ -129,7 +129,8 @@ def _csv_env(name: str) -> list[str]:
 
 def default_model_id() -> str:
     """The model used when the browser does not choose one."""
-    return os.getenv("CHAT_MODEL", DEFAULT_FALLBACK_MODEL)
+    # An empty value in .env (CHAT_MODEL=) counts as "not set".
+    return (os.getenv("CHAT_MODEL") or "").strip() or DEFAULT_FALLBACK_MODEL
 
 
 def enabled_model_ids() -> list[str]:
