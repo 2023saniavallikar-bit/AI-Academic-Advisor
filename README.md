@@ -40,11 +40,11 @@ Good demo students:
 | `data/regulations.json` | Handbook/SOP rules as structured data with clause and page numbers |
 | `advisor.py` | Assignment 1 RAG advisor (kept for comparison) |
 | `multimodal.py` | **Phase 8**: transcript image extraction plus checks; SVG prerequisite and progress charts |
-| `static/extensions.js` | Voice input/output (Web Speech API), upload UI, charts, agent trace |
+| `static/ui.js` | UI layer: sign-in dialog, settings sheet, answer cards (decision badges, citations, sources & steps), voice in/out, upload (drag-and-drop), charts, toasts. See `docs/frontend_audit.md` |
 | `security.py` | **Phase 10** safeguards S1–S6; `SECURITY_MODE=off` reproduces Assignment 1 for the audit |
 | `scripts/generate_students.py` | Synthetic student database v2 (seeded, catalogue-consistent, validated) |
 | `scripts/generate_records.py` | Synthetic transcripts, registration and add/drop forms, phone-photo and problem documents |
-| `eval/` | Test set (42 cases), evaluation runner (5 versions), security suite (20 attacks), multimodal evaluation |
+| `eval/` | Test set (42 cases), evaluation runner (5 versions), security suite (21 attacks), multimodal evaluation |
 | `docs/` | Phase 8–11 write-ups, evaluation methodology, report outline |
 | `tests/` | Offline tests (stub model): `python -m pytest tests` |
 

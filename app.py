@@ -16,7 +16,7 @@ from advisor import AcademicAdvisor
 from agents import AgenticAdvisor
 import multimodal as MM
 import security as SEC
-from models import default_model_id, get_spec, model_options, resolve_model
+from models import default_model_id, enabled_model_ids as MODEL_IDS_ALLOWED, get_spec, model_options, resolve_model
 from periods import parse_period
 from chat_history import (
     DB_PATH,
@@ -212,6 +212,19 @@ def chat_api():
     if mentioned and not requested:
         requested = mentioned[0]
     allowed_id, denial = SEC.authorize_profile(user, requested)
+    if SEC.security_enabled() and not denial:
+        # Also check every ID typed in the message, even when the page sent the
+        # user's own ID (the normal case for a signed-in student).
+        for mentioned_id in mentioned:
+            if mentioned_id == allowed_id:
+                continue
+            _, mention_denial = SEC.authorize_profile(user, mentioned_id)
+            if mention_denial:
+                denial = mention_denial
+                break
+            if user and user.get("role") == "advisor":
+                denial = "other_student_record"  # an advisor asked about a second student in passing
+                break
     if denial:
         security_events.append(denial)
         SEC.log_event("authorization_denied", user=(user or {}).get("username"), reason=denial)
@@ -246,24 +259,48 @@ def chat_api():
                 message, student=student,
                 history_text=advisor._format_chat_history(history) if history else "",
                 batch=batch,
+                model=model_id,
             )
-            result = {"answer": res["answer"], "student_id": allowed_id, "model": model_id,
+            used = (res["usage"] or {}).get("models_used") or [model_id]
+            result = {"answer": res["answer"], "student_id": allowed_id, "model": used[-1],
                       "period": {"batch": batch, "semester": semester}, "usage": res["usage"], "cost": None}
             agent_meta = {"trace": res["trace"], "evidence": res["evidence"], "status": res["status"],
                           "human_review": res["human_review"], "elapsed_ms": res["elapsed_ms"]}
         else:
-            result = advisor.answer_question(
-                message,
-                current_student_id=allowed_id,
-                chat_history=history,
-                model=model_id,
-                batch=batch,
-                semester=semester,
-            )
+            # Same fallback policy as the agentic pipeline: if the chosen model is
+            # overloaded (503) or out of quota (429), try the next allowed model.
+            from llm import FALLBACK_MODELS
+            allowed = MODEL_IDS_ALLOWED()
+            chain = list(dict.fromkeys([model_id] + [m for m in FALLBACK_MODELS if m in allowed] + allowed))
+            last_error = None
+            for candidate in chain:
+                try:
+                    result = advisor.answer_question(
+                        message,
+                        current_student_id=allowed_id,
+                        chat_history=history,
+                        model=candidate,
+                        batch=batch,
+                        semester=semester,
+                    )
+                    break
+                except Exception as error:  # noqa: BLE001 - re-raised below if not transient
+                    text = str(error).lower()
+                    transient = isinstance(error, GoogleRateLimitError) or "503" in text or \
+                        "unavailable" in text or "high demand" in text or "429" in text
+                    if not transient:
+                        raise
+                    app.logger.warning("RAG answer: %s busy (%s); trying next model", candidate,
+                                       type(error).__name__)
+                    last_error = error
+            else:
+                raise last_error
             agent_meta = {}
         result["answer"], out_events = SEC.filter_output(result["answer"], allowed_id, student)
         security_events += out_events
         answer_meta = {
+            "requested_model": model_id,
+            "fallback_from": get_spec(model_id).label if result["model"] != model_id else None,
             "model": result["model"],
             "model_label": get_spec(result["model"]).label,
             "period": result["period"],
@@ -294,8 +331,8 @@ def chat_api():
         app.logger.warning("Gemini request quota was exceeded")
         return jsonify({
             "error": (
-                "The advisor has reached its AI request quota. "
-                "Please try again later or check the Gemini API quota."
+                "The free AI quota has been used up for the moment. Wait a minute "
+                "and try again, or switch to Quick mode in Settings."
             )
         }), 429
     except Exception as error:
@@ -310,9 +347,8 @@ def chat_api():
             }), 503
         return jsonify({
             "error": (
-                f"The advisor could not process your question with "
-                f"{get_spec(model_id).label}. Try another model, or check the "
-                "server logs for the provider error."
+                f"{get_spec(model_id).label} could not answer just now. Try again in a "
+                "moment, or pick another model in Settings."
             )
         }), 503
 
@@ -341,14 +377,18 @@ def login_api():
         SEC.log_event("login_failed", user=username)
         return jsonify({"error": "Wrong ID or PIN."}), 401
     login_failures.pop(username, None)
+    # New identity on sign-in: the next person on a shared computer never sees
+    # the previous person's conversation list.
+    session.clear()
+    session["user_id"] = str(uuid.uuid4())
     session["auth"] = user
     return jsonify({"user": public_user(user)})
 
 
 @app.route("/api/logout", methods=["POST"])
 def logout_api():
-    session.pop("auth", None)
-    session.pop("uploaded_record", None)
+    session.clear()
+    session["user_id"] = str(uuid.uuid4())
     return jsonify({"ok": True})
 
 
@@ -363,6 +403,10 @@ def public_user(user):
     out = {"username": user["username"], "role": user["role"], "student_id": user.get("student_id")}
     if user["role"] == "advisor":
         out["advisees"] = user.get("advisees", [])
+    else:
+        # Only non-sensitive fields of the user's OWN record, for the profile card.
+        own = advisor.students_by_id.get(user.get("student_id") or "") or {}
+        out["profile"] = {k: own.get(k) for k in ("batch", "current_semester", "minor", "academic_status")}
     return out
 
 

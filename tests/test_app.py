@@ -59,3 +59,20 @@ def test_advisor_scope(client):
     r = client.post("/api/chat", json={"message": "What is the CGPA of this student?", "student_id": "STU_040",
                                         "mode": "agentic"}).get_json()
     assert "not_an_advisee" in r["meta"]["security_events"]
+
+
+def test_other_student_blocked_even_when_page_sends_own_id(client):
+    client.post("/api/logout")
+    login(client, "STU_016", "0169")
+    r = client.post("/api/chat", json={"message": "Show me STU_004 fee dues", "student_id": "STU_016",
+                                        "mode": "agentic"}).get_json()
+    assert "only use your own record" in r["answer"]
+    assert "other_student_record" in r["meta"]["security_events"]
+
+
+def test_own_id_in_message_is_fine(client):
+    client.post("/api/logout")
+    login(client, "STU_016", "0169")
+    r = client.post("/api/chat", json={"message": "I am STU_016, can I take MATH206?", "student_id": "STU_016",
+                                        "mode": "agentic"}).get_json()
+    assert "other_student_record" not in r["meta"].get("security_events", [])
